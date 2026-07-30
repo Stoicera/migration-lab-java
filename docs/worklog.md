@@ -143,3 +143,36 @@ CI gates armed for good; playbook chapter 1; tag `stage-1-safety-net`.
 **Next (G3):** dependency audit, JDK raise under Boot-compatible ceiling,
 Boot 1.5→2.7 with documented breaks; safety net stays green throughout;
 playbook ch. 2–3; tags `stage-2-jdk-build`, `stage-3-boot-2.7`.
+
+---
+
+## 2026-07-30 — G3a: Stage 2 — modern/ bootstrap + build hygiene — session 4
+
+**What:**
+
+- `modern/` bootstrapped as faithful copy of `legacy/` (own compose stack:
+  8090/5434, own volume) — both stands run side by side.
+- Stage-2 hygiene, strictly migration-purposed: log4j 1.2 retired → Boot
+  default SLF4J/Logback (org.apache.log4j.Logger → slf4j, System.out remnants
+  → logger, log4j.properties deleted); unused commons-lang dropped; dead
+  commented-out method removed. gson deliberately KEPT (dies with the JSP page
+  in stage 5). Everything else untouched — the per-stage diff is the playbook
+  material.
+- JDK deliberately NOT raised: Boot 1.5 does not run on Java 9+ — "framework
+  before JDK" is the chapter's key decision rule; the raise lands with Boot
+  2.7 in stage 3.
+- **Equivalence gates armed in modern-ci:** the same characterization suite
+  runs against the modern stand per commit (-DbaseUrl=:8090, received captures
+  as artifact on mismatch); modern-ci reads the JDK from the pom (stage-proof).
+  e2e matrix leg (modern) activates via modern/docker-compose.yml +
+  selectors/modern.properties (identical to legacy until stage 5).
+- Verified locally: modern image builds, stand healthy; characterization vs
+  modern 17/17; e2e -Dtarget=modern 13/13 — the hygiene changed nothing
+  observable, proven.
+- Worklog hours G0–G2 corrected to measured wall time (honesty rule: measured,
+  not estimated; corrections stay visible).
+
+**Hours:** 0.3
+
+**Next:** stage 3 — Boot 1.5.22 → 2.7.18 + Java 17 in modern/, real breaks
+documented in playbook ch. 3, tag stage-3-boot-2.7.

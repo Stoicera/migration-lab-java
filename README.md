@@ -8,9 +8,9 @@
 Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 20 —
 safety net first, honest numbers, reusable German migration playbook.
 
-> **Status: G2 done — the safety net stands (`stage-1-safety-net`).** From this
-> point on, no commit may break the Selenium suite or the characterization tests.
-> Next: G3, build/JDK + Boot 2.7. Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
+> **Status: stage 2 done — `modern/` runs side by side with `legacy/`, equivalence
+> proven per commit** (same golden masters + same Selenium suite against both stands).
+> Next: Boot 1.5 → 2.7. Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
 

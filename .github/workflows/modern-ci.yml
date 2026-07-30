@@ -1,4 +1,6 @@
-# Modern stand: build + unit + integration tests (Testcontainers).
+# Modern stand: build + tests, then the EQUIVALENCE GATE — the same
+# characterization suite that locks the legacy behaviour runs against the
+# modern stand. Functional equivalence is proven per commit, not claimed.
 name: modern-ci
 
 on:
@@ -13,19 +15,33 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # Skeleton gate (G0): the modern module starts growing in G3 (stage 2).
-      # Until modern/pom.xml exists, this workflow passes as an empty scaffold.
+      # Skeleton gate (G0): until modern/pom.xml exists this passes as scaffold.
       - name: Check module presence
         id: gate
         run: |
           if [ -f modern/pom.xml ]; then
             echo "present=true" >> "$GITHUB_OUTPUT"
+            # the modern JDK rises stage by stage — single source of truth: the pom
+            echo "jdk=$(grep -oPm1 '(?<=<java.version>)[^<]+' modern/pom.xml | sed 's/^1\.//')" >> "$GITHUB_OUTPUT"
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
             echo "modern/ not yet present (starts in G3) — skeleton pass."
           fi
 
-      - name: Set up JDK 25 (Temurin)
+      - name: Set up JDK ${{ steps.gate.outputs.jdk }} (Temurin)
+        if: steps.gate.outputs.present == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.gate.outputs.jdk }}
+          cache: maven
+
+      - name: Build and verify modern module
+        if: steps.gate.outputs.present == 'true'
+        run: ./mvnw -B verify -f modern/pom.xml
+
+      # ---- equivalence gate: characterization vs the MODERN stand ----
+      - name: Set up JDK 25 (Temurin) for characterization
         if: steps.gate.outputs.present == 'true'
         uses: actions/setup-java@v5
         with:
@@ -33,6 +49,25 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Build and verify (unit + integration, Testcontainers)
+      - name: Start modern stand
         if: steps.gate.outputs.present == 'true'
-        run: ./mvnw -B verify -f modern/pom.xml
+        run: docker compose -f modern/docker-compose.yml up -d --wait
+
+      - name: Characterization vs modern stand (functional equivalence)
+        if: steps.gate.outputs.present == 'true'
+        run: >
+          ./mvnw -B verify -f characterization/pom.xml
+          -DbaseUrl=http://localhost:8090
+          -DdbUrl=jdbc:postgresql://localhost:5434/werkstatt
+
+      - name: Upload received captures on mismatch
+        if: failure() && steps.gate.outputs.present == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: characterization-received-modern
+          path: characterization/target/characterization-received/
+          if-no-files-found: ignore
+
+      - name: Stop modern stand
+        if: always() && steps.gate.outputs.present == 'true'
+        run: docker compose -f modern/docker-compose.yml down -v
