@@ -1,7 +1,7 @@
 # modern/ — the migrated application
 
 Grows stage by stage from a faithful copy of `legacy/`; final state: Java 25,
-Spring Boot 4.1.x, Angular 20, PostgreSQL. Current state: see [`../stages.md`](../stages.md).
+Spring Boot 4.1.x, Angular 22, PostgreSQL. Current state: see [`../stages.md`](../stages.md).
 
 ## Run it (side by side with the legacy stand)
 

@@ -5,12 +5,12 @@
 [![e2e](https://github.com/Stoicera/migration-lab-java/actions/workflows/e2e.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/e2e.yml)
 
 **A public, reproducible legacy modernization:**
-Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 20 —
+Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 22 —
 safety net first, honest numbers, reusable German migration playbook.
 
 > **Status: stage 4 done — the modern backend runs Spring Boot 4.1.0 on Java 25**,
 > functionally equivalent to the frozen 2016 stand (proven per commit by golden
-> masters + the same Selenium suite on both). Next: AngularJS → Angular 20 (stage 5).
+> masters + the same Selenium suite on both). Next: AngularJS → Angular 22 (stage 5).
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
@@ -66,7 +66,7 @@ docker compose -f legacy/docker-compose.yml up -d
 ## Deutsche Kurzfassung
 
 **migration-lab** ist eine öffentlich nachvollziehbare Legacy-Modernisierung:
-Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4.1 / Angular 20.
+Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4.1 / Angular 22.
 
 Der professionell entscheidende Schritt kommt zuerst: ein **Sicherheitsnetz** aus
 Selenium-E2E-Suite und Charakterisierungs-Tests, das während der gesamten Migration

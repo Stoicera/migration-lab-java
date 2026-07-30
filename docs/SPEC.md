@@ -1,6 +1,6 @@
 # Technical Specification — migration-lab
 
-A public, reproducible legacy modernization: Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 20, safety net first, with measured AI-assisted test generation and a reusable migration playbook.
+A public, reproducible legacy modernization: Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 22, safety net first, with measured AI-assisted test generation and a reusable migration playbook.
 
 Status: v1.0 · 2026-07-23 · Repo language: English; playbook German (decision-maker audience)
 
@@ -12,7 +12,7 @@ Status: v1.0 · 2026-07-23 · Repo language: English; playbook German (decision-
 migration-lab/
 ├── legacy/                  # WerkstattCRM as found: Java 8, Spring Boot 1.5.x, AngularJS 1.8, Maven, Postgres
 │   └── (intentionally realistic warts: field injection, God services, SQL strings, no tests, mixed concerns)
-├── modern/                  # grows stage by stage; final: Java 25, Spring Boot 4.1, Angular 20
+├── modern/                  # grows stage by stage; final: Java 25, Spring Boot 4.1, Angular 22
 ├── e2e/                     # Selenium WebDriver suite — runs against BOTH apps via config (base URL + selector map)
 ├── characterization/        # approval/golden-master tests captured from legacy behaviour (API + DB state)
 ├── ai-testgen/              # experiment harness: prompts, generated tests, PIT mutation reports, evaluation notebook/report
@@ -42,7 +42,7 @@ Deliberate legacy patterns (each catalogued in `legacy/LEGACY_NOTES.md` with the
 - **Stage 2 — Build & JDK:** Maven hygiene, dependency audit (OWASP), Java 8→17/21 compile fixes under Boot-compatible ceiling, logging unification.
 - **Stage 3 — Boot 1.5→2.7:** the documented long jump (config property migration, actuator changes, `WebSecurityConfigurerAdapter` era), refactor God class only as far as migration requires (playbook: "migrate first, refactor with purpose").
 - **Stage 4 — Boot 2.7→3.x→4.1 + Java 25:** `javax`→`jakarta`, Spring Security rewrite, constructor injection sweep, records/pattern-matching where it pays, OpenRewrite recipes used **and evaluated** (what the recipes caught vs. missed — playbook data).
-- **Stage 5 — AngularJS→Angular 20:** Strangler Fig: Angular shell + route-by-route port, hybrid period documented, selector map v2; JSP admin page absorbed. E2E stays green throughout — that's the headline.
+- **Stage 5 — AngularJS→Angular 22:** Strangler Fig: Angular shell + route-by-route port, hybrid period documented, selector map v2; JSP admin page absorbed. E2E stays green throughout — that's the headline.
 - **Stage 6 — Cloud & ops:** Docker multi-stage, OTel, health checks, GitHub Actions deploy to Hetzner+Dokploy, both stands (legacy demo + modern) deployed side by side for the demo effect.
 
 ## 5. AI-assisted test generation experiment (`ai-testgen/`) — the research-grade artefact
