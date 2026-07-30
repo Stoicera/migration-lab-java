@@ -1,0 +1,36 @@
+# Modern-Stand: grows stage by stage (see stages.md)
+# Start: docker compose -f modern/docker-compose.yml up -d
+# App: http://localhost:8090  ·  JSP-Admin: http://localhost:8090/admin
+services:
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: werkstatt
+      POSTGRES_USER: werkstatt
+      # lokale Dev-Zugangsdaten, kein Secret
+      POSTGRES_PASSWORD: werkstatt
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - modern-werkstatt-db:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U werkstatt -d werkstatt"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  app:
+    build: .
+    ports:
+      - "8090:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/werkstatt
+      SPRING_DATASOURCE_USERNAME: werkstatt
+      SPRING_DATASOURCE_PASSWORD: werkstatt
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  modern-werkstatt-db:

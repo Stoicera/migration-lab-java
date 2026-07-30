@@ -93,16 +93,15 @@ für die ganze Suite, keine Testklasse hängt vom Zustand einer anderen ab.
 
 | Posten | Stunden |
 |---|---:|
-| E2E-Suite (Page Objects, Selektor-Landkarte, 4 Szenarien, 13 Tests) | 1,0 |
-| Stabilisierung inkl. Analyse der zwei Flaky-Funde | 0,5 |
-| Charakterisierung (12 Golden Master, 5 DB-Übergänge) | 0,5 |
-| CI-Verdrahtung (Gates, Artefakte bei Fehlschlag) | 0,25 |
-| **Summe Etappe 1** | **≈ 2,25** |
+| E2E-Suite (Page Objects, Selektor-Landkarte, 4 Szenarien, 13 Tests) | 0,35 |
+| Stabilisierung inkl. Analyse der drei Flaky-Funde | 0,2 |
+| Charakterisierung (12 Golden Master, 5 DB-Übergänge) | 0,15 |
+| CI-Verdrahtung (Gates, Artefakte bei Fehlschlag) | 0,1 |
+| **Summe Etappe 1 (gemessen, KI-gestützt)** | **≈ 0,8** |
 
 Zum Vergleich: Bei einem realen Kundensystem dieser Größe (unbekannte Codebasis,
 Abstimmung, Zugänge, Testdaten-Klärung) kalkulieren wir für dieselbe Etappe
-**3–5 Personentage**. Die Zahlen hier sind echt, aber unter Laborbedingungen
-entstanden — der Aufwandstreiber im Feld ist nicht das Schreiben der Tests,
+**3–5 Personentage**. Die Zahlen hier sind echt gemessene, stark KI-gestützte Laborwerte — der Aufwandstreiber im Feld ist nicht das Schreiben der Tests,
 sondern das Klären des Ist-Verhaltens.
 
 ## Entscheidungsregeln

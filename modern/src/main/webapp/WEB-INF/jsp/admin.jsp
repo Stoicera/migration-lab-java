@@ -1,0 +1,57 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<title>Admin - ${firmaName}</title>
+	<style>
+		/* Styles direkt in der Seite, die JSP hat mit dem SPA-Design nichts zu tun */
+		body { font-family: Verdana, Arial, sans-serif; background: #f0f0e8; margin: 24px; font-size: 13px; }
+		h1 { font-size: 20px; color: #333366; }
+		table.statistik { border-collapse: collapse; background: #ffffff; }
+		table.statistik td, table.statistik th { border: 1px solid #999999; padding: 6px 14px; text-align: left; }
+		table.statistik th { background: #ddddcc; }
+		.hinweis { color: #666666; margin-top: 18px; font-size: 11px; }
+		.meldung { background: #ffffcc; border: 1px solid #cccc66; padding: 8px 12px; margin: 12px 0; }
+		.gefahr { background: #ffeeee; border: 1px solid #cc6666; padding: 10px 12px; margin-top: 20px; }
+		pre.json { background: #eeeeee; border: 1px dashed #aaaaaa; padding: 8px; font-size: 11px; }
+	</style>
+</head>
+<body>
+
+	<h1>${firmaName} &mdash; Administration</h1>
+	<p>WerkstattCRM Version ${version} &middot; Stand: ${statistik.stand}</p>
+
+	<c:if test="${not empty meldung}">
+		<div class="meldung">${meldung}</div>
+	</c:if>
+
+	<table class="statistik">
+		<tr><th>Kennzahl</th><th>Wert</th></tr>
+		<tr><td>Kunden</td><td>${statistik.kunden}</td></tr>
+		<tr><td>Fahrzeuge</td><td>${statistik.fahrzeuge}</td></tr>
+		<tr><td>Aufträge gesamt</td><td>${statistik.auftraege}</td></tr>
+		<tr><td>Aufträge offen</td><td>${statistik.auftraegeOffen}</td></tr>
+		<tr><td>Rechnungen gesamt</td><td>${statistik.rechnungen}</td></tr>
+		<tr><td>Rechnungen unbezahlt</td><td>${statistik.rechnungenOffen}</td></tr>
+	</table>
+
+	<div class="gefahr">
+		<strong>Bereinigung:</strong> Löscht stornierte Aufträge, die älter als 90 Tage sind.
+		Endgültig, kein Papierkorb!<br><br>
+		<form method="post" action="admin/bereinigen"
+			onsubmit="return confirm('Wirklich alle alten stornierten Aufträge löschen?');">
+			<button type="submit">Jetzt bereinigen</button>
+		</form>
+	</div>
+
+	<p class="hinweis">Rohdaten (für Hrn. B. beim Telefonsupport):</p>
+	<pre class="json">${statistikJson}</pre>
+
+	<p class="hinweis">
+		Zur <a href="./">Werkstatt-Oberfläche</a>
+	</p>
+
+</body>
+</html>

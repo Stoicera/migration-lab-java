@@ -1,0 +1,43 @@
+<h2>Aufträge</h2>
+
+<div style="margin-bottom: 10px;">
+	<div class="btn-group" id="status-filter">
+		<button class="btn btn-default" ng-class="{active: statusFilter == ''}"
+			ng-click="filterSetzen('')">Alle</button>
+		<button class="btn btn-default" ng-class="{active: statusFilter == 'ANGENOMMEN'}"
+			ng-click="filterSetzen('ANGENOMMEN')">Angenommen</button>
+		<button class="btn btn-default" ng-class="{active: statusFilter == 'IN_ARBEIT'}"
+			ng-click="filterSetzen('IN_ARBEIT')">In Arbeit</button>
+		<button class="btn btn-default" ng-class="{active: statusFilter == 'FERTIG'}"
+			ng-click="filterSetzen('FERTIG')">Fertig</button>
+		<button class="btn btn-default" ng-class="{active: statusFilter == 'ABGEHOLT'}"
+			ng-click="filterSetzen('ABGEHOLT')">Abgeholt</button>
+		<button class="btn btn-default" ng-class="{active: statusFilter == 'STORNIERT'}"
+			ng-click="filterSetzen('STORNIERT')">Storniert</button>
+	</div>
+	<a href="#!/auftraege/neu" class="btn btn-primary pull-right" id="btn-auftrag-neu">Neuer Auftrag</a>
+</div>
+
+<table class="table table-striped table-hover" id="auftraege-tabelle">
+	<tr>
+		<th>Nummer</th>
+		<th>Angenommen</th>
+		<th>Kennzeichen</th>
+		<th>Fahrzeug</th>
+		<th>Kunde</th>
+		<th>Beschreibung</th>
+		<th>Status</th>
+	</tr>
+	<tr ng-repeat="a in auftraege" class="zeiger" ng-click="oeffnen(a)">
+		<td>{{a.auftragNr}}</td>
+		<td>{{a.angenommenAm | date:'dd.MM.yyyy'}}</td>
+		<td>{{a.kennzeichen}}</td>
+		<td>{{a.fahrzeugBezeichnung}}</td>
+		<td>{{a.kundeName}}</td>
+		<td>{{a.beschreibung | limitTo:60}}{{a.beschreibung.length > 60 ? '...' : ''}}</td>
+		<td><span class="label label-default label-status status-{{a.status}}">{{statusText[a.status]}}</span></td>
+	</tr>
+	<tr ng-if="auftraege.length == 0">
+		<td colspan="7" class="text-muted">Keine Aufträge mit diesem Status.</td>
+	</tr>
+</table>
