@@ -1,0 +1,30 @@
+# Build
+target/
+build/
+dist/
+node_modules/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+*.war
+
+# Environment / secrets — never commit; keep .env.example current instead
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & temp
+*.log
+hs_err_pid*

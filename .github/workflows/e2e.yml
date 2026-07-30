@@ -1,0 +1,54 @@
+# Selenium E2E safety net — same scenarios against both stands via selector maps.
+# Matrix target: legacy | modern. The legacy leg is the sacred gate from
+# stage-1-safety-net onward; the modern leg activates with stage 5.
+name: e2e
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    - cron: '0 2 * * *' # nightly, 02:00 UTC
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [legacy, modern]
+    steps:
+      - uses: actions/checkout@v7
+
+      # Skeleton gate (G0): the suite lands in G2 (stage-1-safety-net).
+      # A target is exercised only when the suite AND that stand's compose file exist.
+      - name: Check suite and target presence
+        id: gate
+        run: |
+          if [ -f e2e/pom.xml ] && [ -f "${{ matrix.target }}/docker-compose.yml" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "e2e suite or ${{ matrix.target }} stand not yet present — skeleton pass."
+          fi
+
+      - name: Set up JDK 25 (Temurin)
+        if: steps.gate.outputs.present == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Start ${{ matrix.target }} stand
+        if: steps.gate.outputs.present == 'true'
+        run: docker compose -f ${{ matrix.target }}/docker-compose.yml up -d --wait
+
+      - name: Run E2E suite against ${{ matrix.target }}
+        if: steps.gate.outputs.present == 'true'
+        run: ./mvnw -B verify -f e2e/pom.xml -Dtarget=${{ matrix.target }}
+
+      - name: Stop ${{ matrix.target }} stand
+        if: always() && steps.gate.outputs.present == 'true'
+        run: docker compose -f ${{ matrix.target }}/docker-compose.yml down -v

@@ -1,0 +1,38 @@
+# Modern stand: build + unit + integration tests (Testcontainers).
+name: modern-ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Skeleton gate (G0): the modern module starts growing in G3 (stage 2).
+      # Until modern/pom.xml exists, this workflow passes as an empty scaffold.
+      - name: Check module presence
+        id: gate
+        run: |
+          if [ -f modern/pom.xml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "modern/ not yet present (starts in G3) — skeleton pass."
+          fi
+
+      - name: Set up JDK 25 (Temurin)
+        if: steps.gate.outputs.present == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Build and verify (unit + integration, Testcontainers)
+        if: steps.gate.outputs.present == 'true'
+        run: ./mvnw -B verify -f modern/pom.xml
