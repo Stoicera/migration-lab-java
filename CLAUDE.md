@@ -1,6 +1,6 @@
 # CLAUDE.md — migration-lab
 
-You are working on **migration-lab**: a public, reproducible legacy modernization (Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 20) with a Selenium safety net, measured AI-assisted test generation, and a German migration playbook. This is a portfolio piece of the Stoicera Software Group aimed at Austrian SMEs and universities (JKU) — it must demonstrate how a senior team de-risks migrations. Honesty and reproducibility are the product.
+You are working on **migration-lab**: a public, reproducible legacy modernization (Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 22) with a Selenium safety net, measured AI-assisted test generation, and a German migration playbook. This is a portfolio piece of the Stoicera Software Group aimed at Austrian SMEs and universities (JKU) — it must demonstrate how a senior team de-risks migrations. Honesty and reproducibility are the product.
 
 ## Read first (in this order)
 1. `docs/STOICERA_LABS_KONTEXT.md` — who we are, who this is for
@@ -16,7 +16,7 @@ You are working on **migration-lab**: a public, reproducible legacy modernizatio
 - **Honesty rules:** effort hours logged per session in `docs/worklog.md`; dead ends and AI failures are documented, not deleted; the AI test-gen experiment follows `ai-testgen/PROTOCOL.md` written BEFORE execution — results are never curated afterwards.
 - **Refactor only with migration purpose.** Beautification without need is scope creep — the playbook preaches this, the repo must live it.
 - **E2E quality:** Selenium 4, Page Objects, selector-map abstraction (same scenarios vs. AngularJS and Angular UIs), explicit waits only, zero flaky tolerance.
-- **Stack of the modern side:** Java 25, Spring Boot 4.1.x, Angular 20, PostgreSQL, Testcontainers, OpenRewrite (used AND evaluated). No other frameworks without ADR + approval.
+- **Stack of the modern side:** Java 25, Spring Boot 4.1.x, Angular 22 (ADR-0003; was 20), PostgreSQL, Testcontainers, OpenRewrite (used AND evaluated). No other frameworks without ADR + approval.
 - **No secrets in the repo.** `.env.example` complete.
 - Language: code/docs English; `playbook/` German (decision-maker audience); glossary in `docs/glossary.md`.
 

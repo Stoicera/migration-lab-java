@@ -239,6 +239,45 @@ injection sweep, OpenRewrite used AND evaluated, tag stage-4-boot-4x.
 
 **Hours:** 1.0
 
-**Next (G5):** AngularJS → Angular 20 via Strangler Fig; same E2E scenarios
-green on old AND new UI via selectors/modern.properties v2 — the headline
-result. JSP admin page gets absorbed (gson dies with it).
+**Next (G5):** AngularJS → Angular 22 (see ADR-0003 below) via Strangler Fig;
+same E2E scenarios green on old AND new UI via selectors/modern.properties v2 —
+the headline result. JSP admin page gets absorbed (gson dies with it).
+
+---
+
+## 2026-07-30 — Session close: Angular 22 decision + handoff
+
+**What:** Owner decided the flagged open point: **stage 5 targets Angular 22
+(22.1.0, current stable, released 2026-07-29) instead of Angular 20** — 20 is
+already in LTS with support ending Nov 2026, which would have put a
+just-migrated portfolio piece out of support within months of publication.
+Recorded as **ADR-0003** and propagated to every specifying document in one
+commit: CLAUDE.md, PRD, SPEC, MILESTONES, VERMARKTUNG, stages.md, README,
+modern/README. Earlier worklog entries keep their original wording — they are a
+dated record, not a specification.
+
+**Hours:** 0.15
+
+**Status at session end:** stages 0–4 tagged and merged (PRs #1–#6, all green).
+Legacy stand frozen at Boot 1.5.22/Java 8; modern stand at Boot 4.1.0/Java 25.
+Safety net green against BOTH stands: characterization 17/17 ×2, e2e 13/13 ×2.
+Working tree clean, both Docker stands stopped (restart: `docker compose -f
+legacy/docker-compose.yml up -d` and the same for `modern/`; data volumes
+preserved).
+
+**Open decisions for later stages (no action needed now):**
+- JUnit: suites run on 5.14.4; JUnit 6 is current major — revisit only if a
+  concrete need appears (the safety net should stay boring).
+- OpenRewrite has no full `UpgradeSpringBoot_4_1` composite — re-check if a
+  further Boot bump becomes relevant (ADR-0002 records the current evaluation).
+
+**Next session (G5) — start here:**
+1. Read this worklog + `docs/MILESTONES.md` G5 + ADR-0003; start both stands
+   and run the net (`-Dtarget=legacy`, `-Dtarget=modern`) to confirm green.
+2. Verify Angular 22 toolchain versions live (Angular CLI, Node LTS) — never
+   pin from memory; log the exact patch in the stage-5 entry.
+3. Strangler Fig: Angular shell + route-by-route port, hybrid period
+   documented, `selectors/modern.properties` v2 (same intent keys — only the
+   values change), JSP admin page absorbed (gson dies with it).
+4. Deliverables: playbook Kap. 5, tag `stage-5-angular`, E2E matrix green on
+   BOTH UIs — that is the headline result of the whole project.

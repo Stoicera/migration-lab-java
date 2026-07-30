@@ -40,7 +40,7 @@ Aus jedem Projekt entstehen (Checkliste je Projekt):
 
 **Kernbotschaft:** "Wir migrieren Ihre Legacy-Anwendung ohne Blindflug — hier haben wir es öffentlich vorgemacht, mit Sicherheitsnetz, Zahlen und Playbook."
 
-- **Case Study-Winkel:** "Spring Boot 1.5 → 4, AngularJS → Angular 20: eine Migration, öffentlich durchgeführt." Zweitartikel (Forschungs-/JKU-Anschluss): "LLM-generierte Unit-Tests für Legacy-Code: unser Mutation-Testing-Ergebnis" — der PIT-Report ist das differenzierende Artefakt, das sonst niemand veröffentlicht.
+- **Case Study-Winkel:** "Spring Boot 1.5 → 4, AngularJS → Angular 22: eine Migration, öffentlich durchgeführt." Zweitartikel (Forschungs-/JKU-Anschluss): "LLM-generierte Unit-Tests für Legacy-Code: unser Mutation-Testing-Ergebnis" — der PIT-Report ist das differenzierende Artefakt, das sonst niemand veröffentlicht.
 - **Playbook als eigenständiges Asset:** PDF-Export als Anhang für Direktvergaben und Erstgespräche; optional Serie auf austrianbusiness.at.
 - **Outreach-Ziele:** (a) KMU/Industrie OÖ+Wien mit sichtbar alten Webanwendungen, (b) JKU/Unis (die Ausschreibung IST eine solche Migration), (c) Vermittler mit Modernisierungs-Mandaten.
 - **JKU/Plösch-Anker (der stärkste von allen):** Die Migrationsstrecke entspricht wörtlich der ausgeschriebenen Leistung; das KI-Testgen-Experiment mit vorregistriertem Protokoll und Mutation-Score spricht exakt seine Forschungssprache (LLMs im Testing, empirisch statt hypig). Im Gespräch: Report zeigen, nicht erzählen.

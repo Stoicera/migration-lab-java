@@ -26,7 +26,7 @@ Dependency-Audit, JDK-Hebung, Boot 1.5→2.7 mit dokumentierten Brüchen; Sicher
 jakarta-Umstieg, Security-Rewrite, Constructor Injection, OpenRewrite-Einsatz inkl. Bewertung (was fingen die Rezepte, was nicht). Playbook-Kapitel 4, ADRs für echte Entscheidungen, Tag `stage-4-boot-4x`.
 **Abnahme:** Modern-Backend auf Boot 4.1/Java 25, E2E grün, OpenRewrite-Bilanz im Playbook.
 
-## G5 — AngularJS→Angular 20 (Stage 5) (5–6 Tage)
+## G5 — AngularJS→Angular 22 (Stage 5) (5–6 Tage)
 Strangler Fig: Angular-Shell, Route-für-Route-Portierung, Hybrid-Phase dokumentiert, JSP-Adminseite absorbiert, Selektor-Map v2 — **dieselben E2E-Szenarien grün auf alter UND neuer UI** (das Headline-Ergebnis). Playbook-Kapitel 5, Tag `stage-5-angular`.
 **Abnahme:** E2E-Matrix (legacy|modern) beidseitig grün; funktionale Äquivalenz belegt.
 

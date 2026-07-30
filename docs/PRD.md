@@ -1,6 +1,6 @@
 # PRD — migration-lab (Arbeitstitel)
 
-**Eine öffentliche, nachvollziehbare Legacy-Modernisierung: Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 20 — mit Charakterisierungs-Tests, Selenium, KI-gestützter Testgenerierung und einem wiederverwendbaren Migrations-Playbook.**
+**Eine öffentliche, nachvollziehbare Legacy-Modernisierung: Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 22 — mit Charakterisierungs-Tests, Selenium, KI-gestützter Testgenerierung und einem wiederverwendbaren Migrations-Playbook.**
 
 Version 1.0 · 23.07.2026 · Owner: Sebastian Kern · Umsetzung: Claude Code, milestone-basiert
 
@@ -27,7 +27,7 @@ Unternehmen und Institute sitzen auf Java-8/Spring-Boot-1.x/AngularJS-Anwendunge
 Ein Repo (Monorepo mit zwei Application-Ständen + Playbook), das eine realistische Legacy-Anwendung **öffentlich und schrittweise** modernisiert:
 
 - **`legacy/`** — "WerkstattCRM": eine bewusst realistische Alt-Anwendung (Kundenverwaltung/Auftragsannahme einer Autowerkstatt — KMU-nah): Java 8, Spring Boot 1.5, AngularJS 1.x, Field Injection, God-Classes, keine Tests, SQL-Strings — dokumentiert als synthetisch, aber nach echten Legacy-Mustern gebaut. *(Entscheidungs-Gate beim Kickoff: Falls sich ein geeignetes, real abandonnenes Open-Source-Projekt mit passender Lizenz findet, wird stattdessen dieses migriert — höhere Glaubwürdigkeit; sonst synthetisch mit transparenter Kennzeichnung.)*
-- **Migrationsstrecke in nachvollziehbaren Etappen** (je Etappe ein Git-Tag + Playbook-Kapitel): Sicherheitsnetz → Build/JDK → Spring Boot 1.5→2.7→3.x→4.x → AngularJS→Angular 20 (Strangler-Fig, komponentenweise) → Betrieb/Cloud (Docker, CI/CD, OTel, Hetzner).
+- **Migrationsstrecke in nachvollziehbaren Etappen** (je Etappe ein Git-Tag + Playbook-Kapitel): Sicherheitsnetz → Build/JDK → Spring Boot 1.5→2.7→3.x→4.x → AngularJS→Angular 22 (Strangler-Fig, komponentenweise) → Betrieb/Cloud (Docker, CI/CD, OTel, Hetzner).
 - **Sicherheitsnetz zuerst:** Charakterisierungs-Tests (Approval-Tests der bestehenden Läufe), **Selenium-E2E-Suite** auf der Legacy-UI, die während der gesamten Migration grün bleiben muss — das ist die Kernbotschaft an Auftraggeber.
 - **KI-gestützte Testgenerierung, empirisch gemessen:** LLM-generierte Unit-Tests für untestbare Legacy-Klassen; Qualität bewertet mit Coverage **und Mutation Testing (PIT)** — ehrliche Zahlen (wie viele generierte Tests töten Mutanten? was musste ein Mensch nachbessern?). Genau Plöschs empirischer Stil: "wo hilft KI wirklich, wo nicht".
 - **Migrations-Playbook** (`playbook/`): je Etappe Vorgehen, Stolperfallen, Aufwand, Entscheidungslogik — das wiederverwendbare Sales-Asset für jedes Kundengespräch.
@@ -40,7 +40,7 @@ Ein Repo (Monorepo mit zwei Application-Ständen + Playbook), das eine realistis
 
 ## 5. Scope
 
-**In Scope (MVP):** Legacy-App lauffähig (Docker) · Selenium-Suite + Charakterisierungs-Tests · Migrationsetappen bis Spring Boot 4 + Angular 20 · KI-Testgen-Experiment mit PIT-Auswertung und Kurzbericht · Playbook · CI mit parallelen Pipelines (legacy bleibt grün, modern wächst) · Deployment beider Stände als Demo.
+**In Scope (MVP):** Legacy-App lauffähig (Docker) · Selenium-Suite + Charakterisierungs-Tests · Migrationsetappen bis Spring Boot 4 + Angular 22 · KI-Testgen-Experiment mit PIT-Auswertung und Kurzbericht · Playbook · CI mit parallelen Pipelines (legacy bleibt grün, modern wächst) · Deployment beider Stände als Demo.
 
 **Out of Scope (dokumentiert):** Datenbank-Wechsel (bleibt PostgreSQL; Oracle→Postgres nur als Playbook-Exkurs) · Microservice-Zerlegung (bewusst: Modular bleiben ist meist die richtige Antwort — ADR) · Betrieb der Legacy-Version über Projektende hinaus.
 
