@@ -1,6 +1,8 @@
-# Modern stand: build + tests, then the EQUIVALENCE GATE — the same
-# characterization suite that locks the legacy behaviour runs against the
-# modern stand. Functional equivalence is proven per commit, not claimed.
+# Modern stand: build, then the EQUIVALENCE GATE — the same characterization
+# suite that locks the legacy behaviour runs against the modern stand
+# (module unit/integration tests arrive with G6, see docs/DEVIATIONS.md).
+# Functional equivalence is proven per commit, not claimed (ADR-0004).
+# All steps run UNCONDITIONALLY (ADR-0008): presence gates are retired.
 name: modern-ci
 
 on:
@@ -10,64 +12,57 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  modern-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      # Skeleton gate (G0): until modern/pom.xml exists this passes as scaffold.
-      - name: Check module presence
-        id: gate
+      # the modern JDK rises stage by stage — single source of truth: the pom.
+      # An empty extraction fails loudly here instead of downstream.
+      - name: Read JDK version from pom
+        id: jdk
         run: |
-          if [ -f modern/pom.xml ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-            # the modern JDK rises stage by stage — single source of truth: the pom
-            echo "jdk=$(grep -oPm1 '(?<=<java.version>)[^<]+' modern/pom.xml | sed 's/^1\.//')" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "modern/ not yet present (starts in G3) — skeleton pass."
-          fi
+          v="$(grep -oPm1 '(?<=<java.version>)[^<]+' modern/pom.xml | sed 's/^1\.//')"
+          test -n "$v"
+          echo "jdk=$v" >> "$GITHUB_OUTPUT"
 
-      - name: Set up JDK ${{ steps.gate.outputs.jdk }} (Temurin)
-        if: steps.gate.outputs.present == 'true'
-        uses: actions/setup-java@v5
+      - name: Set up JDK ${{ steps.jdk.outputs.jdk }} (Temurin)
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
-          java-version: ${{ steps.gate.outputs.jdk }}
+          java-version: ${{ steps.jdk.outputs.jdk }}
           cache: maven
 
       - name: Build and verify modern module
-        if: steps.gate.outputs.present == 'true'
         run: ./mvnw -B verify -f modern/pom.xml
 
       # ---- equivalence gate: characterization vs the MODERN stand ----
       - name: Set up JDK 25 (Temurin) for characterization
-        if: steps.gate.outputs.present == 'true'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: '25'
           cache: maven
 
       - name: Start modern stand
-        if: steps.gate.outputs.present == 'true'
         run: docker compose -f modern/docker-compose.yml up -d --wait
 
       - name: Characterization vs modern stand (functional equivalence)
-        if: steps.gate.outputs.present == 'true'
         run: >
           ./mvnw -B verify -f characterization/pom.xml
           -DbaseUrl=http://localhost:8090
           -DdbUrl=jdbc:postgresql://localhost:5434/werkstatt
+          -Dstand=modern
 
       - name: Upload received captures on mismatch
-        if: failure() && steps.gate.outputs.present == 'true'
-        uses: actions/upload-artifact@v7
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: characterization-received-modern
           path: characterization/target/characterization-received/
           if-no-files-found: ignore
 
       - name: Stop modern stand
-        if: always() && steps.gate.outputs.present == 'true'
+        if: always()
         run: docker compose -f modern/docker-compose.yml down -v

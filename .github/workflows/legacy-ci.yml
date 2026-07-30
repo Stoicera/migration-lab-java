@@ -1,6 +1,8 @@
 # Legacy stand: build + characterization tests.
 # HARD RULE: from tag stage-1-safety-net onward this workflow must stay green
 # on every commit. Red = stop and fix, never "fix later".
+# All steps run UNCONDITIONALLY (ADR-0008): the historical presence gates are
+# retired — a missing module now fails loudly instead of skipping silently.
 name: legacy-ci
 
 on:
@@ -10,69 +12,52 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  legacy-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      # Skeleton gate (G0): the legacy module lands in G1 (stage-0-legacy).
-      # Until legacy/pom.xml exists, this workflow passes as an empty scaffold.
-      - name: Check module presence
-        id: gate
+      # Guard against silent drift between the canonical seed/schema and the
+      # modern stand's copies (e2e/characterization read the canonical files
+      # directly — no copies there to guard).
+      - name: Seed/schema drift guard
         run: |
-          if [ -f legacy/pom.xml ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "legacy/ not yet present (starts in G1) — skeleton pass."
-          fi
+          diff -q legacy/db/init/01-schema.sql modern/db/init/01-schema.sql
+          diff -q legacy/db/init/02-daten.sql modern/db/init/02-daten.sql
 
       - name: Set up JDK 8 (Temurin)
-        if: steps.gate.outputs.present == 'true'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: '8'
           cache: maven
 
       - name: Build and verify legacy module
-        if: steps.gate.outputs.present == 'true'
         run: ./mvnw -B verify -f legacy/pom.xml
 
       # ---- characterization gate (armed since stage-1-safety-net) ----
-      - name: Check characterization presence
-        id: chargate
-        run: |
-          if [ -f characterization/pom.xml ] && [ -f legacy/docker-compose.yml ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Set up JDK 25 (Temurin) for characterization
-        if: steps.chargate.outputs.present == 'true'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: '25'
           cache: maven
 
       - name: Start legacy stand
-        if: steps.chargate.outputs.present == 'true'
         run: docker compose -f legacy/docker-compose.yml up -d --wait
 
       - name: Run characterization tests (golden masters)
-        if: steps.chargate.outputs.present == 'true'
         run: ./mvnw -B verify -f characterization/pom.xml
 
       - name: Upload received captures on mismatch
-        if: failure() && steps.chargate.outputs.present == 'true'
-        uses: actions/upload-artifact@v7
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: characterization-received
           path: characterization/target/characterization-received/
           if-no-files-found: ignore
 
       - name: Stop legacy stand
-        if: always() && steps.chargate.outputs.present == 'true'
+        if: always()
         run: docker compose -f legacy/docker-compose.yml down -v
