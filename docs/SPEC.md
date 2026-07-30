@@ -21,11 +21,11 @@ migration-lab/
 └── .github/workflows/       # legacy-ci.yml (must stay green), modern-ci.yml, e2e.yml (matrix: legacy|modern)
 ```
 
-**Git tags are first-class deliverables:** `stage-0-legacy`, `stage-1-safety-net`, `stage-2-jdk-build`, `stage-3-boot-2.7`, `stage-4-boot-3x-4x`, `stage-5-angular`, `stage-6-cloud-ops`. Every tag: checkout → `docker compose up` → working app. A `stages.md` table maps tag → state → playbook chapter.
+**Git tags are first-class deliverables:** `stage-0-legacy`, `stage-1-safety-net`, `stage-2-jdk-build`, `stage-3-boot-2.7`, `stage-4-boot-4x`, `stage-5-angular`, `stage-6-cloud-ops`. Every tag: checkout → `docker compose up` → working app. A `stages.md` table maps tag → state → playbook chapter.
 
 ## 2. The legacy application (stage 0)
 
-Domain "WerkstattCRM" (car-workshop CRM, KMU-realistic): customers, vehicles, repair orders (status flow), invoicing light, a monthly report page. Small enough to migrate honestly (~4–6k LOC backend, ~15 AngularJS controllers/views), large enough to exhibit real problems.
+Domain "WerkstattCRM" (car-workshop CRM, KMU-realistic): customers, vehicles, repair orders (status flow), invoicing light, a monthly report page. Small enough to migrate honestly, large enough to exhibit real problems — **as built: ~1.7k LOC backend (14 Java files), 25 REST endpoints, 10 AngularJS views + 1 JSP page** (below the original ~4–6k estimate; deviation recorded in ADR-0001 addendum, disclosed in README).
 
 Deliberate legacy patterns (each catalogued in `legacy/LEGACY_NOTES.md` with the real-world smell it represents): Spring Boot 1.5 + Java 8 + `javax.*`, field injection everywhere, one `WerkstattService` God class, JdbcTemplate string concatenation (incl. one intentional SQL-injection-shaped smell — flagged, fixed in migration, told as a security story), AngularJS 1.8 with `$scope` soup, server-rendered JSP admin page (mixed UI tech — very real), no tests, properties files with duplicated config, Log4j 1.x-style logging via bridge.
 
@@ -55,7 +55,7 @@ Method (pre-registered in `ai-testgen/PROTOCOL.md` before running — Plösch-st
 
 ## 6. CI/CD
 
-Three workflows: legacy (build+characterization), modern (build+unit+integration with Testcontainers), e2e matrix (legacy|modern, nightly + on main). Deployment job (modern) → GHCR → Dokploy. Badges per workflow in README. Same Engineering Standards as all Labs repos (formatting, security scans, conventional commits).
+Three workflows today: legacy (build + characterization vs the legacy stand), modern (build + the same characterization suite vs the modern stand — the per-commit equivalence gate; module unit/integration tests incl. Testcontainers arrive with G6), e2e matrix (legacy|modern, nightly + on push/PR). Planned for G7: deployment job (modern) → GHCR → Dokploy. Badges per workflow in README. Engineering-Standards compliance status incl. dated deviations: `docs/DEVIATIONS.md`.
 
 ## 7. Playbook (`playbook/`, German)
 

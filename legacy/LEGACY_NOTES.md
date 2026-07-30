@@ -27,11 +27,11 @@ beyond what this file documents.
 | B1 | **God class**: one `@Service` holds customers, vehicles, orders, invoices, reports, admin stats (~750 lines) | `WerkstattService` | The grown service layer every legacy app has; primary target for the AI test-gen experiment (G6) |
 | B2 | **Field injection** everywhere (`@Autowired` on fields) | all controllers + service | Untestable-by-design wiring; constructor-injection sweep happens in stage 4 |
 | B3 | SQL built by **string concatenation** for ids and status values | most reads in `WerkstattService` | JdbcTemplate era-typical; blocks parameterised-query hygiene |
-| B4 | **SQL-injection-shaped smell (flagged!)**: user input concatenated into `LIKE` | `WerkstattService.sucheKunden()` | THE security finding of the migration story — found by review, fixed in a migration stage, told in the playbook. Deliberately the only user-input injection point |
+| B4 | **SQL-injection-shaped smell (flagged!)**: user input concatenated into `LIKE` | `WerkstattService.sucheKunden()` | THE security finding of the migration story — found by review, fixed in a migration stage, told in the playbook. ~~Deliberately the only user-input injection point~~ *(wrong — see Corrections below: the `?status=` filter was a second one)* |
 | B5 | Row mapping **duplicated inline** three times for Kunde; only Fahrzeug got an extracted mapper ("2018, Hr. F.") | `WerkstattService` | Inconsistent evolution: refactorings that stopped halfway |
 | B6 | Order/invoice numbers via **`MAX+1`** with no UNIQUE constraint | `neuerAuftrag()`, `erstelleRechnung()`, schema | Race condition that "never happened because there is only one desk" |
 | B7 | **No transactions**: order insert + vehicle km update non-atomic; cleanup deletes row-by-row | `neuerAuftrag()`, `bereinigeStornierte()` | Data integrity by luck |
-| B8 | **Money as `double`** + manual rounding, VAT as int property, invoice stores netto/ust/brutto redundantly | models, `erstelleRechnung()` | The classic; BigDecimal conversion is a migration chapter with real numbers |
+| B8 | **Money as `double`** + manual rounding, VAT as int property, invoice stores netto/ust/brutto redundantly | models, `erstelleRechnung()` | The classic; BigDecimal conversion is deliberately deferred — disposition in `docs/DEVIATIONS.md` |
 | B9 | `static SimpleDateFormat` shared across threads | `WerkstattService.DATUM` | Thread-safety bug class of the `java.util.Date` era |
 | B10 | Business errors as `RuntimeException`; controllers `catch (Exception e)` → HTTP 500 with raw `e.getMessage()` | all controllers | No error contract; internals leak to the client "to help phone support" |
 | B11 | DB entities serialized **directly as JSON**, display fields (`kundeName`) glued onto domain objects, computed getters serialized | models | No DTO boundary; API shape is an accident of the schema |
@@ -41,7 +41,7 @@ beyond what this file documents.
 | B15 | **Zero security**: no authentication, no authorization, no CSRF protection | whole app | "Runs only in the workshop LAN" |
 | B16 | JSP admin page: second UI technology, unprotected, with a **destructive POST** (permanent cleanup) and a gson debug dump | `AdminController`, `admin.jsp` | The forgotten server-rendered page every SPA-era app still drags along; absorbed in stage 5 |
 | B17 | Config duplication with drift: `application-prod.properties` disagrees on version, misses the UID, contains a plaintext DB password (fictional demo value) | `src/main/resources` | Copy-paste environments; "please also update the other file" comments |
-| B18 | Schema = hand-run SQL files, no migration tool, no history | `db/init/` | "The schema lives on the server"; Flyway arrives with a migration stage |
+| B18 | Schema = hand-run SQL files, no migration tool, no history | `db/init/` | "The schema lives on the server"; Flyway disposition in `docs/DEVIATIONS.md` |
 | B19 | Mixed German/English identifiers, German REST paths (`/api/kunden`), German status strings as `static final String` (no enum) | everywhere | Absolutely faithful to Austrian in-house software |
 
 ## Frontend
@@ -65,3 +65,14 @@ beyond what this file documents.
   exists to fix. Do not add tests inside `legacy/`.
 - Seed data (`db/init/02-daten.sql`): 10 customers, 13 vehicles, 16 orders across
   2026, 8 invoices — enough for every view and the report to show real numbers.
+
+## Corrections (dated — the catalogue stays honest)
+
+- **2026-07-30 — B4 understated the attack surface.** The `?status=` request
+  parameter (`getAuftraege()`, filed under B3) was concatenated into SQL exactly
+  like the search term — a second, fully exploitable user-input injection point
+  (`?status=x' OR '1'='1`). The original B4 claim "deliberately the only
+  user-input injection point" was factually wrong. Both sinks were parameterised
+  in `modern/` during stage 4; `legacy/` keeps both, as found — the exhibit is
+  not retouched. Found by hostile review (worklog session 7), corrected here
+  instead of silently rewritten.

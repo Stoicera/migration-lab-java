@@ -27,6 +27,27 @@ equivalence is proven per commit, not claimed.
 - OpenRewrite recipes are used **and evaluated** (stage 4) — what they caught
   vs. missed is playbook data.
 
+## Wart ledger — what survives here, deliberately
+
+The legacy wart catalogue (`legacy/LEGACY_NOTES.md`) applies to the exhibit;
+THIS table is the disposition of each wart on the migrating stand, so
+"deliberate" and "forgotten" stay distinguishable (review finding 8/14):
+
+| Wart | Status in modern/ |
+|---|---|
+| B1 God class | **survives** until G6 — it is the study object of the AI test-gen experiment |
+| B2 field injection | removed (stage 4 constructor-injection sweep, complete) |
+| B3/B4 SQL concatenation | removed — string sinks in stage 4, remaining typed-ID sites in the review remediation; `modern/` is concatenation-free |
+| B7 no transactions | **survives** — pinned by characterization (km side effect); fix would be behaviour-relevant → needs ADR-0004 sanctioning first |
+| B8 money as double | **survives** — disposition in `docs/DEVIATIONS.md`; rounding behaviour pinned by characterization |
+| B9 static SimpleDateFormat | **survives** — single-threaded usage today; candidate for the G6 test target list |
+| B10 raw error messages (500 + `e.getMessage()`) | **survives** — the error contract is pinned by characterization; sanitising it is a contract change (ADR-0004 gate) |
+| B11–B13, B19 | **survive** — pinned where observable; same ADR-0004 gate for any change |
+| B14 debug leftovers / dead code | removed (stage 2, documented) |
+| B16 JSP admin page incl. destructive POST | **survives** until stage 5 absorbs it (gson dies with it) |
+| B17 config duplication w/ plaintext password | removed (review remediation) — `application-prod.properties` deleted; real deployment config arrives with G7 via environment, see `.env.example` |
+| B18 hand-run SQL schema | **survives** — Flyway disposition in `docs/DEVIATIONS.md` (G7) |
+
 ## Stage log
 
 - **Stage 4 (`stage-4-boot-4x`):** Boot 2.7 → 3.5.16 → 4.1.0, Java 17 → 25,

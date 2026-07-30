@@ -18,7 +18,11 @@ You are working on **migration-lab**: a public, reproducible legacy modernizatio
 - **E2E quality:** Selenium 4, Page Objects, selector-map abstraction (same scenarios vs. AngularJS and Angular UIs), explicit waits only, zero flaky tolerance.
 - **Stack of the modern side:** Java 25, Spring Boot 4.1.x, Angular 22 (ADR-0003; was 20), PostgreSQL, Testcontainers, OpenRewrite (used AND evaluated). No other frameworks without ADR + approval.
 - **No secrets in the repo.** `.env.example` complete.
-- Language: code/docs English; `playbook/` German (decision-maker audience); glossary in `docs/glossary.md`.
+- Language: code + technical docs English; `playbook/` German (decision-maker
+  audience); the German strategy docs (PRD, MILESTONES, VERMARKTUNG,
+  STOICERA_LABS_KONTEXT, ENGINEERING_STANDARDS) stay German by design;
+  `docs/glossary.md` bridges the terms.
+- Standards deviations are never silent: ledger in `docs/DEVIATIONS.md`.
 
 ## Working style
 - One milestone at a time; start each session reading `docs/worklog.md` + current milestone and running the relevant suites; end with green CI + worklog entry (date, what, hours, decisions, next).
@@ -28,9 +32,16 @@ You are working on **migration-lab**: a public, reproducible legacy modernizatio
 
 ## Commands (keep current as the repo grows)
 ```bash
-docker compose -f legacy/docker-compose.yml up -d    # legacy stand
-docker compose -f modern/docker-compose.yml up -d    # modern stand (from stage 3)
-./mvnw verify -f legacy/pom.xml                      # legacy build + characterization
-./mvnw verify -f modern/pom.xml                      # modern build + tests
-./mvnw verify -f e2e/pom.xml -Dtarget=legacy         # E2E vs legacy (also: -Dtarget=modern)
+docker compose -f legacy/docker-compose.yml up -d    # legacy stand (8080, db 127.0.0.1:5433)
+docker compose -f modern/docker-compose.yml up -d    # modern stand (8090, db 127.0.0.1:5434; exists since stage 2)
+
+# suites (stands must be up; both suites fail loudly if zero tests are discovered)
+./mvnw verify -f characterization/pom.xml            # characterization vs legacy
+./mvnw verify -f characterization/pom.xml \
+  -DbaseUrl=http://localhost:8090 -DdbUrl=jdbc:postgresql://localhost:5434/werkstatt -Dstand=modern
+./mvnw verify -f e2e/pom.xml -Dtarget=legacy         # E2E (also: -Dtarget=modern)
+
+# builds: the legacy WAR needs Java 8 and builds INSIDE Docker (compose build) —
+# a bare `./mvnw -f legacy/pom.xml` fails on a modern local JDK (legacy/README.md).
+./mvnw verify -f modern/pom.xml                      # modern build (module tests arrive with G6)
 ```

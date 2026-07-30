@@ -62,9 +62,19 @@ Die Entscheidung dazu steht in [ADR-0002](../docs/adr/0002-openrewrite-as-assist
   Legitime Suche "hofer" auf beiden Ständen identisch  ← Golden Master grün
   ```
 
-  Genau so gehört ein Sicherheitsfund erzählt: reproduzierbar, mit Beweis,
-  ohne Verhaltensänderung für legitime Nutzung. Ebenso parametrisiert:
-  der Status-Filter der Auftragsliste.
+  **Korrektur aus dem Review (Session 7), unbeschönigt:** Der Wart-Katalog
+  behauptete, die Suche sei «der einzige» Injektionspunkt — falsch. Der
+  **Status-Filter der Auftragsliste** war ein zweiter, voll ausnutzbarer
+  (`?status=x' OR '1'='1`); er wurde in dieser Etappe zwar mitparametrisiert,
+  aber nur im Nebensatz erwähnt. Und: Die Etappe parametrisierte zunächst nur
+  die beiden String-Eingaben — numerisch typisierte IDs blieben als verkettetes
+  SQL stehen (nicht ausnutzbar, aber genau das Muster, das jeder SAST-Scan
+  anmarkert). Der Rest-Sweep wurde in der Review-Remediation nachgezogen;
+  seither ist `modern/` frei von SQL-Verkettung. Die bewusste
+  Verhaltensabweichung bei feindseligen Eingaben ist als **sanktionierte
+  Abweichung SD-1 in ADR-0004** registriert und seit der Remediation **auf
+  beiden Ständen durch Charakterisierungs-Tests festgeschrieben** — der
+  Vorher/Nachher-Beleg oben ist damit automatisiert, nicht nur erzählt.
 
 ## Stolperfallen
 
@@ -85,9 +95,11 @@ Die Entscheidung dazu steht in [ADR-0002](../docs/adr/0002-openrewrite-as-assist
 | Manuelle Lücken (Jakarta-JSTL, Jackson 3, 4.1-Bump, Java 25) | 0,3 |
 | Konstruktor-Injektion + Sicherheitsfix + Verifikation | 0,25 |
 | Doku (Kapitel, ADR-0002, Stage-Log) | 0,2 |
-| **Summe Etappe 4 (gemessen, KI-gestützt, Laborbedingungen)** | **≈ 1,0** |
+| **Summe Etappe 4** | **≈ 1,0** |
 
-Feldwert: **2–4 Personenwochen** für ein gewachsenes System — der Treiber ist
+Lesart: gemessene Agent-Wall-Time unter Laborbedingungen (Kapitel 1, README).
+Feldwert: **2–4 Personenwochen** für ein gewachsenes System
+(**Erfahrungsschätzung, nicht hier gemessen**) — der Treiber ist
 nicht der Parent-Bump, sondern `javax`→`jakarta` in jeder Bibliothek,
 Spring-Security-Konfiguration (bei uns nicht vorhanden!) und die Frage, welche
 Abhängigkeit überhaupt eine Jakarta-Version hat.
