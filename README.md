@@ -8,9 +8,9 @@
 Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 20 —
 safety net first, honest numbers, reusable German migration playbook.
 
-> **Status: stage 3 done — the modern stand runs Spring Boot 2.7.18 on Java 17,
-> functionally equivalent to the frozen legacy stand** (proven per commit by golden
-> masters + Selenium on both stands). Next: Boot 3.x → 4.1 + Java 25 (stage 4).
+> **Status: stage 4 done — the modern backend runs Spring Boot 4.1.0 on Java 25**,
+> functionally equivalent to the frozen 2016 stand (proven per commit by golden
+> masters + the same Selenium suite on both). Next: AngularJS → Angular 20 (stage 5).
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists

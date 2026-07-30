@@ -2,7 +2,6 @@ package at.werkstatt.crm.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +21,11 @@ import at.werkstatt.crm.service.WerkstattService;
 @RequestMapping("/api/auftraege")
 public class AuftragController {
 
-	@Autowired
-	private WerkstattService werkstattService;
+	private final WerkstattService werkstattService;
+
+	public AuftragController(WerkstattService werkstattService) {
+		this.werkstattService = werkstattService;
+	}
 
 	@GetMapping
 	public List<Auftrag> liste(@RequestParam(value = "status", required = false) String status) {

@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -39,11 +38,13 @@ public class WerkstattService {
 	// eine Instanz fuer alle Threads, hat bis jetzt eh immer funktioniert
 	private static final SimpleDateFormat DATUM = new SimpleDateFormat("dd.MM.yyyy");
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private final JdbcTemplate jdbcTemplate;
+	private final int ustSatz;
 
-	@Value("${werkstatt.ust.satz:20}")
-	private int ustSatz;
+	public WerkstattService(JdbcTemplate jdbcTemplate, @Value("${werkstatt.ust.satz:20}") int ustSatz) {
+		this.jdbcTemplate = jdbcTemplate;
+		this.ustSatz = ustSatz;
+	}
 
 	// =====================================================================
 	// KUNDEN
@@ -71,15 +72,14 @@ public class WerkstattService {
 	}
 
 	/**
-	 * Suche wie sie 2016 halt gemacht wurde. Funktioniert, solange niemand
-	 * boese ist. TODO: irgendwann auf Prepared Statements umstellen (Hr. B., 11/2017)
+	 * Kundensuche. Bis Etappe 4 war der Suchbegriff direkt ins SQL verkettet
+	 * (LEGACY_NOTES B4) - jetzt parametrisiert, Verhalten fuer legitime
+	 * Eingaben unveraendert (Golden Master gruen). Security-Story: Playbook Kap. 4.
 	 */
 	public List<Kunde> sucheKunden(String suchbegriff) {
-		// Achtung: Suchbegriff wird direkt in das SQL eingebaut!
-		String sql = "SELECT * FROM kunde WHERE lower(nachname) LIKE '%" + suchbegriff.toLowerCase()
-				+ "%' OR lower(vorname) LIKE '%" + suchbegriff.toLowerCase() + "%' OR lower(ort) LIKE '%"
-				+ suchbegriff.toLowerCase() + "%' ORDER BY nachname";
-		LOG.debug("Kundensuche: " + sql);
+		String muster = "%" + suchbegriff.toLowerCase() + "%";
+		String sql = "SELECT * FROM kunde WHERE lower(nachname) LIKE ? OR lower(vorname) LIKE ? OR lower(ort) LIKE ? ORDER BY nachname";
+		LOG.debug("Kundensuche: " + suchbegriff);
 		return jdbcTemplate.query(sql, new RowMapper<Kunde>() {
 			public Kunde mapRow(ResultSet rs, int rowNum) throws SQLException {
 				// Mapping nochmal, war schneller als umbauen
@@ -97,7 +97,7 @@ public class WerkstattService {
 				k.setAngelegtAm(rs.getTimestamp("angelegt_am"));
 				return k;
 			}
-		});
+		}, muster, muster, muster);
 	}
 
 	public Kunde getKunde(long id) {
@@ -237,11 +237,12 @@ public class WerkstattService {
 	public List<Auftrag> getAuftraege(String status) {
 		String sql = "SELECT a.*, k.nachname, k.vorname, f.kennzeichen, f.marke, f.modell "
 				+ "FROM auftrag a LEFT JOIN kunde k ON k.id = a.kunde_id LEFT JOIN fahrzeug f ON f.id = a.fahrzeug_id";
-		if (status != null && status.length() > 0) {
-			// Status kommt nur aus dem eigenen Frontend, passt schon
-			sql = sql + " WHERE a.status = '" + status + "'";
+		boolean mitStatus = status != null && status.length() > 0;
+		if (mitStatus) {
+			sql = sql + " WHERE a.status = ?";
 		}
 		sql = sql + " ORDER BY a.angenommen_am DESC";
+		Object[] parameter = mitStatus ? new Object[] { status } : new Object[0];
 		return jdbcTemplate.query(sql, new RowMapper<Auftrag>() {
 			public Auftrag mapRow(ResultSet rs, int rowNum) throws SQLException {
 				Auftrag a = mapAuftrag(rs);
@@ -253,7 +254,7 @@ public class WerkstattService {
 				a.setFahrzeugBezeichnung(defaultString(rs.getString("marke")) + " " + defaultString(rs.getString("modell")));
 				return a;
 			}
-		});
+		}, parameter);
 	}
 
 	public Auftrag getAuftrag(long id) {

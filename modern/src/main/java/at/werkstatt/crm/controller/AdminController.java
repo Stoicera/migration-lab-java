@@ -2,7 +2,6 @@ package at.werkstatt.crm.controller;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,17 +19,20 @@ import at.werkstatt.crm.service.WerkstattService;
 @Controller
 public class AdminController {
 
-	@Autowired
-	private WerkstattService werkstattService;
-
-	@Value("${werkstatt.firma.name}")
-	private String firmaName;
-
-	@Value("${werkstatt.version:?}")
-	private String version;
+	private final WerkstattService werkstattService;
+	private final String firmaName;
+	private final String version;
 
 	// gson statt jackson, weil das Beispiel damals aus einem Forum kopiert wurde
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
+
+	public AdminController(WerkstattService werkstattService,
+			@Value("${werkstatt.firma.name}") String firmaName,
+			@Value("${werkstatt.version:?}") String version) {
+		this.werkstattService = werkstattService;
+		this.firmaName = firmaName;
+		this.version = version;
+	}
 
 	@GetMapping("/admin")
 	public String admin(Model model) {
