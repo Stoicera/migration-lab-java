@@ -37,11 +37,20 @@ public final class SelectorMap {
 
 	/** CSS selector for an intent key; fails fast when the map has a hole. */
 	public static By css(String key) {
+		return By.cssSelector(value(key));
+	}
+
+	/**
+	 * Raw map value for non-selector keys (e.g. {@code wait.strategy}).
+	 * Fails fast when the map has a hole — a missing key is a broken map,
+	 * never a silent default.
+	 */
+	public static String value(String key) {
 		String value = SELECTORS.getProperty(key);
 		if (value == null || value.isBlank()) {
 			throw new IllegalStateException(
 					"Selector key '" + key + "' missing in map for target '" + TestConfig.target() + "'");
 		}
-		return By.cssSelector(value);
+		return value;
 	}
 }

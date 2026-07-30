@@ -74,6 +74,8 @@
 					<!-- scenarios are ordered flows; never run classes in parallel against one stand -->
 					<forkCount>1</forkCount>
 					<reuseForks>true</reuseForks>
+					<!-- a run that discovers zero tests is a broken gate, not a pass (review finding 7) -->
+					<failIfNoTests>true</failIfNoTests>
 				</configuration>
 			</plugin>
 		</plugins>

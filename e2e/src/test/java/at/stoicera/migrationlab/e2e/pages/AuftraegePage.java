@@ -39,6 +39,11 @@ public class AuftraegePage {
 		return row(auftragNr).findElement(css("auftraege.rowStatusLabel")).getText();
 	}
 
+	/** Row count of the settled list (open() already waited for the load). */
+	public int rowCount() {
+		return driver.findElements(css("auftraege.rows")).size();
+	}
+
 	public AuftragDetailPage openAuftrag(String auftragNr) {
 		row(auftragNr).click();
 		waits.visible(css("auftragDetail.statusLabel"));

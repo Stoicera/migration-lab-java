@@ -18,6 +18,17 @@ public final class Waits {
 	private static final Duration TIMEOUT = Duration.ofSeconds(10);
 	private static final Duration POLL = Duration.ofMillis(200);
 
+	/**
+	 * Which "UI is idle" strategy {@link #idle()} uses, per target UI. Comes from
+	 * the selector map (selectors/&lt;target&gt;.properties, key
+	 * {@code wait.strategy}) because it is a property of the UI under test, not of
+	 * the scenario: today both stands serve the AngularJS UI ({@code angularjs});
+	 * the stage-5 Angular UI gets an {@code angular} strategy against the Angular
+	 * testability API. Unknown values throw — fail-loud by design, a silently
+	 * skipped idle wait would reintroduce the lost-update race of flaky log #3.
+	 */
+	private static final String WAIT_STRATEGY = at.stoicera.migrationlab.e2e.selectors.SelectorMap.value("wait.strategy");
+
 	private final WebDriver driver;
 
 	public Waits(WebDriver driver) {
@@ -52,6 +63,14 @@ public final class Waits {
 		driverWait().until(ExpectedConditions.textToBePresentInElementLocated(locator, expected));
 	}
 
+	/** Exact text match (textIn is a substring match — too weak for numbers like "0" vs "10"). */
+	public void textIs(By locator, String expected) {
+		driverWait().until(d -> {
+			List<WebElement> found = d.findElements(locator);
+			return !found.isEmpty() && expected.equals(found.get(0).getText());
+		});
+	}
+
 	public void countAtLeast(By locator, int minimum) {
 		driverWait().until(d -> d.findElements(locator).size() >= minimum);
 	}
@@ -65,14 +84,43 @@ public final class Waits {
 		driver.switchTo().alert().accept();
 	}
 
+	/** Waits for a JS alert/confirm, accepts it, returns its text (to pin messages exactly). */
+	public String alertTextAndAccept() {
+		driverWait().until(ExpectedConditions.alertIsPresent());
+		org.openqa.selenium.Alert alert = driver.switchTo().alert();
+		String text = alert.getText();
+		alert.accept();
+		return text;
+	}
+
 	/**
-	 * Explicit wait until AngularJS has no pending $http requests. Needed after
-	 * writes whose success produces NO visible DOM change (the legacy UI gives
-	 * no save feedback — flaky log #3: navigating away too early aborts the
-	 * in-flight PUT and silently loses the update). AngularJS-specific; the
-	 * stage-5 Angular UI will need its own idle strategy in this method.
+	 * Explicit wait until the UI under test has no pending HTTP requests. Needed
+	 * after writes whose success produces NO visible DOM change (the legacy UI
+	 * gives no save feedback — flaky log #3: navigating away too early aborts the
+	 * in-flight PUT and silently loses the update), and after async view loads
+	 * that render into an already-present template.
+	 *
+	 * Dispatches on the {@code wait.strategy} key of the selector map:
+	 * "angularjs" polls AngularJS' $http.pendingRequests. The stage-5 Angular UI
+	 * adds an "angular" strategy against the Angular testability API — this
+	 * method throws on anything unknown instead of guessing, because a wrong
+	 * strategy times out on every save (angular UI) or silently skips the gate.
 	 */
-	public void angularIdle() {
+	public void idle() {
+		switch (WAIT_STRATEGY) {
+			case "angularjs":
+				angularJsIdle();
+				break;
+			default:
+				throw new IllegalStateException("Unknown wait.strategy '" + WAIT_STRATEGY
+						+ "' in the selector map — supported: 'angularjs' (stage 5 adds 'angular'). "
+						+ "Fail-loud by design: weakening or skipping the idle wait is not an option "
+						+ "(see e2e/README.md, wait strategy).");
+		}
+	}
+
+	/** AngularJS strategy: no pending $http requests ⇒ last digest has rendered. */
+	private void angularJsIdle() {
 		driverWait().until(d -> (Boolean) ((org.openqa.selenium.JavascriptExecutor) d).executeScript(
 				"return (window.angular !== undefined)"
 						+ " && (angular.element(document.body).injector() !== undefined)"

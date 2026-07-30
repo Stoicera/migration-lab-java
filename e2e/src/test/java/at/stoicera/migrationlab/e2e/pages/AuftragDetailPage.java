@@ -2,6 +2,8 @@ package at.stoicera.migrationlab.e2e.pages;
 
 import static at.stoicera.migrationlab.e2e.selectors.SelectorMap.css;
 
+import java.util.List;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
@@ -51,6 +53,25 @@ public class AuftragDetailPage {
 		return this;
 	}
 
+	public AuftragDetailPage stornieren() {
+		waits.clickable(css("auftragDetail.stornoButton")).click();
+		waits.textIn(css("auftragDetail.statusLabel"), "Storniert");
+		return this;
+	}
+
+	/** FERTIG → IN_ARBEIT special case ("doch noch was gefunden"). */
+	public AuftragDetailPage zurueckInArbeit() {
+		waits.clickable(css("auftragDetail.wiederArbeitButton")).click();
+		waits.textIn(css("auftragDetail.statusLabel"), "In Arbeit");
+		return this;
+	}
+
+	/** Header texts of the position table — tests pin these before any cell-position access. */
+	public List<String> posHeaderTexte() {
+		return waits.allVisible(css("auftragDetail.posHeaderCells")).stream()
+				.map(WebElement::getText).toList();
+	}
+
 	public AuftragDetailPage addPosition(String typ, String bezeichnung, String menge, String einzelpreis) {
 		int before = driver.findElements(css("auftragDetail.posRows")).size();
 		new Select(waits.visible(css("auftragDetail.posTyp"))).selectByValue(typ);
@@ -58,8 +79,22 @@ public class AuftragDetailPage {
 		type("auftragDetail.posMenge", menge);
 		type("auftragDetail.posPreis", einzelpreis);
 		waits.clickable(css("auftragDetail.posSaveButton")).click();
+		// POST + reload GET land in one model swap: row count AND sum update together
 		waits.countIs(css("auftragDetail.posRows"), before + 1);
 		return this;
+	}
+
+	public AuftragDetailPage removePosition(String bezeichnung) {
+		int before = driver.findElements(css("auftragDetail.posRows")).size();
+		for (WebElement row : driver.findElements(css("auftragDetail.posRows"))) {
+			if (row.findElement(css("auftragDetail.posRowBezeichnungCell")).getText().equals(bezeichnung)) {
+				// no confirm dialog on position delete in the legacy UI (unlike vehicles/customers)
+				row.findElement(css("auftragDetail.posRowDeleteButton")).click();
+				waits.countIs(css("auftragDetail.posRows"), before - 1);
+				return this;
+			}
+		}
+		throw new AssertionError("Position not in table: " + bezeichnung);
 	}
 
 	public String summeNetto() {
@@ -71,6 +106,17 @@ public class AuftragDetailPage {
 		waits.alertAndAccept();
 		waits.visible(css("rechnungDetail.nummer"));
 		return new RechnungDetailPage(driver, waits);
+	}
+
+	/**
+	 * Clicks "Rechnung erstellen" expecting the SERVER to reject it (e.g. the
+	 * order already has an invoice). Dialog sequence: confirm first, then the
+	 * error alert with the server message — which is returned for exact pinning.
+	 */
+	public String rechnungErstellenErwarteFehler() {
+		waits.clickable(css("auftragDetail.rechnungButton")).click();
+		waits.alertAndAccept();
+		return waits.alertTextAndAccept();
 	}
 
 	private void type(String key, String wert) {
