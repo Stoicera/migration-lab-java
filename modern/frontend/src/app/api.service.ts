@@ -3,8 +3,10 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import {
+  AdminStatistik,
   Auftrag,
   AuftragPosition,
+  BereinigenErgebnis,
   Fahrzeug,
   Kunde,
   MonatsBericht,
@@ -104,5 +106,14 @@ export class ApiService {
 
   berichtTopKunden(jahr: number): Observable<TopKunde[]> {
     return this.http.get<TopKunde[]>('api/bericht/topkunden', { params: { jahr } });
+  }
+
+  adminStatistik(): Observable<AdminStatistik> {
+    return this.http.get<AdminStatistik>('api/admin/statistik');
+  }
+
+  /** deliberately NOT under /api: the path is pinned by characterization (SD-2) */
+  adminBereinigen(): Observable<BereinigenErgebnis> {
+    return this.http.post<BereinigenErgebnis>('admin/bereinigen', null);
   }
 }

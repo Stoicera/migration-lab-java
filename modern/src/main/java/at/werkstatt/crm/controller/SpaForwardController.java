@@ -14,7 +14,7 @@ public class SpaForwardController {
 
 	@GetMapping({ "/start", "/kunden", "/kunden/neu", "/kunden/{id:\\d+}", "/fahrzeuge",
 			"/auftraege", "/auftraege/neu", "/auftraege/{id:\\d+}",
-			"/rechnungen", "/rechnungen/{id:\\d+}", "/bericht" })
+			"/rechnungen", "/rechnungen/{id:\\d+}", "/bericht", "/admin" })
 	public String spa() {
 		return "forward:/index.html";
 	}

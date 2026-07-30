@@ -39,31 +39,9 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<!-- JSP Admin-Seite -->
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- jakarta JSTL: the OpenRewrite Boot-3 recipe PINNED javax jstl 1.2
-		     instead of migrating it — ClassNotFoundException on Tomcat 10.1
-		     (playbook ch. 4, recipe evaluation: "compiles" != "works") -->
-		<dependency>
-			<groupId>jakarta.servlet.jsp.jstl</groupId>
-			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.web</groupId>
-			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
-		</dependency>
-
-		<!-- only used by the JSP admin page; dies with it in stage 5.
-		     Version now BOM-managed: the 2015 pin (2.3.1) broke Boot 2.7's
-		     GsonAutoConfiguration at startup (playbook ch. 3, break #2) -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
+		<!-- JSP/JSTL/gson: retired in stage 5 with the absorbed admin page
+		     (SD-2, ADR-0004) — the app is JSP-free; WAR->JAR follows at the
+		     stage-5 cutover when the last webapp/ content goes -->
 	</dependencies>
 
 	<build>

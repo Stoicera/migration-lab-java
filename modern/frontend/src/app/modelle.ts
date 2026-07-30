@@ -104,3 +104,25 @@ export interface TopKunde {
   anzahl_auftraege: number;
   umsatz: number;
 }
+
+/** GET /api/admin/statistik — JSON successor of the absorbed JSP admin page (SD-2) */
+export interface AdminStatistik {
+  firmaName: string;
+  version: string;
+  statistik: {
+    kunden: number;
+    fahrzeuge: number;
+    auftraege: number;
+    auftraegeOffen: number;
+    rechnungen: number;
+    rechnungenOffen: number;
+    /** dd.MM.yyyy, computed server-side like the JSP did */
+    stand: string;
+  };
+}
+
+/** POST /admin/bereinigen — meldung text is a pinned contract (characterization) */
+export interface BereinigenErgebnis {
+  geloescht: number;
+  meldung: string;
+}

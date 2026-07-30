@@ -125,10 +125,31 @@ class ApiCharacterizationTest {
 	}
 
 	@Test
-	@DisplayName("JSP-Adminseite (HTML, Datum maskiert)")
+	@DisplayName("Adminseite: JSP-Golden (legacy) / SPA-Route + Statistik-JSON (modern, SD-2)")
 	void adminPageMatchesGolden() throws Exception {
 		var response = Stand.get("/admin");
 		assertThat(response.statusCode()).isEqualTo(200);
+
+		if (Stand.isModern()) {
+			// SD-2 (ADR-0004): stage 5 absorbed the JSP admin page into the SPA.
+			// Pinned modern behaviour: /admin serves the Angular shell, and the
+			// page's numbers come from /api/admin/statistik — asserted against
+			// the same seed-derived values the JSP golden shows.
+			assertThat(response.body()).contains("<app-root");
+
+			var statistik = MAPPER.readTree(Stand.get("/api/admin/statistik").body());
+			assertThat(statistik.path("firmaName").asText()).isEqualTo("KFZ-Werkstatt Moser GmbH");
+			assertThat(statistik.path("version").asText()).isEqualTo("1.4.2");
+			JsonNode zahlen = statistik.path("statistik");
+			assertThat(zahlen.path("kunden").asInt()).isEqualTo(10);
+			assertThat(zahlen.path("fahrzeuge").asInt()).isEqualTo(13);
+			assertThat(zahlen.path("auftraege").asInt()).isEqualTo(16);
+			assertThat(zahlen.path("auftraegeOffen").asInt()).isEqualTo(4);
+			assertThat(zahlen.path("rechnungen").asInt()).isEqualTo(8);
+			assertThat(zahlen.path("rechnungenOffen").asInt()).isEqualTo(1);
+			assertThat(zahlen.path("stand").asText()).matches("\\d{2}\\.\\d{2}\\.\\d{4}");
+			return;
+		}
 
 		String normalized = normalizeAdminHtml(response.body());
 		String golden;
