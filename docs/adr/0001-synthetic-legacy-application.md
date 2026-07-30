@@ -63,3 +63,16 @@ Reasons, in order of weight:
   real — patterns are, history is not. The playbook states this scaling caveat.
 - Should a suitable real abandoned application surface later, it does **not**
   replace WerkstattCRM mid-project; at most it becomes a follow-up case study.
+
+## Addendum 2026-07-30 — actual size vs. the gate range (review finding 8)
+
+The gate range above (~4–8k LOC backend) was written for *real* candidates. The
+synthetic app as built is **~1.7k LOC backend (14 Java files), 25 REST
+endpoints, 10 AngularJS views + 1 JSP page** — below the gate range, and SPEC
+§2's "~4–6k LOC" claim was stale against reality. Recorded here instead of
+silently adjusted: the wart density (LEGACY_NOTES B1–B19, F1–F7), not raw LOC,
+is what carries the didactic load, and every break the migration story needed
+did occur at this size. The cost of the smaller size is honesty about effort
+scaling — every playbook chapter now states the concrete denominator
+(~1.7k LOC / 25 endpoints) next to its numbers, and README "How this was
+built" carries the disclosure.
