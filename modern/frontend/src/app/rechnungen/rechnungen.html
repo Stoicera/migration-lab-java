@@ -1,0 +1,56 @@
+<h2>Rechnungen</h2>
+
+<div class="checkbox">
+  <label>
+    <input
+      type="checkbox"
+      name="nurOffene"
+      [ngModel]="nurOffene()"
+      (ngModelChange)="nurOffene.set($event)"
+      data-testid="check-nur-offene"
+    />
+    nur unbezahlte anzeigen
+  </label>
+</div>
+
+<table class="table table-striped table-hover" data-testid="rechnungen-tabelle">
+  <tr>
+    <th>Nummer</th>
+    <th>Datum</th>
+    <th>Auftrag</th>
+    <th>Kunde</th>
+    <th class="text-right">Netto</th>
+    <th class="text-right">Brutto</th>
+    <th>Status</th>
+    <th></th>
+  </tr>
+  @for (r of sichtbare(); track r.id) {
+    <tr data-testid="rechnung-zeile">
+      <td>
+        <a [routerLink]="['/rechnungen', r.id]">{{ r.rechnungNr }}</a>
+      </td>
+      <td>{{ r.ausgestelltAm | date: 'dd.MM.yyyy' }}</td>
+      <td>{{ r.auftragNr }}</td>
+      <td>{{ r.kundeName }}</td>
+      <td class="text-right">{{ r.summeNetto | euro }}</td>
+      <td class="text-right">{{ r.summeBrutto | euro }}</td>
+      <td>
+        @if (r.bezahlt) {
+          <span class="label label-success">bezahlt</span>
+        } @else {
+          <span class="label label-danger">offen</span>
+        }
+      </td>
+      <td class="text-right">
+        @if (!r.bezahlt) {
+          <button class="btn btn-xs btn-success" (click)="bezahltSetzen(r)">Bezahlt</button>
+        }
+      </td>
+    </tr>
+  }
+  @if (rechnungen().length === 0) {
+    <tr>
+      <td colspan="8" class="text-muted">Noch keine Rechnungen.</td>
+    </tr>
+  }
+</table>

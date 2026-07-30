@@ -18,4 +18,4 @@ Regeln:
   **Feldwerte/Personentage** sind Erfahrungsschätzungen und werden immer als
   solche gekennzeichnet. Die beiden werden nie vermischt.
 
-Status: **Kapitel 1–4 fertig (Etappen 1–4); Kapitel 5 entsteht in G5.**
+Status: **Kapitel 1–5 fertig (Etappen 1–5); Schlusskapitel + PDF-Export folgen mit G7.**

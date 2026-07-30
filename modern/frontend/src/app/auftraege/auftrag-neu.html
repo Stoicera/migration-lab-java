@@ -1,0 +1,71 @@
+<h2>Neuer Auftrag</h2>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label for="feld-kunde">Kunde *</label>
+      <select
+        class="form-control"
+        name="kunde"
+        [(ngModel)]="gewaehlterKunde"
+        (ngModelChange)="kundeGewaehlt()"
+        id="feld-kunde"
+        data-testid="feld-kunde"
+      >
+        <option [ngValue]="null">-- bitte wählen --</option>
+        @for (k of kunden(); track k.id) {
+          <option [ngValue]="k">{{ k.anzeigeName }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="feld-fahrzeug">Fahrzeug *</label>
+      <select
+        class="form-control"
+        name="fahrzeug"
+        [(ngModel)]="auftrag.fahrzeugId"
+        [disabled]="!gewaehlterKunde"
+        id="feld-fahrzeug"
+        data-testid="feld-fahrzeug"
+      >
+        <option [ngValue]="null">-- zuerst Kunde wählen --</option>
+        @for (f of fahrzeuge(); track f.id) {
+          <option [ngValue]="f.id">{{ f.kennzeichen }} - {{ f.marke }} {{ f.modell }}</option>
+        }
+      </select>
+      @if (gewaehlterKunde && fahrzeuge().length === 0) {
+        <p class="help-block">
+          Dieser Kunde hat noch kein Fahrzeug - bitte zuerst
+          <a [routerLink]="['/kunden', gewaehlterKunde.id]">beim Kunden</a> anlegen.
+        </p>
+      }
+    </div>
+    <div class="form-group">
+      <label for="feld-beschreibung">Was ist zu tun? *</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        name="beschreibung"
+        [(ngModel)]="auftrag.beschreibung"
+        placeholder="z.B. Jahresservice, Bremsen quietschen..."
+        id="feld-beschreibung"
+        data-testid="feld-beschreibung"
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="feld-km">km-Stand bei Annahme</label>
+      <input
+        type="number"
+        class="form-control"
+        name="kmStand"
+        [(ngModel)]="auftrag.kmStand"
+        id="feld-km"
+        data-testid="feld-km"
+      />
+    </div>
+    <button class="btn btn-primary" (click)="anlegen()" data-testid="btn-auftrag-anlegen">
+      Auftrag anlegen
+    </button>
+    <a routerLink="/auftraege" class="btn btn-default">Abbrechen</a>
+  </div>
+</div>

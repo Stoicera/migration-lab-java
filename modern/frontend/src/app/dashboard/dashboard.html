@@ -1,0 +1,100 @@
+<h2>Übersicht</h2>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">Offene Aufträge</div>
+      <div class="panel-body">
+        <span style="font-size: 32px" data-testid="kpi-offene-auftraege">{{
+          offeneAuftraege().length
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-success">
+      <div class="panel-heading">Fertig, wartet auf Abholung</div>
+      <div class="panel-body">
+        <span style="font-size: 32px" data-testid="kpi-fertige-auftraege">{{
+          fertigeAuftraege().length
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-warning">
+      <div class="panel-heading">Unbezahlte Rechnungen</div>
+      <div class="panel-body">
+        <span style="font-size: 32px" data-testid="kpi-offene-rechnungen">{{
+          offeneRechnungen()
+        }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4 data-testid="werkstatt-heading">In der Werkstatt</h4>
+    <table class="table table-condensed table-hover" data-testid="werkstatt-tabelle">
+      <tr>
+        <th>Auftrag</th>
+        <th>Kennzeichen</th>
+        <th>Kunde</th>
+        <th>Status</th>
+      </tr>
+      @for (a of offeneAuftraege(); track a.id) {
+        <tr data-testid="werkstatt-zeile">
+          <td>
+            <a [routerLink]="['/auftraege', a.id]">{{ a.auftragNr }}</a>
+          </td>
+          <td>{{ a.kennzeichen }}</td>
+          <td>{{ a.kundeName }}</td>
+          <td>
+            <span class="label label-default label-status status-{{ a.status }}">{{
+              a.status | statusText
+            }}</span>
+          </td>
+        </tr>
+      }
+      @if (offeneAuftraege().length === 0) {
+        <tr>
+          <td colspan="4" class="text-muted">Nichts offen - seltener Anblick.</td>
+        </tr>
+      }
+    </table>
+  </div>
+  <div class="col-md-6">
+    <h4 data-testid="abholbereit-heading">Abholbereit</h4>
+    <table class="table table-condensed table-hover" data-testid="abholbereit-tabelle">
+      <tr>
+        <th>Auftrag</th>
+        <th>Kennzeichen</th>
+        <th>Kunde</th>
+        <th>Fertig seit</th>
+      </tr>
+      @for (a of fertigeAuftraege(); track a.id) {
+        <tr data-testid="abholbereit-zeile">
+          <td>
+            <a [routerLink]="['/auftraege', a.id]">{{ a.auftragNr }}</a>
+          </td>
+          <td>{{ a.kennzeichen }}</td>
+          <td>{{ a.kundeName }}</td>
+          <td>{{ a.fertigAm | date: 'dd.MM.yyyy' }}</td>
+        </tr>
+      }
+      @if (fertigeAuftraege().length === 0) {
+        <tr>
+          <td colspan="4" class="text-muted">Derzeit nichts abholbereit.</td>
+        </tr>
+      }
+    </table>
+  </div>
+</div>
+
+<p>
+  <a routerLink="/auftraege/neu" class="btn btn-primary" data-testid="btn-neuer-auftrag"
+    >Neuer Auftrag</a
+  >
+  <a routerLink="/kunden/neu" class="btn btn-default" data-testid="btn-neuer-kunde">Neuer Kunde</a>
+</p>

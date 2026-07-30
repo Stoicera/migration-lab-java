@@ -1,60 +1,50 @@
 package at.werkstatt.crm.controller;
 
+import at.werkstatt.crm.service.WerkstattService;
+import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import com.google.gson.Gson;
-
-import at.werkstatt.crm.service.WerkstattService;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Alte Admin-Seite als JSP, stammt noch aus der Tomcat-Zeit vor Spring Boot.
- * Wird nur vom Chef verwendet. Kein Login davor - die Seite kennt eh niemand.
+ * Stage 5 (SD-2, ADR-0004): the JSP admin page is absorbed into the SPA — this controller now
+ * serves JSON for the Angular /admin route (gson and the whole JSP/JSTL stack died with the page).
+ * POST /admin/bereinigen keeps its path and its exact German meldung: that contract is pinned by
+ * the characterization suite on both stands.
  */
-@Controller
+@RestController
 public class AdminController {
 
-	private final WerkstattService werkstattService;
-	private final String firmaName;
-	private final String version;
+  private final WerkstattService werkstattService;
+  private final String firmaName;
+  private final String version;
 
-	// gson statt jackson, weil das Beispiel damals aus einem Forum kopiert wurde
-	private final Gson gson = new Gson();
+  public AdminController(
+      WerkstattService werkstattService,
+      @Value("${werkstatt.firma.name}") String firmaName,
+      @Value("${werkstatt.version:?}") String version) {
+    this.werkstattService = werkstattService;
+    this.firmaName = firmaName;
+    this.version = version;
+  }
 
-	public AdminController(WerkstattService werkstattService,
-			@Value("${werkstatt.firma.name}") String firmaName,
-			@Value("${werkstatt.version:?}") String version) {
-		this.werkstattService = werkstattService;
-		this.firmaName = firmaName;
-		this.version = version;
-	}
+  @GetMapping("/api/admin/statistik")
+  public Map<String, Object> statistik() {
+    Map<String, Object> antwort = new HashMap<>();
+    antwort.put("firmaName", firmaName);
+    antwort.put("version", version);
+    antwort.put("statistik", werkstattService.getAdminStatistik());
+    return antwort;
+  }
 
-	@GetMapping("/admin")
-	public String admin(Model model) {
-		Map<String, Object> statistik = werkstattService.getAdminStatistik();
-		model.addAttribute("statistik", statistik);
-		model.addAttribute("statistikJson", gson.toJson(statistik));
-		model.addAttribute("firmaName", firmaName);
-		model.addAttribute("version", version);
-		model.addAttribute("meldung", null);
-		return "admin";
-	}
-
-	@PostMapping("/admin/bereinigen")
-	public String bereinigen(Model model) {
-		int anzahl = werkstattService.bereinigeStornierte();
-		Map<String, Object> statistik = werkstattService.getAdminStatistik();
-		model.addAttribute("statistik", statistik);
-		model.addAttribute("statistikJson", gson.toJson(statistik));
-		model.addAttribute("firmaName", firmaName);
-		model.addAttribute("version", version);
-		model.addAttribute("meldung", anzahl + " stornierte Aufträge wurden endgültig gelöscht.");
-		return "admin";
-	}
-
+  @PostMapping("/admin/bereinigen")
+  public Map<String, Object> bereinigen() {
+    int anzahl = werkstattService.bereinigeStornierte();
+    Map<String, Object> antwort = new HashMap<>();
+    antwort.put("geloescht", anzahl);
+    antwort.put("meldung", anzahl + " stornierte Aufträge wurden endgültig gelöscht.");
+    return antwort;
+  }
 }

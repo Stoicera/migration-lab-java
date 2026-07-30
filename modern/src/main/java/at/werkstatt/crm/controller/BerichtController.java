@@ -1,41 +1,40 @@
 package at.werkstatt.crm.controller;
 
+import at.werkstatt.crm.model.MonatsBericht;
+import at.werkstatt.crm.service.WerkstattService;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import at.werkstatt.crm.model.MonatsBericht;
-import at.werkstatt.crm.service.WerkstattService;
-
 @RestController
 @RequestMapping("/api/bericht")
 public class BerichtController {
 
-	private final WerkstattService werkstattService;
+  private final WerkstattService werkstattService;
 
-	public BerichtController(WerkstattService werkstattService) {
-		this.werkstattService = werkstattService;
-	}
+  public BerichtController(WerkstattService werkstattService) {
+    this.werkstattService = werkstattService;
+  }
 
-	@GetMapping("/monat")
-	public List<MonatsBericht> monatsBericht(@RequestParam(value = "jahr", required = false) Integer jahr) {
-		if (jahr == null) {
-			jahr = Calendar.getInstance().get(Calendar.YEAR);
-		}
-		return werkstattService.getMonatsBericht(jahr);
-	}
+  @GetMapping("/monat")
+  public List<MonatsBericht> monatsBericht(
+      @RequestParam(value = "jahr", required = false) Integer jahr) {
+    if (jahr == null) {
+      jahr = Calendar.getInstance().get(Calendar.YEAR);
+    }
+    return werkstattService.getMonatsBericht(jahr);
+  }
 
-	@GetMapping("/topkunden")
-	public List<Map<String, Object>> topKunden(@RequestParam(value = "jahr", required = false) Integer jahr) {
-		if (jahr == null) {
-			jahr = Calendar.getInstance().get(Calendar.YEAR);
-		}
-		return werkstattService.getTopKunden(jahr);
-	}
-
+  @GetMapping("/topkunden")
+  public List<Map<String, Object>> topKunden(
+      @RequestParam(value = "jahr", required = false) Integer jahr) {
+    if (jahr == null) {
+      jahr = Calendar.getInstance().get(Calendar.YEAR);
+    }
+    return werkstattService.getTopKunden(jahr);
+  }
 }

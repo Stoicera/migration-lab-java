@@ -1,7 +1,8 @@
 # modern/ — the migrated application
 
-Grows stage by stage from a faithful copy of `legacy/`; final state: Java 25,
-Spring Boot 4.1.x, Angular 22, PostgreSQL. Current state: see [`../stages.md`](../stages.md).
+Grows stage by stage from a faithful copy of `legacy/`; since stage 5: Java 25,
+Spring Boot 4.1.x, **Angular 22** (executable JAR, frontend built into the boot
+artifact). Current state: see [`../stages.md`](../stages.md).
 
 ## Run it (side by side with the legacy stand)
 
@@ -9,8 +10,25 @@ Spring Boot 4.1.x, Angular 22, PostgreSQL. Current state: see [`../stages.md`](.
 docker compose -f modern/docker-compose.yml up -d
 ```
 
-- App: http://localhost:8090 · JSP admin: http://localhost:8090/admin
+- App: http://localhost:8090 · admin (SPA route since stage 5): http://localhost:8090/admin
 - PostgreSQL: localhost:5434 (werkstatt/werkstatt), same committed seed as legacy
+
+## Frontend build (stage 5)
+
+The Angular app lives in [`frontend/`](frontend/) and is built INTO the Boot
+artifact by `frontend-maven-plugin` during `./mvnw verify -f modern/pom.xml`
+(or the Docker image build): the plugin installs its own pinned Node
+(v24.18.1 LTS) and runs `npm ci` against the committed lockfile — no local
+Node toolchain required, same pattern as the Dockerized JDK-8 build of
+`legacy/`. Frontend dev loop: `cd modern/frontend && npm start` (proxy to a
+running stand not configured on purpose — the compose stand is the reference).
+Lint/format gates (`ng lint`, `prettier --check`, Spotless google-java-format)
+run at `verify` (see `docs/DEVIATIONS.md`, item met at G5).
+
+The E2E wait contract of the UI: the app maintains
+`window.werkstattOffeneRequests` (an HTTP-interceptor counter, see
+`frontend/src/app/offene-requests.interceptor.ts`) because the app is zoneless
+— this is a testability contract, do not remove it (e2e/README, wait strategy).
 
 ## The equivalence gate
 
@@ -44,11 +62,24 @@ THIS table is the disposition of each wart on the migrating stand, so
 | B10 raw error messages (500 + `e.getMessage()`) | **survives** — the error contract is pinned by characterization; sanitising it is a contract change (ADR-0004 gate) |
 | B11–B13, B19 | **survive** — pinned where observable; same ADR-0004 gate for any change |
 | B14 debug leftovers / dead code | removed (stage 2, documented) |
-| B16 JSP admin page incl. destructive POST | **survives** until stage 5 absorbs it (gson dies with it) |
+| B16 JSP admin page incl. destructive POST | removed (stage 5, SD-2) — absorbed as SPA route `/admin` + `GET /api/admin/statistik`; `POST /admin/bereinigen` keeps path/status/meldung (pinned); JSP/JSTL/gson retired, WAR→JAR |
 | B17 config duplication w/ plaintext password | removed (review remediation) — `application-prod.properties` deleted; real deployment config arrives with G7 via environment, see `.env.example` |
 | B18 hand-run SQL schema | **survives** — Flyway disposition in `docs/DEVIATIONS.md` (G7) |
 
 ## Stage log
+
+- **Stage 5 (`stage-5-angular`):** AngularJS 1.8 → Angular 22.1.0 via Strangler
+  Fig on a URL seam ([ADR-0009](../docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md)):
+  the Angular app took `/` with path routes from the first slice, the old app
+  stayed fully functional at `/alt.html#!/…` until each route ported over —
+  one commit per route group, suites green at every step, cross-framework
+  handovers as full page loads. JSP admin page absorbed (SD-2), the legacy
+  "undefined" error alert replaced by the real server message (SD-3),
+  packaging WAR→JAR, `src/main/webapp/` deleted at cutover. Formatting parity
+  is enforced (EuroPipe replicates the 2016 `euro` filter byte-for-byte;
+  alert/confirm kept) — UX modernisation is deliberately out of scope.
+  Zoneless lesson (found by the net): async-written component state must be
+  signal-tracked. Details: playbook Kap. 5.
 
 - **Stage 4 (`stage-4-boot-4x`):** Boot 2.7 → 3.5.16 → 4.1.0, Java 17 → 25,
   `javax` → `jakarta`. OpenRewrite used **and evaluated** ([ADR-0002](../docs/adr/0002-openrewrite-as-assistant-not-autopilot.md)):

@@ -3,6 +3,9 @@ target/
 build/
 dist/
 node_modules/
+# Angular toolchain (modern/frontend): CLI cache + node installed by frontend-maven-plugin
+.angular/
+modern/frontend/node/
 *.class
 *.jar
 !.mvn/wrapper/maven-wrapper.jar

@@ -1,0 +1,25 @@
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" routerLink="/start">WerkstattCRM</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a routerLink="/kunden">Kunden</a></li>
+      <li><a routerLink="/fahrzeuge">Fahrzeuge</a></li>
+      <li><a routerLink="/auftraege">Aufträge</a></li>
+      <li><a routerLink="/rechnungen">Rechnungen</a></li>
+      <li><a routerLink="/bericht">Monatsbericht</a></li>
+    </ul>
+    <p class="navbar-text navbar-right" style="margin-right: 10px">
+      KFZ-Werkstatt Moser GmbH, Perg
+    </p>
+  </div>
+</nav>
+
+<div class="container-fluid" id="inhalt">
+  <router-outlet />
+</div>
+
+<footer class="werkstatt-footer">
+  WerkstattCRM 1.4.2 &middot; intern &middot; bei Problemen: Hr. B. anrufen
+</footer>

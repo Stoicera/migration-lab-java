@@ -43,5 +43,7 @@ docker compose -f modern/docker-compose.yml up -d    # modern stand (8090, db 12
 
 # builds: the legacy WAR needs Java 8 and builds INSIDE Docker (compose build) —
 # a bare `./mvnw -f legacy/pom.xml` fails on a modern local JDK (legacy/README.md).
+# modern verify builds the Angular frontend too (frontend-maven-plugin installs its
+# own Node, npm ci) and runs the lint/format gates (Spotless, ng lint, prettier).
 ./mvnw verify -f modern/pom.xml                      # modern build (module tests arrive with G6)
 ```

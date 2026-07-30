@@ -1,0 +1,52 @@
+<h2>Kunden</h2>
+
+<div class="row" style="margin-bottom: 10px">
+  <div class="col-md-5">
+    <form (ngSubmit)="suchen()">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          data-testid="suchfeld"
+          placeholder="Name oder Ort suchen..."
+          name="suche"
+          [(ngModel)]="suche"
+        />
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit" data-testid="btn-suchen">Suchen</button>
+        </span>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-7 text-right">
+    <a routerLink="/kunden/neu" class="btn btn-primary" data-testid="btn-kunde-neu">Neuer Kunde</a>
+  </div>
+</div>
+
+<table class="table table-striped table-hover" data-testid="kunden-tabelle">
+  <tr>
+    <th>Name</th>
+    <th>Telefon</th>
+    <th>E-Mail</th>
+    <th>Ort</th>
+    <th></th>
+  </tr>
+  @for (k of kunden(); track k.id) {
+    <tr data-testid="kunde-zeile">
+      <td>
+        <a [routerLink]="['/kunden', k.id]">{{ k.anzeigeName }}</a>
+      </td>
+      <td>{{ k.telefon }}</td>
+      <td>{{ k.email }}</td>
+      <td>{{ k.plz }} {{ k.ort }}</td>
+      <td class="text-right">
+        <button class="btn btn-xs btn-danger" (click)="loeschen(k)">Löschen</button>
+      </td>
+    </tr>
+  }
+  @if (kunden().length === 0) {
+    <tr>
+      <td colspan="5" class="text-muted">Keine Kunden gefunden.</td>
+    </tr>
+  }
+</table>

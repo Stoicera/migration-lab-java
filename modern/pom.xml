@@ -6,7 +6,9 @@
 	<groupId>at.werkstatt</groupId>
 	<artifactId>werkstatt-crm</artifactId>
 	<version>1.4.2</version>
-	<packaging>war</packaging>
+	<!-- war -> jar at the stage-5 cutover: the JSP admin page (the only WAR
+	     reason) is absorbed, src/main/webapp is gone -->
+	<packaging>jar</packaging>
 
 	<name>WerkstattCRM</name>
 	<description>WerkstattCRM modern stand — grows stage by stage (see stages.md)</description>
@@ -39,31 +41,9 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<!-- JSP Admin-Seite -->
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- jakarta JSTL: the OpenRewrite Boot-3 recipe PINNED javax jstl 1.2
-		     instead of migrating it — ClassNotFoundException on Tomcat 10.1
-		     (playbook ch. 4, recipe evaluation: "compiles" != "works") -->
-		<dependency>
-			<groupId>jakarta.servlet.jsp.jstl</groupId>
-			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.web</groupId>
-			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
-		</dependency>
-
-		<!-- only used by the JSP admin page; dies with it in stage 5.
-		     Version now BOM-managed: the 2015 pin (2.3.1) broke Boot 2.7's
-		     GsonAutoConfiguration at startup (playbook ch. 3, break #2) -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
+		<!-- JSP/JSTL/gson: retired in stage 5 with the absorbed admin page
+		     (SD-2, ADR-0004) — the app is JSP-free; WAR->JAR follows at the
+		     stage-5 cutover when the last webapp/ content goes -->
 	</dependencies>
 
 	<build>
@@ -72,6 +52,114 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!-- Stage 5: the Angular UI is part of this artifact. The plugin
+			     installs its own Node (no local toolchain requirement, same
+			     pattern as the Dockerized JDK-8 build of legacy/) and builds
+			     frontend/ reproducibly via npm ci + the committed lockfile.
+			     Versions verified live 2026-07-30: Node v24.18.1 LTS. -->
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.15.1</version>
+				<configuration>
+					<workingDirectory>frontend</workingDirectory>
+					<installDirectory>frontend</installDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install-node-and-npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v24.18.1</nodeVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm-ci</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>ci</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>ng-build</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+					</execution>
+					<!-- lint/format gates (DEVIATIONS: deferred(G5), now armed) run
+					     at verify — CI enforces them, docker package skips them -->
+					<execution>
+						<id>ng-lint</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run lint</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>prettier-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run format:check</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Java format gate (google-java-format), same deviation item;
+			     spotless:check binds to verify. Versions checked 2026-07-31. -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.44.5</version>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.27.0</version>
+						</googleJavaFormat>
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- ship the Angular build as Boot static resources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-frontend-dist</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+							<resources>
+								<resource>
+									<directory>frontend/dist/werkstatt-frontend/browser</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,0 +1,61 @@
+<h2>Monatsbericht</h2>
+
+<div class="form-inline" style="margin-bottom: 12px">
+  <label for="feld-jahr">Jahr:</label>
+  <select
+    class="form-control"
+    name="jahr"
+    [(ngModel)]="jahr"
+    (ngModelChange)="laden()"
+    id="feld-jahr"
+    data-testid="feld-jahr"
+  >
+    @for (j of jahre; track j) {
+      <option [ngValue]="j">{{ j }}</option>
+    }
+  </select>
+</div>
+
+<table class="table table-striped" data-testid="bericht-tabelle">
+  <tr>
+    <th>Monat</th>
+    <th class="text-right">Aufträge</th>
+    <th class="text-right">Rechnungen</th>
+    <th class="text-right">Umsatz netto</th>
+    <th class="text-right">Umsatz brutto</th>
+  </tr>
+  @for (m of monate(); track m.monat) {
+    <tr data-testid="monat-zeile">
+      <td>{{ m.monatName }}</td>
+      <td class="text-right">{{ m.anzahlAuftraege }}</td>
+      <td class="text-right">{{ m.anzahlRechnungen }}</td>
+      <td class="text-right">{{ m.umsatzNetto | euro }}</td>
+      <td class="text-right">{{ m.umsatzBrutto | euro }}</td>
+    </tr>
+  }
+  <tr>
+    <th>Gesamt</th>
+    <th class="text-right" data-testid="summe-auftraege">{{ summeAuftraege() }}</th>
+    <th></th>
+    <th class="text-right" data-testid="summe-netto">{{ summeNetto() | euro }}</th>
+    <th class="text-right" data-testid="summe-brutto">{{ summeBrutto() | euro }}</th>
+  </tr>
+</table>
+
+<h4>Top-Kunden {{ jahr }}</h4>
+<table class="table table-condensed" data-testid="topkunden-tabelle" style="max-width: 600px">
+  <tr>
+    <th>#</th>
+    <th>Kunde</th>
+    <th class="text-right">Aufträge</th>
+    <th class="text-right">Umsatz brutto</th>
+  </tr>
+  @for (k of topKunden(); track k.id; let i = $index) {
+    <tr data-testid="topkunde-zeile">
+      <td>{{ i + 1 }}</td>
+      <td>{{ k.nachname }}{{ k.vorname ? ' ' + k.vorname : '' }}</td>
+      <td class="text-right">{{ k.anzahl_auftraege }}</td>
+      <td class="text-right">{{ k.umsatz | euro }}</td>
+    </tr>
+  }
+</table>
