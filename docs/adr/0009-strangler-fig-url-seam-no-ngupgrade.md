@@ -21,7 +21,7 @@ app, and what happens to the WAR packaging once the JSP admin page dies.
    full page loads (Angular catch-all → `/alt.html#!<path>`; the old app keeps
    a ported-routes list and hands over via `window.location`). Both shells
    carry byte-identical nav hrefs so the selector map holds mid-flow.
-   `@angular/upgrade` exists at 22.1.0 (checked live 2026-07-31) and was
+   `@angular/upgrade` exists at 22.1.0 (checked live 2026-07-30, session start) and was
    REJECTED for this size class: dual change detection, AngularJS inside the
    Angular build and `$injector` bridging buy page-internal mixing we do not
    need — ten views with clean route boundaries make the URL seam strictly
@@ -50,8 +50,12 @@ app, and what happens to the WAR packaging once the JSP admin page dies.
 ## Consequences
 
 - The hybrid period is verifiable history: one commit per route slice, each
-  green against both stands, including a Selenium scenario that crosses the
-  framework seam mid-flow (order detail → invoice sheet).
+  verified green against the modern stand (e2e + characterization); the legacy
+  legs were re-run at every commit that touched shared suite code (slices 1, 4,
+  7, the format pass) and in the full both-stand closing matrix — a risk-based
+  cadence, recorded precisely in worklog sessions 9/10 rather than rounded up
+  to "everything, always". The hybrid window includes a Selenium scenario that
+  crosses the framework seam mid-flow (order detail → invoice sheet).
 - The old app was strangled to an empty shell BEFORE deletion — every slice
   removed its AngularJS view/controller/route immediately (no zombie copies).
 - Zoneless is a real behavioural constraint, not a toggle: async-written

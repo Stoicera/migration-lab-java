@@ -5,10 +5,15 @@ page objects address elements by intent key only; the mapping to concrete CSS
 selectors lives in `src/test/resources/selectors/<target>.properties`.
 Stage 5 proved the design: porting the suite to the Angular UI meant new
 `modern.properties` values, two `wait.strategy` implementations and ONE
-sanctioned per-stand expectation (SD-3, below) — zero new scenarios. A
-`SelectorMapParityTest` guards that both maps carry identical key sets.
+sanctioned per-stand expectation (SD-3, below) — zero new scenarios for the
+port itself. (Fairness note: the suite had been widened 13 → 27 tests in the
+session-8 review remediation, days before the port — the port validated that
+widened net, not only the original stage-1 one.) The review after stage 5
+(session 10) then ADDED scenarios for the surface stage 5 created: the admin
+flow, hash-bang deep links and the two list filters. A `SelectorMapParityTest`
+guards that both maps carry identical key sets.
 
-## Scenarios (9 classes, 27 tests + 1 map-parity guard)
+## Scenarios (12 classes, 33 tests + 1 map-parity guard)
 
 | Class | Flow |
 |---|---|
@@ -21,12 +26,16 @@ sanctioned per-stand expectation (SD-3, below) — zero new scenarios. A
 | `RechnungTest` (4) | invoice from finished seed order (exact number, 20% USt math), mark paid, list→detail navigation with position lines, duplicate-invoice rejection |
 | `BerichtTest` (4) | monthly report numbers of the frozen seed months, top customer, real year-switch round trip |
 | `ValidierungTest` (2) | required-field alerts on kunde-neu and auftrag-neu — nothing saved, exact messages pinned |
+| `AdminTest` (2) | admin Kennzahlen from the seed; destructive Bereinigung behind its confirm, exact meldung, refreshed table — JSP and SPA drive the SAME flow via the map (session 10) |
+| `ListenFilterTest` (3) | order status filter (server re-query), "nur unbezahlte" toggle (client-side), kunden header pin — the stage-5 REWRITES of these conveniences made them new code needing pins (session 10) |
+| `DeepLinkTest` (1) | a saved `#!`-bookmark reaches its page on both stands (legacy: native; modern: the main.ts shim) |
 
 ## Coverage philosophy and its limits
 
 The suite covers the **Monday-morning-call flows**: everything the workshop
 does at the counter, once each, through the real UI, within a runtime budget
-of well under 60 s per stand (currently ~23 s including Maven).
+of well under 60 s per stand (measured 2026-07-31: ~26 s modern / ~28 s
+legacy including Maven, warm JVM, 34 tests).
 
 Deliberately **not** covered at the UI level — these permutations are held by
 the `characterization/` layer, where they are cheaper and more precise:
@@ -35,14 +44,20 @@ the `characterization/` layer, where they are cheaper and more precise:
 - invoice rounding edge cases (characterization),
 - search with hostile input (single quote, injection patterns — characterization + ADR-0004),
 - the orphaned-vehicles side effect of deleting a customer (DB-state characterization),
-- the admin JSP page and the 90-day cleanup job (golden master + DB-state characterization),
+- the legacy admin JSP page markup (golden master) and the cleanup DELETE
+  semantics (DB-state characterization) — the admin UI FLOW itself is e2e
+  (`AdminTest`, both stands) since session 10: after SD-2 the modern admin
+  page was newly written code, and "held by characterization" was only true
+  of its JSP predecessor,
 - the 4xx/5xx error-contract surface across all endpoints (error-contract characterization).
 
-Known UI-only gaps, accepted with reason: the order status filter buttons, the
-"nur unbezahlte" checkbox and the print button are trivial client-side
-conveniences; covering them buys almost no migration safety against the
-runtime budget. E2E proves each UI mechanism once — exhaustiveness lives one
-layer down.
+Coverage arguments are re-argued when the code they cover is rewritten
+(session-10 rule): the status filter and the "nur unbezahlte" toggle stopped
+being "trivial 2016 conveniences" the moment stage 5 reimplemented them, and
+are pinned since (`ListenFilterTest`). Still accepted as uncovered, with
+reason: the print button (`window.print` — no assertable outcome), empty-state
+rows and the load-error alerts (would need fault injection; the HTTP error
+contracts are characterization-pinned).
 
 ## Zero-flake rules (binding)
 
@@ -84,7 +99,13 @@ layer down.
   counter `window.werkstattOffeneRequests` (an HTTP interceptor in
   `modern/frontend`) — the app is **zoneless**, so the classic Testability
   `isStable` probe observes nothing; the counter is the app's testability
-  contract, same semantic as `$http.pendingRequests`.
+  contract, same semantic as `$http.pendingRequests`. Two session-10
+  hardenings: the app creates the marker only at/after bootstrap (a missing
+  marker = "not idle", closing the page-load dead window), and the probe
+  confirms counter==0 across a double `requestAnimationFrame` so "idle"
+  implies "rendered" (the interceptor's finalize runs before the zoneless
+  scheduler flushes). Contract boundary: only HttpClient traffic counts — the
+  app must not introduce raw `fetch()`/XHR (documented in the interceptor).
 - `hybrid` (used during the stage-5 route-by-route port, kept as a documented
   strategy): dispatches per CURRENT document on whichever framework marker is
   present — one flow could legally cross from an Angular page to an AngularJS
@@ -147,7 +168,11 @@ legacy (honesty rule). The stage-5 Angular UI surfaces the backend's German
 message instead — the expected alert text lives in the selector maps
 (`alert.rechnungDuplikat`), so ONE assertion pins both behaviours per stand.
 The *server-side* message contract (identical on both stands) is held by the
-error-contract characterization tests.
+error-contract characterization tests. Discipline note (session 10): an
+expectation that lives in the map is data, and its oracle is one step removed
+— a change to UI text plus map value in one commit passes every suite, so map
+VALUE changes are review-gated like test changes (they are ADR-0004 material,
+never routine).
 
 ## Selector discipline
 
@@ -157,7 +182,9 @@ through `SelectorMap.value`. The 2016 markup offers no ids for table cells, so
 the legacy map's cell access is positional (`nth-child` in the map or index in
 the page object); wherever that is unavoidable, the tests **pin the column
 headers** (or section headings on the dashboard) first, so a silent
-column/section reorder fails loudly instead of asserting the wrong cell. The
+column/section reorder fails loudly instead of asserting the wrong cell —
+since session 10 that promise holds for ALL positional tables (the kunden,
+auftraege and rechnungen lists had been missing their header pins). The
 stage-5 Angular UI carries explicit `data-testid` anchors instead — the modern
 map addresses those, and the key sets of both maps are guarded byte-identical
 by `SelectorMapParityTest`.

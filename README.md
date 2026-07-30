@@ -9,8 +9,9 @@ Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular
 safety net first, honest numbers, reusable German migration playbook.
 
 > **Status: stage 5 done — the modern stand runs Spring Boot 4.1.0 / Java 25
-> with an Angular 22 UI**, migrated route by route via Strangler Fig with the
-> same Selenium scenarios green on the old AND the new UI throughout —
+> with an Angular 22 UI**, migrated route by route via Strangler Fig, the same
+> Selenium scenarios green on the old AND the new UI (per-slice on modern,
+> full matrix at the gates; cadence in the worklog) —
 > functionally equivalent to the frozen 2016 stand for all legitimate inputs
 > (the deliberate divergences — security fix, absorbed admin page, fixed
 > "undefined" alert — are registered and pinned per stand in

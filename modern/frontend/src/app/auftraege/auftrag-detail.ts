@@ -23,9 +23,16 @@ export class AuftragDetail implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly auftrag = signal<Auftrag | null>(null);
-  protected neuePosition: AuftragPosition = this.leerePosition();
+  // signal-backed for the same zoneless reason as kunde-detail: the reset
+  // happens in an async callback and must schedule its own render (session 10
+  // review — the plain property relied on the adjacent laden() signal write)
+  private readonly neuePositionState = signal<AuftragPosition>(this.leerePosition());
 
   private id = '';
+
+  protected get neuePosition(): AuftragPosition {
+    return this.neuePositionState();
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -48,7 +55,7 @@ export class AuftragDetail implements OnInit {
     }
     this.api.positionAnlegen(this.id, this.neuePosition).subscribe({
       next: () => {
-        this.neuePosition = this.leerePosition();
+        this.neuePositionState.set(this.leerePosition());
         this.laden();
       },
       error: (fehler) => alert(fehlerText(fehler)),

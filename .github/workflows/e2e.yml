@@ -1,7 +1,7 @@
 # Selenium E2E safety net — same scenarios against both stands via selector maps.
 # Matrix target: legacy | modern. The legacy leg is the sacred gate from
-# stage-1-safety-net onward; the modern leg has been armed since stage 2
-# (identical UI copy until stage 5 — stricter than originally planned).
+# stage-1-safety-net onward; the modern leg has been armed since stage 2 and
+# drives the Angular 22 UI since stage 5 (selector map v2, angular wait strategy).
 # All steps run UNCONDITIONALLY (ADR-0008): presence gates are retired.
 name: e2e
 

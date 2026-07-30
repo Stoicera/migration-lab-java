@@ -31,10 +31,14 @@ export class KundeDetail implements OnInit {
   // The getter keeps the template/ngModel syntax; user-input mutation of the
   // current object is safe (DOM events schedule CD themselves).
   private readonly kundeState = signal<Kunde>(this.leererKunde());
-  protected neuesFahrzeug: Partial<Fahrzeug> = {};
+  private readonly neuesFahrzeugState = signal<Partial<Fahrzeug>>({});
 
   protected get kunde(): Kunde {
     return this.kundeState();
+  }
+
+  protected get neuesFahrzeug(): Partial<Fahrzeug> {
+    return this.neuesFahrzeugState();
   }
 
   ngOnInit(): void {
@@ -72,7 +76,7 @@ export class KundeDetail implements OnInit {
     this.neuesFahrzeug.kundeId = this.kunde.id;
     this.api.fahrzeugSpeichern(this.neuesFahrzeug as Fahrzeug).subscribe({
       next: () => {
-        this.neuesFahrzeug = {};
+        this.neuesFahrzeugState.set({});
         this.zeigeFahrzeugForm.set(false);
         this.fahrzeugeLaden(this.kunde.id!);
       },
@@ -92,6 +96,9 @@ export class KundeDetail implements OnInit {
   }
 
   private leererKunde(): Kunde {
-    return { anrede: 'Herr', vorname: '', nachname: '' };
+    // exactly the 2016 initial model: untouched fields stay ABSENT so the
+    // create-POST omits them (NULL in the DB) — '' defaults were a silent
+    // wire/DB divergence, found in review session 10
+    return { anrede: 'Herr' };
   }
 }

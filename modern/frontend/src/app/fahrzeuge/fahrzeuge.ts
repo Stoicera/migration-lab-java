@@ -7,8 +7,10 @@ import { ApiService } from '../api.service';
 import { Fahrzeug } from '../modelle';
 
 /** Global vehicle list, read-only — vehicles are created on the owning
- * customer's page. The filter reproduces AngularJS' `filter:filter`:
- * case-insensitive substring match across all field values, client-side. */
+ * customer's page. The filter reproduces AngularJS' `filter:filter`
+ * including the leading-`!` negation prefix (review session 10: the port
+ * had dropped it): case-insensitive substring match across all field
+ * values, client-side, inverted when the term starts with `!`. */
 @Component({
   selector: 'app-fahrzeuge',
   imports: [DatePipe, FormsModule, RouterLink],
@@ -25,8 +27,14 @@ export class Fahrzeuge implements OnInit {
     if (!begriff) {
       return this.fahrzeuge();
     }
-    return this.fahrzeuge().filter((f) =>
-      Object.values(f).some((wert) => wert != null && String(wert).toLowerCase().includes(begriff)),
+    // a bare "!" negates the match-everything empty term ⇒ empty list, like AngularJS
+    const negiert = begriff.startsWith('!');
+    const suchbegriff = negiert ? begriff.substring(1) : begriff;
+    return this.fahrzeuge().filter(
+      (f) =>
+        Object.values(f).some(
+          (wert) => wert != null && String(wert).toLowerCase().includes(suchbegriff),
+        ) !== negiert,
     );
   });
 
