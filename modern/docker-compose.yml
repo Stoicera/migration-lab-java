@@ -1,6 +1,6 @@
 # Modern-Stand: grows stage by stage (see stages.md)
 # Start: docker compose -f modern/docker-compose.yml up -d
-# App: http://localhost:8090  ·  JSP-Admin: http://localhost:8090/admin
+# App: http://localhost:8090  ·  Admin (SPA-Route seit Stage 5): http://localhost:8090/admin
 services:
   db:
     image: postgres:9.6
