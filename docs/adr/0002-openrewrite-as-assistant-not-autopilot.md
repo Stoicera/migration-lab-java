@@ -55,3 +55,27 @@ never as an unsupervised migration autopilot.** Concretely:
 - The project can now answer the sales question — *"can AI/tooling just do our
   migration?"* — with measured evidence instead of opinion: it removes the
   typing, not the engineering.
+
+## Addendum 2026-07-30 — reproduction commands (review finding 23)
+
+The original invocations were not preserved verbatim; the commands below are
+**reconstructed** from the recorded plugin/recipe versions and recipe names in
+this ADR (stated honestly rather than backdated). To re-run the evaluation
+against the `stage-3-boot-2.7` state of `modern/`:
+
+```bash
+mvn -f modern/pom.xml org.openrewrite.maven:rewrite-maven-plugin:6.45.0:run \
+  -Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:6.36.0 \
+  -Drewrite.activeRecipes=org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5
+
+mvn -f modern/pom.xml org.openrewrite.maven:rewrite-maven-plugin:6.45.0:run \
+  -Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:6.36.0 \
+  -Drewrite.activeRecipes=org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+
+mvn -f modern/pom.xml org.openrewrite.maven:rewrite-maven-plugin:6.45.0:run \
+  -Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:6.36.0 \
+  -Drewrite.activeRecipes=org.openrewrite.java.spring.boot4.SpringBootProperties_4_1
+```
+
+Recipe results are date- and version-specific; a re-run against newer
+rewrite-spring releases is a new evaluation, not a reproduction.

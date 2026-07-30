@@ -18,8 +18,15 @@ public class AuftragNeuPage {
 		this.waits = waits;
 	}
 
+	/**
+	 * Customer options load async (GET api/kunden fired on controller start) —
+	 * same guard as {@link #fahrzeug(String)}: wait for the wanted entry before
+	 * selecting, selectByVisibleText on a not-yet-populated select throws.
+	 */
 	public AuftragNeuPage kunde(String anzeigeName) {
-		new Select(waits.visible(css("auftragNeu.kundeSelect"))).selectByVisibleText(anzeigeName);
+		waits.until(css("auftragNeu.kundeSelect"), select -> new Select(select).getOptions().stream()
+				.anyMatch(o -> o.getText().equals(anzeigeName)));
+		new Select(driver.findElement(css("auftragNeu.kundeSelect"))).selectByVisibleText(anzeigeName);
 		return this;
 	}
 
@@ -56,5 +63,14 @@ public class AuftragNeuPage {
 		waits.clickable(css("auftragNeu.submitButton")).click();
 		waits.visible(css("auftragDetail.statusLabel"));
 		return new AuftragDetailPage(driver, waits);
+	}
+
+	/**
+	 * Submits expecting the client-side validation alert (customer/vehicle
+	 * missing); returns the alert text so the test pins the exact message.
+	 */
+	public String anlegenErwarteAlert() {
+		waits.clickable(css("auftragNeu.submitButton")).click();
+		return waits.alertTextAndAccept();
 	}
 }

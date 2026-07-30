@@ -1,6 +1,5 @@
-# Build- und Laufumgebung fuer den Legacy-Stand (Java 8).
-# Der Container ist Projekt-Infrastruktur (Reproduzierbarkeit), nicht Teil
-# des 2016-Exhibits - siehe LEGACY_NOTES.md.
+# Build and runtime for the modern stand (Java 25, Spring Boot 4.1).
+# Project infrastructure, grows stage by stage - see stages.md.
 FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /build
 COPY pom.xml .

@@ -57,6 +57,7 @@ public class KundenPage {
 
 	public KundeDetailPage neuerKunde() {
 		waits.clickable(css("kunden.newButton")).click();
+		// new-customer form: legitimately empty, so NO waitLoaded() here
 		waits.visible(css("kundeDetail.nachname"));
 		return new KundeDetailPage(driver, waits);
 	}
@@ -68,7 +69,8 @@ public class KundenPage {
 				.findFirst();
 		link.orElseThrow(() -> new AssertionError("Kunde not in list: " + anzeigeName)).click();
 		waits.visible(css("kundeDetail.nachname"));
-		return new KundeDetailPage(driver, waits);
+		// existing customer: gate on the async data load before anyone reads or types
+		return new KundeDetailPage(driver, waits).waitLoaded();
 	}
 
 	public void deleteByName(String anzeigeName) {

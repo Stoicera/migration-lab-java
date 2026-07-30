@@ -13,9 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Access to the running legacy stand: HTTP client, JDBC connection and the
+ * Access to the running stand under test: HTTP client, JDBC connection and the
  * reset-to-seed that makes every capture deterministic. The seed file in
- * legacy/db/init/ is the single source of the golden state.
+ * legacy/db/init/ is the single source of the golden state — both stands run
+ * the identical schema and seed, so the same reset works against either DB.
+ *
+ * Defaults target the legacy stand; the modern stand is selected with
+ * -DbaseUrl=http://localhost:8090 -DdbUrl=jdbc:postgresql://localhost:5434/werkstatt
+ * -Dstand=modern.
  */
 public final class Stand {
 
@@ -24,9 +29,21 @@ public final class Stand {
 	private static final String DB_USER = System.getProperty("dbUser", "werkstatt");
 	private static final String DB_PASSWORD = System.getProperty("dbPassword", "werkstatt");
 
+	/**
+	 * Which stand's expectations apply where behaviour legally diverges —
+	 * ADR-0004 (sanctioned divergence). Values: "legacy" (default) | "modern".
+	 * Everything not explicitly forked on this flag must behave identically on
+	 * both stands.
+	 */
+	public static final String STAND = validateStand(System.getProperty("stand", "legacy"));
+
 	private static final HttpClient HTTP = HttpClient.newHttpClient();
 
 	private Stand() {
+	}
+
+	public static boolean isModern() {
+		return "modern".equals(STAND);
 	}
 
 	public static Connection connect() throws Exception {
@@ -40,7 +57,7 @@ public final class Stand {
 				statement.execute(sql);
 			}
 		} catch (Exception e) {
-			throw new IllegalStateException("DB reset failed — is the legacy stand running? (" + DB_URL + ")", e);
+			throw new IllegalStateException("DB reset failed — is the " + STAND + " stand running? (" + DB_URL + ")", e);
 		}
 	}
 
@@ -66,6 +83,14 @@ public final class Stand {
 		} catch (Exception e) {
 			throw new IllegalStateException(method + " " + pathAndQuery + " failed", e);
 		}
+	}
+
+	private static String validateStand(String value) {
+		if (!"legacy".equals(value) && !"modern".equals(value)) {
+			throw new IllegalArgumentException(
+					"-Dstand must be 'legacy' or 'modern' (ADR-0004), got: '" + value + "'");
+		}
+		return value;
 	}
 
 	private static Path locateSeedFile() {

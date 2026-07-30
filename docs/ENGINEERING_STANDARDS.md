@@ -2,6 +2,9 @@
 
 > English below where it maps 1:1 to repo content. Diese Standards sind die messbare Definition von "Senior Software Engineering Meisterwerk". Jedes Repo wird daran gemessen — von uns und von jedem, der es liest.
 
+> **Abweichungen dieses Repos** sind nie stillschweigend: datiertes Ledger mit
+> Disposition je Punkt in [`docs/DEVIATIONS.md`](DEVIATIONS.md).
+
 ## 1. Definition of Done (pro Feature / Milestone)
 
 Ein Feature ist fertig, wenn:

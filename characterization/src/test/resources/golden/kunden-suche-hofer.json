@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "anrede": "Herr",
+        "vorname": "Franz",
+        "nachname": "Hofer",
+        "telefon": "+43 664 1111111",
+        "email": "franz.hofer@aon.at",
+        "strasse": "Hauptstraße 4",
+        "plz": "4320",
+        "ort": "Perg",
+        "notiz": "Stammkunde seit 2016",
+        "angelegtAm": 1767604320000,
+        "anzeigeName": "HOFER, Franz"
+    }
+]

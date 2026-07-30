@@ -32,6 +32,12 @@ public class RechnungenPage {
 		return row(rechnungNr).findElement(css("rechnungen.rowStatusLabel")).getText();
 	}
 
+	public RechnungDetailPage openRechnung(String rechnungNr) {
+		row(rechnungNr).findElement(css("rechnungen.rowNumberLink")).click();
+		waits.visible(css("rechnungDetail.nummer"));
+		return new RechnungDetailPage(driver, waits);
+	}
+
 	public RechnungenPage markPaid(String rechnungNr) {
 		row(rechnungNr).findElement(css("rechnungen.rowPayButton")).click();
 		waits.until(css("rechnungen.rows"), ignored -> "bezahlt".equals(statusOfQuiet(rechnungNr)));

@@ -9,8 +9,11 @@ Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular
 safety net first, honest numbers, reusable German migration playbook.
 
 > **Status: stage 4 done — the modern backend runs Spring Boot 4.1.0 on Java 25**,
-> functionally equivalent to the frozen 2016 stand (proven per commit by golden
-> masters + the same Selenium suite on both). Next: AngularJS → Angular 22 (stage 5).
+> functionally equivalent to the frozen 2016 stand for all legitimate inputs
+> (proven per commit by golden masters + the same Selenium suite on both;
+> the one deliberate security divergence is registered in
+> [ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md)).
+> Next: AngularJS → Angular 22 (stage 5).
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
@@ -19,18 +22,42 @@ Companies and institutes sit on Java-8/Spring-Boot-1.x/AngularJS applications
 (AngularJS EOL since January 2022, Spring Boot 1.x EOL since 2019). Migrations get
 postponed because legacy systems have no tests, the risk feels incalculable, and
 vendors demand blind trust. This repository shows — publicly, step by step, with
-real effort numbers — how a senior team de-risks exactly this migration:
+measured effort numbers — how such a migration is de-risked:
 
 1. **Safety net before anything else:** a Selenium E2E suite and characterization
    tests define functional equivalence *before* the first migration commit — and
    must stay green through every stage.
 2. **Reproducible stages:** every stage is a git tag; checkout → `docker compose up`
    → working application. See [`stages.md`](stages.md).
-3. **Measured AI-assisted test generation:** LLM-generated unit tests for legacy
-   code, evaluated with JaCoCo coverage **and PIT mutation scores** under a
-   pre-registered protocol. Failures stay in the repo.
+3. **Measured AI-assisted test generation (planned, G6):** LLM-generated unit tests
+   for legacy code, to be evaluated with JaCoCo coverage **and PIT mutation scores**
+   under a pre-registered protocol ([`ai-testgen/PROTOCOL.md`](ai-testgen/PROTOCOL.md),
+   frozen before anything runs). Failures will stay in the repo.
 4. **A German migration playbook** ([`playbook/`](playbook/)) with honest effort
    figures and decision rules, reusable for real projects.
+
+## How this was built — read this before reusing any number
+
+**The execution was AI-assisted: a Claude Code agent performed the work, directed
+and reviewed by the owner.** This is disclosed here, at the front door, because it
+changes how the numbers transfer:
+
+- **The logged hours are agent wall-clock time under supervision** — the five
+  backend stages took ~4 wall-clock hours on 2026-07-30, against a human-team
+  plan estimate of ~5 focused weeks ([`docs/MILESTONES.md`](docs/MILESTONES.md)).
+  Do **not** price a human migration from these hours; price the *method* (stage
+  order, safety-net-first, break catalogue) and see the playbook's separately
+  labelled experience-based estimates.
+- **What does transfer:** the migration path, the breaks the net caught and how,
+  the decision rules, the tooling evaluations (e.g. OpenRewrite's catch/miss
+  list) — those are properties of the stacks, not of who typed.
+- **Review model:** solo maintainer; "owner reviewed" means author-is-reviewer,
+  hardened by commissioned adversarial reviews whose findings are public
+  (worklog session 7) and were remediated in the open
+  ([ADR-0008](docs/adr/0008-ci-enforcement-and-solo-review.md)).
+- The app is small on purpose: **~1.7k LOC backend, 25 REST endpoints, 10 views**
+  — big enough to exhibit real breaks, small enough to stay fully honest.
+  Scaling caveats are in every playbook chapter.
 
 ## Repository layout
 
@@ -40,9 +67,9 @@ real effort numbers — how a senior team de-risks exactly this migration:
 | [`modern/`](modern/) | The migrated application, growing stage by stage |
 | [`e2e/`](e2e/) | Selenium 4 suite — same scenarios vs. both UIs via selector maps |
 | [`characterization/`](characterization/) | Golden-master tests = the definition of functional equivalence |
-| [`ai-testgen/`](ai-testgen/) | Pre-registered AI test-generation experiment + PIT reports |
+| [`ai-testgen/`](ai-testgen/) | Pre-registered AI test-generation experiment (starts G6; protocol drafted) |
 | [`playbook/`](playbook/) | German playbook, one chapter per stage |
-| [`docs/`](docs/) | PRD, SPEC, milestones, ADRs, worklog, glossary |
+| [`docs/`](docs/) | PRD, SPEC, milestones, ADRs, worklog, deviations ledger, glossary |
 
 ## Honest limits
 
@@ -50,15 +77,25 @@ real effort numbers — how a senior team de-risks exactly this migration:
   legacy smells, transparently catalogued (`legacy/LEGACY_NOTES.md`), because no
   suitable genuinely abandoned, permissively licensed OSS application exists
   (research documented in [ADR-0001](docs/adr/0001-synthetic-legacy-application.md)).
-- One small domain: numbers do not scale linearly to 500k-LOC systems; the playbook
-  explains the scaling deltas.
-- AI results are model- and date-specific; the report pins models and dates.
+  The catalogue includes deliberate security warts — among them a flagged
+  SQL-injection-shaped search (B4), fixed in the modern stand in stage 4 and told
+  as the playbook's security story.
+- **Small scale, disclosed exactly:** ~1.7k LOC backend / 25 endpoints / 10 views.
+  Numbers do not scale linearly to 500k-LOC systems; each playbook chapter states
+  what does and does not generalize.
+- Effort figures are AI-agent wall-clock time (see *How this was built*); the
+  playbook labels measured values and experience-based estimates separately.
+- AI-experiment results will be model- and date-specific; the protocol pins both.
+- Known standards deviations are ledgered in [`docs/DEVIATIONS.md`](docs/DEVIATIONS.md)
+  — nothing is silently waived.
 
 ## Quickstart
 
 ```bash
 docker compose -f legacy/docker-compose.yml up -d
 # SPA: http://localhost:8080 · JSP admin: http://localhost:8080/admin
+docker compose -f modern/docker-compose.yml up -d
+# modern stand: http://localhost:8090
 ```
 
 ---
@@ -71,14 +108,21 @@ Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4.1 / Angular 22.
 Der professionell entscheidende Schritt kommt zuerst: ein **Sicherheitsnetz** aus
 Selenium-E2E-Suite und Charakterisierungs-Tests, das während der gesamten Migration
 grün bleiben muss. Jede Etappe ist ein auscheckbarer Git-Tag mit lauffähigem
-Docker-Compose-Stand. Aufwände werden ehrlich in Stunden geloggt
-([`docs/worklog.md`](docs/worklog.md)), Sackgassen dokumentiert statt gelöscht, und
-das KI-Testgenerierungs-Experiment folgt einem **vorab festgeschriebenen Protokoll**
+Docker-Compose-Stand. Sackgassen werden dokumentiert statt gelöscht, und das
+KI-Testgenerierungs-Experiment folgt einem **vorab festgeschriebenen Protokoll**
 mit Mutation-Testing-Auswertung (PIT).
 
+**Transparenz zur Entstehung:** Die Umsetzung erfolgte KI-gestützt — ein
+Claude-Code-Agent hat unter Anleitung und Review des Inhabers gearbeitet. Die
+geloggten Stunden ([`docs/worklog.md`](docs/worklog.md)) sind **Agent-Wall-Time
+unter Aufsicht**, keine Personentage eines Teams; was auf reale Projekte übertragbar
+ist (Methode, Stolperfallen, Entscheidungsregeln) und was nicht (die Stundenzahlen),
+steht oben unter *How this was built* und in jedem Playbook-Kapitel.
+
 Das Ergebnis für Entscheider: ein **deutschsprachiges Migrations-Playbook**
-([`playbook/`](playbook/)) mit Vorgehen, Stolperfallen, ehrlichen Aufwänden und
-Entscheidungsregeln — wiederverwendbar für reale Modernisierungsprojekte.
+([`playbook/`](playbook/)) mit Vorgehen, Stolperfallen, transparent gekennzeichneten
+Aufwänden und Entscheidungsregeln — wiederverwendbar für reale
+Modernisierungsprojekte.
 
 Ein Projekt von [Stoicera Software Group](https://stoicera.com) ·
 [Lugmayr-Kern](https://lugmayrkern.at), Oberösterreich.

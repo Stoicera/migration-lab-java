@@ -60,10 +60,14 @@ Netz in Etappe 1 gebaut.
 | Kopie, Ports/Volumes, Compose-Parallelbetrieb | 0,1 |
 | Audit + Logging-Vereinheitlichung + Aufräumen | 0,1 |
 | CI-Äquivalenz-Gate (Charakterisierung + E2E gegen 8090) | 0,1 |
-| **Summe Etappe 2 (gemessen, KI-gestützt)** | **≈ 0,3** |
+| **Summe Etappe 2** | **≈ 0,3** |
 
-Feldwert für ein reales System dieser Größe: 1–2 Personentage — der Treiber
-ist das Audit (Lizenz- und CVE-Recherche über echte, gewachsene Abhängigkeitsbäume).
+Lesart der Zahlen: gemessene Agent-Wall-Time, Aufteilung geschätzt — siehe die
+verbindliche Erklärung in Kapitel 1 („Wie diese Zahl zu lesen ist") und README
+(„How this was built"). Feldwert für ein reales System dieser Größe (~1.700
+Zeilen Backend, 25 Endpunkte — hier ist gemeint: *plus* gewachsene, unbekannte
+Abhängigkeitsbäume): **1–2 Personentage** — eine **Erfahrungsschätzung, nicht
+hier gemessen**; der Treiber ist das Audit (Lizenz- und CVE-Recherche).
 
 ## Entscheidungsregeln
 

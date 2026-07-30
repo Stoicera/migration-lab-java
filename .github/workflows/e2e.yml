@@ -1,6 +1,8 @@
 # Selenium E2E safety net — same scenarios against both stands via selector maps.
 # Matrix target: legacy | modern. The legacy leg is the sacred gate from
-# stage-1-safety-net onward; the modern leg activates with stage 5.
+# stage-1-safety-net onward; the modern leg has been armed since stage 2
+# (identical UI copy until stage 5 — stricter than originally planned).
+# All steps run UNCONDITIONALLY (ADR-0008): presence gates are retired.
 name: e2e
 
 on:
@@ -14,49 +16,35 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         target: [legacy, modern]
     steps:
-      - uses: actions/checkout@v7
-
-      # Skeleton gate (G0): the suite lands in G2 (stage-1-safety-net).
-      # A target is exercised only when the suite AND that stand's compose file exist.
-      - name: Check suite and target presence
-        id: gate
-        run: |
-          if [ -f e2e/pom.xml ] && [ -f "${{ matrix.target }}/docker-compose.yml" ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "e2e suite or ${{ matrix.target }} stand not yet present — skeleton pass."
-          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up JDK 25 (Temurin)
-        if: steps.gate.outputs.present == 'true'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: '25'
           cache: maven
 
       - name: Start ${{ matrix.target }} stand
-        if: steps.gate.outputs.present == 'true'
         run: docker compose -f ${{ matrix.target }}/docker-compose.yml up -d --wait
 
       - name: Run E2E suite against ${{ matrix.target }}
-        if: steps.gate.outputs.present == 'true'
         run: ./mvnw -B verify -f e2e/pom.xml -Dtarget=${{ matrix.target }}
 
       - name: Upload failure screenshots
-        if: failure() && steps.gate.outputs.present == 'true'
-        uses: actions/upload-artifact@v7
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: e2e-screenshots-${{ matrix.target }}
           path: e2e/target/screenshots/
           if-no-files-found: ignore
 
       - name: Stop ${{ matrix.target }} stand
-        if: always() && steps.gate.outputs.present == 'true'
+        if: always()
         run: docker compose -f ${{ matrix.target }}/docker-compose.yml down -v

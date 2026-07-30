@@ -53,8 +53,9 @@ heißt anhalten und reparieren — nicht «später».
 
 ## Stolperfallen (aus diesem Projekt, ehrlich protokolliert)
 
-Unser Flaky-Protokoll aus der Stabilisierung — zwei echte Funde, beide beim
-ersten Lauf, beide deterministisch behoben, kein einziger Retry:
+Unser Flaky-Protokoll aus der Stabilisierung — **drei** echte Funde (zwei beim
+ersten lokalen Lauf, der dritte erst in der CI), alle deterministisch behoben,
+kein einziger Retry:
 
 1. **Überlappende HTTP-Ladevorgänge.** Die Legacy-Oberfläche bricht laufende
    Requests nicht ab. Wer sofort nach dem Öffnen der Kundenliste sucht, hat
@@ -88,6 +89,11 @@ CI-Umgebung machte das Zeitfenster groß genug.
 Weitere Regeln, die Flakiness strukturell verhindern: Screenshots bei jedem
 Fehlschlag (Analyse beginnt mit Beweismaterial), ein einziger Timeout-Standard
 für die ganze Suite, keine Testklasse hängt vom Zustand einer anderen ab.
+Offen deklarierter Kompromiss: **innerhalb** einer Szenario-Klasse bilden die
+Tests bewusst einen geordneten Geschäftsfluss (Anlegen → Ändern → Löschen) —
+schlägt Schritt 1 fehl, sind die Folgefehler derselben Klasse Folgeschäden,
+keine eigenständigen Befunde. Der Trade-off (realistische Flüsse gegen isolierte
+Einzeldiagnose) ist gewollt und hier dokumentiert statt verschwiegen.
 
 ## Aufwand
 
@@ -97,18 +103,35 @@ für die ganze Suite, keine Testklasse hängt vom Zustand einer anderen ab.
 | Stabilisierung inkl. Analyse der drei Flaky-Funde | 0,2 |
 | Charakterisierung (12 Golden Master, 5 DB-Übergänge) | 0,15 |
 | CI-Verdrahtung (Gates, Artefakte bei Fehlschlag) | 0,1 |
-| **Summe Etappe 1 (gemessen, KI-gestützt)** | **≈ 0,8** |
+| **Summe Etappe 1** | **≈ 0,8** |
 
-Zum Vergleich: Bei einem realen Kundensystem dieser Größe (unbekannte Codebasis,
-Abstimmung, Zugänge, Testdaten-Klärung) kalkulieren wir für dieselbe Etappe
-**3–5 Personentage**. Die Zahlen hier sind echt gemessene, stark KI-gestützte Laborwerte — der Aufwandstreiber im Feld ist nicht das Schreiben der Tests,
-sondern das Klären des Ist-Verhaltens.
+**Wie diese Zahl zu lesen ist** (gilt für alle Aufwandstabellen dieses
+Playbooks): Die *Summe* ist gemessene Wall-Time — allerdings die eines
+**KI-Agenten unter Aufsicht**, nicht die eines Menschenteams (Offenlegung:
+README, „How this was built"). Die *Aufteilung* auf die Posten ist eine
+nachträgliche Schätzung über die gemessene Summe, keine Einzelmessung — das
+stand hier anfangs anders und wurde im Zuge des Reviews korrigiert
+(Worklog Session 7/8).
+
+Zum Vergleich: Bei einem realen Kundensystem dieser Größe — konkret: ~1.700
+Zeilen Backend, 25 REST-Endpunkte, 10 Views, aber unbekannte Codebasis,
+Abstimmung, Zugänge, Testdaten-Klärung — kalkulieren wir für dieselbe Etappe
+**3–5 Personentage**. Diese Spanne ist eine **Erfahrungsschätzung aus
+Projektgeschäft, nicht in diesem Repo gemessen** — sie ist bewusst anders
+etikettiert als die Messwerte darüber. Der Aufwandstreiber im Feld ist nicht
+das Schreiben der Tests, sondern das Klären des Ist-Verhaltens.
 
 ## Entscheidungsregeln
 
 - **Wie viele E2E-Szenarien reichen?** Die Geschäftsflüsse, deren Ausfall am
-  Montagfrüh ein Anruf wäre — nicht mehr. Hier: 4 Flüsse, 13 Tests, < 1 Minute
-  Laufzeit. Alles Weitere gehört in die billigeren Schichten darunter.
+  Montagfrüh ein Anruf wäre — nicht mehr. Hier zu Etappe 1: 4 Flüsse, 13 Tests,
+  < 1 Minute Laufzeit. Alles Weitere gehört in die billigeren Schichten darunter.
+  *Nachtrag (Review Session 7):* Das feindselige Review zeigte, dass unsere
+  erste Antwort auf diese Frage zu schmal war — Dashboard, Fahrzeug-Modul,
+  Storno- und Validierungspfade fehlten. Die Suite wurde daraufhin auf
+  **6 Flüsse / 26 Tests** erweitert (weiterhin < 30 s). Lektion fürs Feld: Die
+  «Montagfrüh-Anruf»-Liste macht man zweimal — einmal selbst, einmal von
+  jemandem, der das Scheitern sucht.
 - **E2E oder API-Charakterisierung?** Beides, mit klarer Arbeitsteilung: E2E
   beweist Benutzer-Flüsse (wenige, teure, aussagekräftige Tests), Golden Master
   beweisen Antwort-Gleichheit in der Breite (viele, billige, exakte Vergleiche).

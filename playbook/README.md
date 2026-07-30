@@ -13,4 +13,9 @@ Regeln:
 - Aufwände, Sackgassen und Fehlschläge werden dokumentiert, nicht geglättet.
 - Ab G7: PDF-Export via pandoc in CI (Artefakt für Direktvergaben und Erstgespräche).
 
-Status: **leer — Kapitel 1 („Ohne Netz keine Migration") entsteht in G2.**
+- Aufwands-Etikettierung (verbindlich seit Review Session 7): **Messwerte** sind
+  Agent-Wall-Time unter Aufsicht (Offenlegung: README „How this was built");
+  **Feldwerte/Personentage** sind Erfahrungsschätzungen und werden immer als
+  solche gekennzeichnet. Die beiden werden nie vermischt.
+
+Status: **Kapitel 1–4 fertig (Etappen 1–4); Kapitel 5 entsteht in G5.**

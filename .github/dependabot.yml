@@ -1,0 +1,28 @@
+# Dependabot — security/update scanning for everything EXCEPT legacy/:
+# the legacy module's EOL dependencies ARE the exhibit (LEGACY_NOTES P1-P7)
+# and must never be bumped. See docs/DEVIATIONS.md (Security-Scan row).
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /modern
+    schedule:
+      interval: weekly
+  - package-ecosystem: maven
+    directory: /e2e
+    schedule:
+      interval: weekly
+    ignore:
+      # JUnit stays on the 5.14 line per ADR-0006
+      - dependency-name: "org.junit*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: maven
+    directory: /characterization
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "org.junit*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

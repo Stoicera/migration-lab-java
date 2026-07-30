@@ -36,7 +36,8 @@ Formate, alle 13 Selenium-Tests grün. **Nur der Golden Master schlug an.**
 Genau für diesen Fall gibt es die zweite Netz-Schicht: UI-Tests beweisen
 Abläufe, nicht Verträge. *Behebung:* explizite Wire-Format-Kompatibilität
 (`configOverride(java.sql.Date.class)`), dokumentiert als bewusste
-Vertrags-Entscheidung — nicht stillschweigend Golden Master «nachziehen».
+Vertrags-Entscheidung (**ADR-0005**) — nicht stillschweigend Golden Master
+«nachziehen».
 
 **Was NICHT brach — ebenso ehrlich:** JdbcTemplate-API, JSP/JSTL (Boot 2.7 ist
 noch `javax`-Welt), Property-Namen, PostgreSQL-Treiber (BOM-Hebung), die
@@ -64,12 +65,13 @@ skaliert dafür nicht linear.
 |---|---:|
 | Versionssprung, drei Brüche finden + beheben (Netz-getrieben) | 0,3 |
 | Doku (dieses Kapitel, Stage-Log, Worklog) | 0,1 |
-| **Summe Etappe 3 (gemessen, KI-gestützt, Laborbedingungen)** | **≈ 0,4** |
+| **Summe Etappe 3** | **≈ 0,4** |
 
+Lesart: gemessene Agent-Wall-Time unter Laborbedingungen (Kapitel 1, README).
 Feldwert: Für gewachsene Systeme mit Security/Actuator/Hibernate-Tiefe ist
 dieser Sprung der teuerste der ganzen Strecke — **1–3 Personenwochen** sind
-realistisch. Der Unterschied zum Blindflug: Mit Netz ist es planbare Arbeit,
-ohne Netz ist es Risiko-Roulette.
+realistisch (**Erfahrungsschätzung, nicht hier gemessen**). Der Unterschied zum
+Blindflug: Mit Netz ist es planbare Arbeit, ohne Netz ist es Risiko-Roulette.
 
 ## Entscheidungsregeln
 
@@ -79,7 +81,8 @@ ohne Netz ist es Risiko-Roulette.
   Framework-Customizing jede Generation einzeln bricht — sonst bezahlt man
   jede Zwischenstation doppelt.
 - **Der API-Vertrag ist Teil der funktionalen Gleichwertigkeit.** Wire-Format
-  halten, bis eine Etappe es bewusst ändert (ADR + Golden-Master-Update in
-  einem Commit).
+  halten, bis eine Etappe es bewusst ändert — nach dem Verfahren aus ADR-0004
+  (sanktionierte Abweichung) und ADR-0007 (Golden-Master-Governance): ADR +
+  Golden-Master-Update in einem Commit.
 - **JDK-Hebung immer huckepack** auf den Framework-Sprung, der sie freigibt —
   nie als eigene Etappe erzwingen (Kapitel 2).

@@ -30,7 +30,8 @@ class AuftragLebenszyklusTest extends ScenarioTest {
 				.km(248100)
 				.anlegen();
 		auftragNr = detail.auftragNr();
-		assertThat(auftragNr).matches("A-\\d{4}-\\d{4}");
+		// exact number, year-decoupled: computed from the wall clock like the backend does
+		assertThat(auftragNr).isEqualTo(at.stoicera.migrationlab.e2e.support.Seed.naechsteAuftragNr());
 		assertThat(detail.status()).isEqualTo("Angenommen");
 	}
 

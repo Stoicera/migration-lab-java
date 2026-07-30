@@ -57,4 +57,17 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- a run that discovers zero tests is a broken gate, not a pass (review finding 7) -->
+					<failIfNoTests>true</failIfNoTests>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
