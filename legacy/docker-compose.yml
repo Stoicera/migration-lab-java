@@ -13,7 +13,8 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d:ro
       - werkstatt-db:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      # nur loopback - die Test-DB gehoert nicht ins Netz (Review-Fund 22)
+      - "127.0.0.1:5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U werkstatt -d werkstatt"]
       interval: 5s
@@ -31,6 +32,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      # TCP-Check reicht: Boot/Tomcat oeffnet 8080 erst nach fertigem Context.
+      # bash statt curl/wget - mehr ist im Temurin-JRE-Image nicht drin.
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 10s
 
 volumes:
   werkstatt-db:

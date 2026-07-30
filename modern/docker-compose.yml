@@ -13,7 +13,8 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d:ro
       - modern-werkstatt-db:/var/lib/postgresql/data
     ports:
-      - "5434:5432"
+      # loopback only - the test DB does not belong on the network (review finding 22)
+      - "127.0.0.1:5434:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U werkstatt -d werkstatt"]
       interval: 5s
@@ -31,6 +32,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      # TCP check suffices: Boot/Tomcat opens 8080 only after the context is up.
+      # bash instead of curl/wget - the Temurin JRE image ships neither.
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 10s
 
 volumes:
   modern-werkstatt-db:
