@@ -1,0 +1,36 @@
+[
+    {
+        "id": 12,
+        "auftragNr": "A-2026-0012",
+        "fahrzeugId": 10,
+        "kundeId": 8,
+        "status": "FERTIG",
+        "beschreibung": "Bremsen hinten + Handbremse nachstellen",
+        "kmStand": 198500,
+        "angenommenAm": 1783410000000,
+        "fertigAm": 1783516200000,
+        "abgeholtAm": null,
+        "kundeName": "Huber Transporte GmbH ",
+        "kennzeichen": "PE-655QS",
+        "fahrzeugBezeichnung": "Mercedes-Benz Sprinter 316 CDI",
+        "positionen": [],
+        "summeNetto": 0.0
+    },
+    {
+        "id": 9,
+        "auftragNr": "A-2026-0009",
+        "fahrzeugId": 11,
+        "kundeId": 9,
+        "status": "FERTIG",
+        "beschreibung": "Klimaservice, K\u00e4ltemittel auff\u00fcllen",
+        "kmStand": 45100,
+        "angenommenAm": 1779187500000,
+        "fertigAm": 1779269400000,
+        "abgeholtAm": null,
+        "kundeName": "Wagner Christine",
+        "kennzeichen": "PE-987ST",
+        "fahrzeugBezeichnung": "Seat Ibiza 1.0 TSI",
+        "positionen": [],
+        "summeNetto": 0.0
+    }
+]

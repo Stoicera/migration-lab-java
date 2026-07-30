@@ -1,0 +1,13 @@
+{
+    "id": 4,
+    "rechnungNr": "R-2026-0004",
+    "auftragId": 5,
+    "ausgestelltAm": 1772700300000,
+    "summeNetto": 679.0,
+    "ust": 135.8,
+    "summeBrutto": 814.8,
+    "bezahlt": true,
+    "bezahltAm": 1773307800000,
+    "auftragNr": "A-2026-0005",
+    "kundeName": "Brunner Elisabeth"
+}

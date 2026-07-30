@@ -1,0 +1,72 @@
+[
+    {
+        "id": 5,
+        "nachname": "Steiner",
+        "vorname": "Karl",
+        "anzahl_auftraege": 1,
+        "umsatz": 912.0
+    },
+    {
+        "id": 4,
+        "nachname": "Brunner",
+        "vorname": "Elisabeth",
+        "anzahl_auftraege": 2,
+        "umsatz": 814.8
+    },
+    {
+        "id": 2,
+        "nachname": "Leitner",
+        "vorname": "Maria",
+        "anzahl_auftraege": 1,
+        "umsatz": 434.88
+    },
+    {
+        "id": 8,
+        "nachname": "Huber Transporte GmbH",
+        "vorname": null,
+        "anzahl_auftraege": 2,
+        "umsatz": 408.0
+    },
+    {
+        "id": 7,
+        "nachname": "Pichler",
+        "vorname": "Josef",
+        "anzahl_auftraege": 1,
+        "umsatz": 294.0
+    },
+    {
+        "id": 1,
+        "nachname": "Hofer",
+        "vorname": "Franz",
+        "anzahl_auftraege": 4,
+        "umsatz": 261.6
+    },
+    {
+        "id": 6,
+        "nachname": "Mayr",
+        "vorname": "Anna",
+        "anzahl_auftraege": 1,
+        "umsatz": 179.52
+    },
+    {
+        "id": 3,
+        "nachname": "Wimmer",
+        "vorname": "Johann",
+        "anzahl_auftraege": 1,
+        "umsatz": 100.8
+    },
+    {
+        "id": 9,
+        "nachname": "Wagner",
+        "vorname": "Christine",
+        "anzahl_auftraege": 2,
+        "umsatz": 0
+    },
+    {
+        "id": 10,
+        "nachname": "Aigner",
+        "vorname": "Thomas",
+        "anzahl_auftraege": 1,
+        "umsatz": 0
+    }
+]

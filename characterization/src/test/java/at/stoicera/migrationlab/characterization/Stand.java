@@ -1,0 +1,99 @@
+package at.stoicera.migrationlab.characterization;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Access to the running legacy stand: HTTP client, JDBC connection and the
+ * reset-to-seed that makes every capture deterministic. The seed file in
+ * legacy/db/init/ is the single source of the golden state.
+ */
+public final class Stand {
+
+	public static final String BASE_URL = System.getProperty("baseUrl", "http://localhost:8080");
+	private static final String DB_URL = System.getProperty("dbUrl", "jdbc:postgresql://localhost:5433/werkstatt");
+	private static final String DB_USER = System.getProperty("dbUser", "werkstatt");
+	private static final String DB_PASSWORD = System.getProperty("dbPassword", "werkstatt");
+
+	private static final HttpClient HTTP = HttpClient.newHttpClient();
+
+	private Stand() {
+	}
+
+	public static Connection connect() throws Exception {
+		return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+	}
+
+	public static void resetToSeed() {
+		try (Connection connection = connect(); Statement statement = connection.createStatement()) {
+			statement.execute("TRUNCATE kunde, fahrzeug, auftrag, auftrag_position, rechnung RESTART IDENTITY CASCADE");
+			for (String sql : parseStatements(locateSeedFile())) {
+				statement.execute(sql);
+			}
+		} catch (Exception e) {
+			throw new IllegalStateException("DB reset failed — is the legacy stand running? (" + DB_URL + ")", e);
+		}
+	}
+
+	public static HttpResponse<String> get(String pathAndQuery) {
+		try {
+			HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + pathAndQuery)).GET().build();
+			return HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (Exception e) {
+			throw new IllegalStateException("GET " + pathAndQuery + " failed", e);
+		}
+	}
+
+	public static HttpResponse<String> send(String method, String pathAndQuery, String jsonBody) {
+		try {
+			HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(BASE_URL + pathAndQuery));
+			if (jsonBody != null) {
+				builder.header("Content-Type", "application/json")
+						.method(method, HttpRequest.BodyPublishers.ofString(jsonBody));
+			} else {
+				builder.method(method, HttpRequest.BodyPublishers.noBody());
+			}
+			return HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+		} catch (Exception e) {
+			throw new IllegalStateException(method + " " + pathAndQuery + " failed", e);
+		}
+	}
+
+	private static Path locateSeedFile() {
+		Path fromRoot = Path.of("legacy/db/init/02-daten.sql");
+		Path fromModule = Path.of("../legacy/db/init/02-daten.sql");
+		if (Files.exists(fromRoot)) {
+			return fromRoot;
+		}
+		if (Files.exists(fromModule)) {
+			return fromModule;
+		}
+		throw new IllegalStateException("Seed file 02-daten.sql not found from " + Path.of("").toAbsolutePath());
+	}
+
+	private static List<String> parseStatements(Path seedFile) throws Exception {
+		List<String> statements = new ArrayList<>();
+		StringBuilder current = new StringBuilder();
+		for (String line : Files.readAllLines(seedFile)) {
+			String trimmed = line.trim();
+			if (trimmed.isEmpty() || trimmed.startsWith("--")) {
+				continue;
+			}
+			current.append(line).append('\n');
+			if (trimmed.endsWith(";")) {
+				statements.add(current.toString());
+				current.setLength(0);
+			}
+		}
+		return statements;
+	}
+}

@@ -100,3 +100,46 @@ Owner reviewed and merged G0 (PR #1), gave go for autonomous continuation.
 **Next (G2 — the most important milestone):** Selenium 4 suite with Page Objects
 + selector map vs. the legacy UI; characterization tests (API + DB states);
 CI gates armed for good; playbook chapter 1; tag `stage-1-safety-net`.
+
+---
+
+## 2026-07-30 — G2: Sicherheitsnetz (stage 1) — session 3
+
+**What:**
+
+- **E2E suite** (`e2e/`, Java 25 + JUnit 5.14.4 + Selenium 4.46.0 + AssertJ):
+  Page Objects address elements by intent key; per-target selector map
+  (`selectors/legacy.properties`, ~40 keys). 4 scenarios / 13 tests: Kunden-CRUD,
+  Auftrag lifecycle, Rechnung (exact number R-2026-0009 + VAT math), Bericht
+  (frozen seed months + top customer). Explicit waits only (implicit = 0);
+  DB reset to committed seed per scenario class; screenshots on failure.
+- **Flaky log — two real findings on first runs, both fixed deterministically,
+  zero retries** (also in playbook ch. 1):
+  1. Overlapping $http loads in the legacy UI (no request cancellation) →
+     StaleElementReference; fix: settle initial list load before interacting.
+  2. ngRoute does not re-instantiate the controller when clicking the nav link
+     of the CURRENT route → test stuck on stale filtered view (screenshot
+     evidence); fix: open() = full page load + real route change.
+  3. Found in CI only (slower hardware): saving an EDIT produces zero visible
+     DOM change, the heading wait was vacuous, navigation aborted the in-flight
+     PUT → lost update. Fix: explicit angularIdle() wait ($http.pendingRequests
+     == 0) in speichern(). Side finding for the migration backlog: missing save
+     feedback is a data-loss risk for real users too.
+- **3 consecutive green runs** locally (13/13, exit 0). Suite runtime ~10 s.
+- **Characterization** (`characterization/`): 11 JSON golden masters (tree
+  comparison, received copy written on mismatch) + JSP admin HTML (date masked)
+  + 5 DB state-transition tests incl. quirks (km side effect, orphaned rows
+  after customer delete). 17/17 green first run. Goldens captured from pristine
+  seeded stand; re-capture only with intended behaviour change (ADR rule in
+  module README).
+- **CI armed:** legacy-ci = JDK 8 build → JDK 25 + compose up → characterization
+  (received-captures artifact on failure). e2e workflow activates via presence
+  gate (Chrome preinstalled on ubuntu runners), failure screenshots as artifact.
+- Decision: **JUnit 5.14.4** (not JUnit 6) for e2e + characterization — the
+  safety net must be boring-stable; revisit with a modern-stack ADR if wanted.
+
+**Hours:** 2.25 (suite 1.0 · stabilisation 0.5 · characterization 0.5 · CI 0.25)
+
+**Next (G3):** dependency audit, JDK raise under Boot-compatible ceiling,
+Boot 1.5→2.7 with documented breaks; safety net stays green throughout;
+playbook ch. 2–3; tags `stage-2-jdk-build`, `stage-3-boot-2.7`.

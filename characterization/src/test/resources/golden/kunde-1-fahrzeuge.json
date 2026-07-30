@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "kundeId": 1,
+        "kennzeichen": "PE-123AB",
+        "marke": "VW",
+        "modell": "Golf V 1.9 TDI",
+        "fahrgestellnr": "WVWZZZ1KZ6W000001",
+        "baujahr": 2006,
+        "kmStand": 248000,
+        "pickerlDatum": "2026-11-30",
+        "angelegtAm": 1767604500000,
+        "kundeName": null,
+        "bezeichnung": "VW Golf V 1.9 TDI"
+    },
+    {
+        "id": 2,
+        "kundeId": 1,
+        "kennzeichen": "PE-456CD",
+        "marke": "Skoda",
+        "modell": "Octavia Combi",
+        "fahrgestellnr": "TMBJF7NE0F0000002",
+        "baujahr": 2015,
+        "kmStand": 132500,
+        "pickerlDatum": "2027-03-31",
+        "angelegtAm": 1767604680000,
+        "kundeName": null,
+        "bezeichnung": "Skoda Octavia Combi"
+    }
+]
