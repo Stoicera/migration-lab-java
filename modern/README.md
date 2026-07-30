@@ -29,6 +29,13 @@ equivalence is proven per commit, not claimed.
 
 ## Stage log
 
+- **Stage 3 (`stage-3-boot-2.7`):** Boot 1.5.22 → 2.7.18 + Java 17 in one jump.
+  Three real breaks, all net-caught: `SpringBootServletInitializer` package
+  move (compile); pinned gson 2.3.1 vs `GsonAutoConfiguration` (startup);
+  `java.sql.Date` wire-format drift Jackson 2.8→2.13 (API contract — invisible
+  in the UI, caught only by the golden masters; pinned back via
+  `JacksonWireCompatConfig`). Details: playbook Kap. 3.
+
 - **Stage 2 (`stage-2-jdk-build`):** baseline copy of legacy + build hygiene —
   logging unified to SLF4J/Logback (log4j 1.2 retired), unused `commons-lang`
   dropped, dead code removed. Deliberately NOT raised: the JDK — Spring Boot
