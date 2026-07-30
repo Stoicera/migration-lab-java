@@ -1,0 +1,108 @@
+<div ng-if="auftrag">
+
+	<h2>
+		Auftrag {{auftrag.auftragNr}}
+		<span class="label label-default label-status status-{{auftrag.status}}" id="auftrag-status">
+			{{statusText[auftrag.status]}}
+		</span>
+	</h2>
+
+	<div class="row">
+		<div class="col-md-4">
+			<table class="table table-condensed">
+				<tr><th>Kunde</th><td><a href="#!/kunden/{{auftrag.kundeId}}">{{auftrag.kundeName}}</a></td></tr>
+				<tr><th>Fahrzeug</th><td>{{auftrag.kennzeichen}} - {{auftrag.fahrzeugBezeichnung}}</td></tr>
+				<tr><th>km-Stand</th><td>{{auftrag.kmStand}}</td></tr>
+				<tr><th>Angenommen</th><td>{{auftrag.angenommenAm | date:'dd.MM.yyyy HH:mm'}}</td></tr>
+				<tr ng-if="auftrag.fertigAm"><th>Fertig</th><td>{{auftrag.fertigAm | date:'dd.MM.yyyy HH:mm'}}</td></tr>
+				<tr ng-if="auftrag.abgeholtAm"><th>Abgeholt</th><td>{{auftrag.abgeholtAm | date:'dd.MM.yyyy HH:mm'}}</td></tr>
+			</table>
+			<p><strong>Beschreibung:</strong><br>{{auftrag.beschreibung}}</p>
+
+			<div id="status-aktionen">
+				<button class="btn btn-warning" id="btn-in-arbeit"
+					ng-if="auftrag.status == 'ANGENOMMEN'"
+					ng-click="statusSetzen('IN_ARBEIT')">In Arbeit nehmen</button>
+				<button class="btn btn-success" id="btn-fertig"
+					ng-if="auftrag.status == 'IN_ARBEIT'"
+					ng-click="statusSetzen('FERTIG')">Fertig melden</button>
+				<button class="btn btn-warning" id="btn-wieder-arbeit"
+					ng-if="auftrag.status == 'FERTIG'"
+					ng-click="statusSetzen('IN_ARBEIT')">Zurück in Arbeit</button>
+				<button class="btn btn-info" id="btn-abgeholt"
+					ng-if="auftrag.status == 'FERTIG'"
+					ng-click="statusSetzen('ABGEHOLT')">Abgeholt</button>
+				<button class="btn btn-danger" id="btn-storno"
+					ng-if="auftrag.status == 'ANGENOMMEN' || auftrag.status == 'IN_ARBEIT'"
+					ng-click="statusSetzen('STORNIERT')">Stornieren</button>
+				<button class="btn btn-primary" id="btn-rechnung-erstellen"
+					ng-if="auftrag.status == 'FERTIG'"
+					ng-click="rechnungErstellen()">Rechnung erstellen</button>
+			</div>
+		</div>
+
+		<div class="col-md-8">
+			<h4>Positionen</h4>
+			<table class="table table-striped" id="positionen-tabelle">
+				<tr>
+					<th>Typ</th>
+					<th>Bezeichnung</th>
+					<th class="text-right">Menge</th>
+					<th class="text-right">Einzelpreis</th>
+					<th class="text-right">Gesamt</th>
+					<th></th>
+				</tr>
+				<tr ng-repeat="p in auftrag.positionen">
+					<td>{{p.typ == 'ARBEIT' ? 'Arbeit' : 'Material'}}</td>
+					<td>{{p.bezeichnung}}</td>
+					<td class="text-right">{{p.menge}}</td>
+					<td class="text-right">{{p.einzelpreis | euro}}</td>
+					<td class="text-right">{{p.gesamtpreis | euro}}</td>
+					<td class="text-right">
+						<button class="btn btn-xs btn-danger"
+							ng-if="auftrag.status == 'ANGENOMMEN' || auftrag.status == 'IN_ARBEIT'"
+							ng-click="positionLoeschen(p)">X</button>
+					</td>
+				</tr>
+				<tr>
+					<th colspan="4" class="text-right">Summe netto</th>
+					<th class="text-right" id="summe-netto">{{auftrag.summeNetto | euro}}</th>
+					<th></th>
+				</tr>
+			</table>
+
+			<div ng-if="auftrag.status == 'ANGENOMMEN' || auftrag.status == 'IN_ARBEIT'"
+				style="border: 1px solid #dddddd; padding: 10px;" id="position-form">
+				<div class="row">
+					<div class="col-sm-2">
+						<select class="form-control" ng-model="neuePosition.typ" id="feld-pos-typ">
+							<option value="ARBEIT">Arbeit</option>
+							<option value="MATERIAL">Material</option>
+						</select>
+					</div>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" placeholder="Bezeichnung"
+							ng-model="neuePosition.bezeichnung" id="feld-pos-bezeichnung">
+					</div>
+					<div class="col-sm-2">
+						<input type="number" step="0.5" class="form-control" placeholder="Menge"
+							ng-model="neuePosition.menge" id="feld-pos-menge">
+					</div>
+					<div class="col-sm-2">
+						<input type="number" step="0.01" class="form-control" placeholder="Einzelpreis"
+							ng-model="neuePosition.einzelpreis" id="feld-pos-preis">
+					</div>
+					<div class="col-sm-2">
+						<button class="btn btn-primary btn-block" ng-click="positionSpeichern()"
+							id="btn-pos-speichern">Hinzufügen</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<p style="margin-top: 15px;">
+		<a href="#!/auftraege" class="btn btn-default">Zurück zur Liste</a>
+	</p>
+
+</div>
