@@ -33,7 +33,9 @@
   </tr>
   @for (k of kunden(); track k.id) {
     <tr data-testid="kunde-zeile">
-      <td><a [routerLink]="['/kunden', k.id]">{{ k.anzeigeName }}</a></td>
+      <td>
+        <a [routerLink]="['/kunden', k.id]">{{ k.anzeigeName }}</a>
+      </td>
       <td>{{ k.telefon }}</td>
       <td>{{ k.email }}</td>
       <td>{{ k.plz }} {{ k.ort }}</td>

@@ -1,9 +1,11 @@
 @if (auftrag(); as a) {
   <h2>
     Auftrag {{ a.auftragNr }}
-    <span class="label label-default label-status status-{{ a.status }}" data-testid="auftrag-status">{{
-      a.status | statusText
-    }}</span>
+    <span
+      class="label label-default label-status status-{{ a.status }}"
+      data-testid="auftrag-status"
+      >{{ a.status | statusText }}</span
+    >
   </h2>
 
   <div class="row">
@@ -11,7 +13,9 @@
       <table class="table table-condensed">
         <tr>
           <th>Kunde</th>
-          <td><a [routerLink]="['/kunden', a.kundeId]">{{ a.kundeName }}</a></td>
+          <td>
+            <a [routerLink]="['/kunden', a.kundeId]">{{ a.kundeName }}</a>
+          </td>
         </tr>
         <tr>
           <th>Fahrzeug</th>
@@ -42,7 +46,11 @@
 
       <div data-testid="status-aktionen">
         @if (a.status === 'ANGENOMMEN') {
-          <button class="btn btn-warning" data-testid="btn-in-arbeit" (click)="statusSetzen('IN_ARBEIT')">
+          <button
+            class="btn btn-warning"
+            data-testid="btn-in-arbeit"
+            (click)="statusSetzen('IN_ARBEIT')"
+          >
             In Arbeit nehmen
           </button>
         }
@@ -52,20 +60,38 @@
           </button>
         }
         @if (a.status === 'FERTIG') {
-          <button class="btn btn-warning" data-testid="btn-wieder-arbeit" (click)="statusSetzen('IN_ARBEIT')">
+          <button
+            class="btn btn-warning"
+            data-testid="btn-wieder-arbeit"
+            (click)="statusSetzen('IN_ARBEIT')"
+          >
             Zurück in Arbeit
           </button>
         }
         @if (a.status === 'FERTIG') {
-          <button class="btn btn-info" data-testid="btn-abgeholt" (click)="statusSetzen('ABGEHOLT')">Abgeholt</button>
+          <button
+            class="btn btn-info"
+            data-testid="btn-abgeholt"
+            (click)="statusSetzen('ABGEHOLT')"
+          >
+            Abgeholt
+          </button>
         }
         @if (a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT') {
-          <button class="btn btn-danger" data-testid="btn-storno" (click)="statusSetzen('STORNIERT')">
+          <button
+            class="btn btn-danger"
+            data-testid="btn-storno"
+            (click)="statusSetzen('STORNIERT')"
+          >
             Stornieren
           </button>
         }
         @if (a.status === 'FERTIG') {
-          <button class="btn btn-primary" data-testid="btn-rechnung-erstellen" (click)="rechnungErstellen()">
+          <button
+            class="btn btn-primary"
+            data-testid="btn-rechnung-erstellen"
+            (click)="rechnungErstellen()"
+          >
             Rechnung erstellen
           </button>
         }
@@ -108,7 +134,12 @@
         <div style="border: 1px solid #dddddd; padding: 10px" data-testid="position-form">
           <div class="row">
             <div class="col-sm-2">
-              <select class="form-control" name="posTyp" [(ngModel)]="neuePosition.typ" data-testid="feld-pos-typ">
+              <select
+                class="form-control"
+                name="posTyp"
+                [(ngModel)]="neuePosition.typ"
+                data-testid="feld-pos-typ"
+              >
                 <option value="ARBEIT">Arbeit</option>
                 <option value="MATERIAL">Material</option>
               </select>
@@ -146,7 +177,11 @@
               />
             </div>
             <div class="col-sm-2">
-              <button class="btn btn-primary btn-block" (click)="positionSpeichern()" data-testid="btn-pos-speichern">
+              <button
+                class="btn btn-primary btn-block"
+                (click)="positionSpeichern()"
+                data-testid="btn-pos-speichern"
+              >
                 Hinzufügen
               </button>
             </div>

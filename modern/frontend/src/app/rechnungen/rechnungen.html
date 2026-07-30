@@ -26,7 +26,9 @@
   </tr>
   @for (r of sichtbare(); track r.id) {
     <tr data-testid="rechnung-zeile">
-      <td><a [routerLink]="['/rechnungen', r.id]">{{ r.rechnungNr }}</a></td>
+      <td>
+        <a [routerLink]="['/rechnungen', r.id]">{{ r.rechnungNr }}</a>
+      </td>
       <td>{{ r.ausgestelltAm | date: 'dd.MM.yyyy' }}</td>
       <td>{{ r.auftragNr }}</td>
       <td>{{ r.kundeName }}</td>

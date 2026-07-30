@@ -1,12 +1,13 @@
 <h2>Monatsbericht</h2>
 
 <div class="form-inline" style="margin-bottom: 12px">
-  <label>Jahr:</label>
+  <label for="feld-jahr">Jahr:</label>
   <select
     class="form-control"
     name="jahr"
     [(ngModel)]="jahr"
     (ngModelChange)="laden()"
+    id="feld-jahr"
     data-testid="feld-jahr"
   >
     @for (j of jahre; track j) {

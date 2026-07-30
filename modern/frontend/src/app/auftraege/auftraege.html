@@ -2,7 +2,13 @@
 
 <div style="margin-bottom: 10px">
   <div class="btn-group" data-testid="status-filter">
-    <button class="btn btn-default" [class.active]="statusFilter() === ''" (click)="filterSetzen('')">Alle</button>
+    <button
+      class="btn btn-default"
+      [class.active]="statusFilter() === ''"
+      (click)="filterSetzen('')"
+    >
+      Alle
+    </button>
     <button
       class="btn btn-default"
       [class.active]="statusFilter() === 'ANGENOMMEN'"
@@ -17,10 +23,18 @@
     >
       In Arbeit
     </button>
-    <button class="btn btn-default" [class.active]="statusFilter() === 'FERTIG'" (click)="filterSetzen('FERTIG')">
+    <button
+      class="btn btn-default"
+      [class.active]="statusFilter() === 'FERTIG'"
+      (click)="filterSetzen('FERTIG')"
+    >
       Fertig
     </button>
-    <button class="btn btn-default" [class.active]="statusFilter() === 'ABGEHOLT'" (click)="filterSetzen('ABGEHOLT')">
+    <button
+      class="btn btn-default"
+      [class.active]="statusFilter() === 'ABGEHOLT'"
+      (click)="filterSetzen('ABGEHOLT')"
+    >
       Abgeholt
     </button>
     <button
@@ -31,7 +45,9 @@
       Storniert
     </button>
   </div>
-  <a routerLink="/auftraege/neu" class="btn btn-primary pull-right" data-testid="btn-auftrag-neu">Neuer Auftrag</a>
+  <a routerLink="/auftraege/neu" class="btn btn-primary pull-right" data-testid="btn-auftrag-neu"
+    >Neuer Auftrag</a
+  >
 </div>
 
 <table class="table table-striped table-hover" data-testid="auftraege-tabelle">
@@ -53,7 +69,9 @@
       <td>{{ a.kundeName }}</td>
       <td>{{ kurz(a.beschreibung) }}</td>
       <td>
-        <span class="label label-default label-status status-{{ a.status }}">{{ a.status | statusText }}</span>
+        <span class="label label-default label-status status-{{ a.status }}">{{
+          a.status | statusText
+        }}</span>
       </td>
     </tr>
   }

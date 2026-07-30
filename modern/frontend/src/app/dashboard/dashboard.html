@@ -45,7 +45,9 @@
       </tr>
       @for (a of offeneAuftraege(); track a.id) {
         <tr data-testid="werkstatt-zeile">
-          <td><a [routerLink]="['/auftraege', a.id]">{{ a.auftragNr }}</a></td>
+          <td>
+            <a [routerLink]="['/auftraege', a.id]">{{ a.auftragNr }}</a>
+          </td>
           <td>{{ a.kennzeichen }}</td>
           <td>{{ a.kundeName }}</td>
           <td>
@@ -73,7 +75,9 @@
       </tr>
       @for (a of fertigeAuftraege(); track a.id) {
         <tr data-testid="abholbereit-zeile">
-          <td><a [routerLink]="['/auftraege', a.id]">{{ a.auftragNr }}</a></td>
+          <td>
+            <a [routerLink]="['/auftraege', a.id]">{{ a.auftragNr }}</a>
+          </td>
           <td>{{ a.kennzeichen }}</td>
           <td>{{ a.kundeName }}</td>
           <td>{{ a.fertigAm | date: 'dd.MM.yyyy' }}</td>

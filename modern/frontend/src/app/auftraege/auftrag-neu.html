@@ -3,12 +3,13 @@
 <div class="row">
   <div class="col-md-6">
     <div class="form-group">
-      <label>Kunde *</label>
+      <label for="feld-kunde">Kunde *</label>
       <select
         class="form-control"
         name="kunde"
         [(ngModel)]="gewaehlterKunde"
         (ngModelChange)="kundeGewaehlt()"
+        id="feld-kunde"
         data-testid="feld-kunde"
       >
         <option [ngValue]="null">-- bitte wählen --</option>
@@ -18,12 +19,13 @@
       </select>
     </div>
     <div class="form-group">
-      <label>Fahrzeug *</label>
+      <label for="feld-fahrzeug">Fahrzeug *</label>
       <select
         class="form-control"
         name="fahrzeug"
         [(ngModel)]="auftrag.fahrzeugId"
         [disabled]="!gewaehlterKunde"
+        id="feld-fahrzeug"
         data-testid="feld-fahrzeug"
       >
         <option [ngValue]="null">-- zuerst Kunde wählen --</option>
@@ -39,21 +41,31 @@
       }
     </div>
     <div class="form-group">
-      <label>Was ist zu tun? *</label>
+      <label for="feld-beschreibung">Was ist zu tun? *</label>
       <textarea
         class="form-control"
         rows="3"
         name="beschreibung"
         [(ngModel)]="auftrag.beschreibung"
         placeholder="z.B. Jahresservice, Bremsen quietschen..."
+        id="feld-beschreibung"
         data-testid="feld-beschreibung"
       ></textarea>
     </div>
     <div class="form-group">
-      <label>km-Stand bei Annahme</label>
-      <input type="number" class="form-control" name="kmStand" [(ngModel)]="auftrag.kmStand" data-testid="feld-km" />
+      <label for="feld-km">km-Stand bei Annahme</label>
+      <input
+        type="number"
+        class="form-control"
+        name="kmStand"
+        [(ngModel)]="auftrag.kmStand"
+        id="feld-km"
+        data-testid="feld-km"
+      />
     </div>
-    <button class="btn btn-primary" (click)="anlegen()" data-testid="btn-auftrag-anlegen">Auftrag anlegen</button>
+    <button class="btn btn-primary" (click)="anlegen()" data-testid="btn-auftrag-anlegen">
+      Auftrag anlegen
+    </button>
     <a routerLink="/auftraege" class="btn btn-default">Abbrechen</a>
   </div>
 </div>

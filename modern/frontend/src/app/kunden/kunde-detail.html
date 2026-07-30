@@ -8,52 +8,116 @@
   <div class="col-md-6">
     <form (ngSubmit)="speichern()">
       <div class="form-group">
-        <label>Anrede</label>
-        <select class="form-control" name="anrede" [(ngModel)]="kunde.anrede" data-testid="feld-anrede">
+        <label for="feld-anrede">Anrede</label>
+        <select
+          class="form-control"
+          name="anrede"
+          [(ngModel)]="kunde.anrede"
+          id="feld-anrede"
+          data-testid="feld-anrede"
+        >
           <option>Herr</option>
           <option>Frau</option>
           <option>Firma</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Vorname</label>
-        <input type="text" class="form-control" name="vorname" [(ngModel)]="kunde.vorname" data-testid="feld-vorname" />
+        <label for="feld-vorname">Vorname</label>
+        <input
+          type="text"
+          class="form-control"
+          name="vorname"
+          [(ngModel)]="kunde.vorname"
+          id="feld-vorname"
+          data-testid="feld-vorname"
+        />
       </div>
       <div class="form-group">
-        <label>Nachname *</label>
-        <input type="text" class="form-control" name="nachname" [(ngModel)]="kunde.nachname" data-testid="feld-nachname" />
+        <label for="feld-nachname">Nachname *</label>
+        <input
+          type="text"
+          class="form-control"
+          name="nachname"
+          [(ngModel)]="kunde.nachname"
+          id="feld-nachname"
+          data-testid="feld-nachname"
+        />
       </div>
       <div class="form-group">
-        <label>Telefon</label>
-        <input type="text" class="form-control" name="telefon" [(ngModel)]="kunde.telefon" data-testid="feld-telefon" />
+        <label for="feld-telefon">Telefon</label>
+        <input
+          type="text"
+          class="form-control"
+          name="telefon"
+          [(ngModel)]="kunde.telefon"
+          id="feld-telefon"
+          data-testid="feld-telefon"
+        />
       </div>
       <div class="form-group">
-        <label>E-Mail</label>
-        <input type="text" class="form-control" name="email" [(ngModel)]="kunde.email" data-testid="feld-email" />
+        <label for="feld-email">E-Mail</label>
+        <input
+          type="text"
+          class="form-control"
+          name="email"
+          [(ngModel)]="kunde.email"
+          id="feld-email"
+          data-testid="feld-email"
+        />
       </div>
       <div class="form-group">
-        <label>Straße</label>
-        <input type="text" class="form-control" name="strasse" [(ngModel)]="kunde.strasse" data-testid="feld-strasse" />
+        <label for="feld-strasse">Straße</label>
+        <input
+          type="text"
+          class="form-control"
+          name="strasse"
+          [(ngModel)]="kunde.strasse"
+          id="feld-strasse"
+          data-testid="feld-strasse"
+        />
       </div>
       <div class="row">
         <div class="col-xs-4">
           <div class="form-group">
-            <label>PLZ</label>
-            <input type="text" class="form-control" name="plz" [(ngModel)]="kunde.plz" data-testid="feld-plz" />
+            <label for="feld-plz">PLZ</label>
+            <input
+              type="text"
+              class="form-control"
+              name="plz"
+              [(ngModel)]="kunde.plz"
+              id="feld-plz"
+              data-testid="feld-plz"
+            />
           </div>
         </div>
         <div class="col-xs-8">
           <div class="form-group">
-            <label>Ort</label>
-            <input type="text" class="form-control" name="ort" [(ngModel)]="kunde.ort" data-testid="feld-ort" />
+            <label for="feld-ort">Ort</label>
+            <input
+              type="text"
+              class="form-control"
+              name="ort"
+              [(ngModel)]="kunde.ort"
+              id="feld-ort"
+              data-testid="feld-ort"
+            />
           </div>
         </div>
       </div>
       <div class="form-group">
-        <label>Notiz</label>
-        <textarea class="form-control" rows="2" name="notiz" [(ngModel)]="kunde.notiz" data-testid="feld-notiz"></textarea>
+        <label for="feld-notiz">Notiz</label>
+        <textarea
+          class="form-control"
+          rows="2"
+          name="notiz"
+          [(ngModel)]="kunde.notiz"
+          id="feld-notiz"
+          data-testid="feld-notiz"
+        ></textarea>
       </div>
-      <button type="submit" class="btn btn-primary" data-testid="btn-kunde-speichern">Speichern</button>
+      <button type="submit" class="btn btn-primary" data-testid="btn-kunde-speichern">
+        Speichern
+      </button>
       <a routerLink="/kunden" class="btn btn-default">Zurück zur Liste</a>
     </form>
   </div>
@@ -98,36 +162,39 @@
       @if (zeigeFahrzeugForm()) {
         <div style="margin-top: 12px; border: 1px solid #dddddd; padding: 10px">
           <div class="form-group">
-            <label>Kennzeichen *</label>
+            <label for="feld-kennzeichen">Kennzeichen *</label>
             <input
               type="text"
               class="form-control"
               name="fahrzeugKennzeichen"
               [(ngModel)]="neuesFahrzeug.kennzeichen"
+              id="feld-kennzeichen"
               data-testid="feld-kennzeichen"
             />
           </div>
           <div class="row">
             <div class="col-xs-6">
               <div class="form-group">
-                <label>Marke</label>
+                <label for="feld-marke">Marke</label>
                 <input
                   type="text"
                   class="form-control"
                   name="fahrzeugMarke"
                   [(ngModel)]="neuesFahrzeug.marke"
+                  id="feld-marke"
                   data-testid="feld-marke"
                 />
               </div>
             </div>
             <div class="col-xs-6">
               <div class="form-group">
-                <label>Modell</label>
+                <label for="feld-modell">Modell</label>
                 <input
                   type="text"
                   class="form-control"
                   name="fahrzeugModell"
                   [(ngModel)]="neuesFahrzeug.modell"
+                  id="feld-modell"
                   data-testid="feld-modell"
                 />
               </div>
@@ -136,30 +203,36 @@
           <div class="row">
             <div class="col-xs-6">
               <div class="form-group">
-                <label>Baujahr</label>
+                <label for="feld-baujahr">Baujahr</label>
                 <input
                   type="number"
                   class="form-control"
                   name="fahrzeugBaujahr"
                   [(ngModel)]="neuesFahrzeug.baujahr"
+                  id="feld-baujahr"
                   data-testid="feld-baujahr"
                 />
               </div>
             </div>
             <div class="col-xs-6">
               <div class="form-group">
-                <label>km-Stand</label>
+                <label for="feld-kmstand">km-Stand</label>
                 <input
                   type="number"
                   class="form-control"
                   name="fahrzeugKmStand"
                   [(ngModel)]="neuesFahrzeug.kmStand"
+                  id="feld-kmstand"
                   data-testid="feld-kmstand"
                 />
               </div>
             </div>
           </div>
-          <button class="btn btn-primary btn-sm" (click)="fahrzeugSpeichern()" data-testid="btn-fahrzeug-speichern">
+          <button
+            class="btn btn-primary btn-sm"
+            (click)="fahrzeugSpeichern()"
+            data-testid="btn-fahrzeug-speichern"
+          >
             Fahrzeug speichern
           </button>
         </div>

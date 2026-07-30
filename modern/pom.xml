@@ -94,6 +94,49 @@
 							<arguments>run build</arguments>
 						</configuration>
 					</execution>
+					<!-- lint/format gates (DEVIATIONS: deferred(G5), now armed) run
+					     at verify — CI enforces them, docker package skips them -->
+					<execution>
+						<id>ng-lint</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run lint</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>prettier-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run format:check</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Java format gate (google-java-format), same deviation item;
+			     spotless:check binds to verify. Versions checked 2026-07-31. -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.44.5</version>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.27.0</version>
+						</googleJavaFormat>
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 			<!-- ship the Angular build as Boot static resources -->
