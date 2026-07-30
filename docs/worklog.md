@@ -438,3 +438,70 @@ UNFROZEN — freeze is a separate owner act.
 **Next (G5):** unchanged from session 6, with two additions: implement the
 `angular` wait strategy when the Angular shell lands, and take the 26-test
 matrix as the equivalence bar for the new UI.
+
+---
+
+## 2026-07-30/31 — G5: Stage 5 — AngularJS → Angular 22, Strangler Fig — session 9
+
+**What:**
+
+- Baseline verified before touching anything: both stands up, characterization
+  36/36 ×2, e2e 27/27 ×2 (surefire reports, not log claims). Toolchain checked
+  live on npm (ADR-0003 rule): **Angular core 22.1.0 (`latest`), CLI 22.1.2,
+  Node v24.18.1 LTS**; `@angular/upgrade` exists at 22.1.0 — evaluated and
+  rejected (ADR-0009: URL seam beats ngUpgrade at this size class).
+- **Strangler Fig, one commit per route slice, suites green at every commit:**
+  Angular 22 app (zoneless, standalone, signals) took `/` with path routes from
+  slice 1; the AngularJS app stayed fully functional at `/alt.html#!/…`,
+  shrinking per slice (view/controller/route deleted the moment its
+  replacement landed — services.js and bericht-controller.js died mid-stage,
+  controllers.js was an empty shell before the cutover deleted webapp/).
+  Slices: shell+dashboard → kunden(+detail) → fahrzeuge → aufträge(3 views) →
+  rechnungen(2) → bericht → admin → cutover. Cross-framework handovers are
+  full page loads with byte-identical nav hrefs in both shells; during the
+  hybrid window one Selenium scenario legally CROSSED the seam mid-flow
+  (Angular order detail → invoice → AngularJS invoice sheet) and stayed green.
+- **E2E port = map values, not tests:** selector map v2 on `data-testid`
+  anchors; new `SelectorMapParityTest` (map key sets guarded identical, 28th
+  test); `angular` wait strategy polls an app-maintained pending-request
+  counter (HTTP interceptor — the app is zoneless, Testability observes
+  nothing) plus a `hybrid` strategy dispatching per current document; ONE
+  per-stand expectation moved into the maps (`alert.rechnungDuplikat`, SD-3).
+- **Sanctioned divergences registered + pinned (ADR-0004):** SD-2 admin page
+  absorbed (SPA `/admin` + `GET /api/admin/statistik`; `POST /admin/bereinigen`
+  keeps path/200/exact meldung on both stands; JSP/JSTL/gson retired; WAR→JAR
+  at cutover; characterization admin pin forks per stand). SD-3 the
+  "undefined" alert: modern shows the real German server message; legacy stays
+  pinned as-is.
+- **Formatting contract held byte-for-byte:** EuroPipe replicates the 2016
+  `euro` filter exactly (CurrencyPipe would have been silent drift);
+  dd.MM.yyyy; alert/confirm kept — UX modernisation explicitly out of scope.
+- **Lint/format gates armed (DEVIATIONS item → met):** Spotless
+  google-java-format 1.27.0 on modern/e2e/characterization (one-time
+  mechanical reformat), angular-eslint + prettier on the frontend, all bound
+  to `verify` so the existing CI steps enforce them. The a11y lint rule found
+  19 real 2016-inherited label defects — fixed with for/id, not disabled.
+- **Genuine zoneless bug, found by the net, 1 red run in 9:** `this.kunde = …`
+  in a subscribe callback is a plain property write — nothing schedules a
+  render; eight runs stayed green only because the parallel `fahrzeuge`
+  signal-set raced a render in afterwards. Fixed by signal-backing the state
+  (getter keeps template syntax); all components audited for the pattern.
+  Red pipeline handled by the book: stop, diagnose with evidence, fix, TWO
+  consecutive green runs before continuing. Lesson recorded in playbook Kap. 5.
+
+**Verification at session end:** e2e 28/28 twice consecutively vs modern AND
+twice vs legacy; characterization 36/36 vs both stands; modern verify green
+with all gates (frontend build, ng lint, prettier check, spotless check).
+
+**Hours:** 1.7 *(measured wall time: session start ≈23:35 (first tool call,
+baseline runs from 23:37) to PR merge ≈01:15 — verifiable via git/PR
+timestamps; agent wall-clock under supervision, see worklog header)*
+
+**Decisions:** ADR-0009 (strangler shape: URL seam, no ngUpgrade; zoneless
+wait contract; WAR→JAR); ADR-0004 register +SD-2/+SD-3 (both mandated by
+SPEC §4/MILESTONES G5 wording); lint deviation closed.
+
+**Next (G6):** freeze `ai-testgen/PROTOCOL.md` per the accepted v0.1 (owner
+accepted 2026-07-30; freeze checklist + tag at G6 start), decide Arm B, run
+the experiment strictly per protocol. The constructor-injected, JSP-free
+modern stand is the precondition G6 was waiting for.

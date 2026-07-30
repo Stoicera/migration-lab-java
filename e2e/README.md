@@ -3,10 +3,12 @@
 Selenium 4 + JUnit 5 + Java 25. **The same scenarios run against both UIs** —
 page objects address elements by intent key only; the mapping to concrete CSS
 selectors lives in `src/test/resources/selectors/<target>.properties`.
-Porting the suite to the stage-5 Angular UI means writing `modern.properties`
-(and one `wait.strategy` implementation, see below), not new tests.
+Stage 5 proved the design: porting the suite to the Angular UI meant new
+`modern.properties` values, two `wait.strategy` implementations and ONE
+sanctioned per-stand expectation (SD-3, below) — zero new scenarios. A
+`SelectorMapParityTest` guards that both maps carry identical key sets.
 
-## Scenarios (9 classes, 27 tests)
+## Scenarios (9 classes, 27 tests + 1 map-parity guard)
 
 | Class | Flow |
 |---|---|
@@ -75,13 +77,22 @@ layer down.
 ## Wait strategy (per target)
 
 `Waits.idle()` — the "no pending HTTP work" gate — dispatches on the
-`wait.strategy` key of the selector map. Both stands currently serve the
-AngularJS UI, so both maps say `angularjs` (polls `$http.pendingRequests`).
-Stage 5 adds an `angular` strategy against the Angular testability API for
-`modern.properties`. Unknown values **throw** — fail-loud by design: on the
-Angular UI the AngularJS probe would time out on every save, and silently
-skipping the gate would reintroduce the lost-update race (#3 above).
-Weakening the wait is not an option.
+`wait.strategy` key of the selector map. Three strategies exist:
+
+- `angularjs` (legacy map): polls `$http.pendingRequests`.
+- `angular` (modern map since the stage-5 cutover): polls the app-maintained
+  counter `window.werkstattOffeneRequests` (an HTTP interceptor in
+  `modern/frontend`) — the app is **zoneless**, so the classic Testability
+  `isStable` probe observes nothing; the counter is the app's testability
+  contract, same semantic as `$http.pendingRequests`.
+- `hybrid` (used during the stage-5 route-by-route port, kept as a documented
+  strategy): dispatches per CURRENT document on whichever framework marker is
+  present — one flow could legally cross from an Angular page to an AngularJS
+  page mid-scenario; neither marker present counts as "not idle".
+
+Unknown values **throw** — fail-loud by design: a wrong strategy times out on
+every save, and silently skipping the gate would reintroduce the lost-update
+race (#3 above). Weakening the wait is not an option.
 
 ## Year handling
 
@@ -125,25 +136,31 @@ the **UI formatting contract** of the legacy app (hand-rolled `euro` filter,
 these byte-for-byte or the change is sanctioned via ADR-0004 — silent
 formatting drift is a migration defect, not a cosmetic detail.
 
-That includes a pinned **defect**: on server-rejected actions (e.g. creating a
-second invoice for an order) the user sees an alert reading literally
-`undefined`. Spring Boot 1.5 content-negotiates the plain-string 500 body to
+That includes a pinned **defect** — now with a per-stand expectation (SD-3,
+ADR-0004): on server-rejected actions (e.g. creating a second invoice for an
+order) the LEGACY UI shows an alert reading literally `undefined`. Spring Boot
+1.5 content-negotiates the plain-string 500 body to
 `Content-Type: application/json` for XHR Accept headers, AngularJS 1.8's
 response transform throws `[$http:baddata]` on the non-JSON body, and the
-error callback alerts `fehler.data` of an `Error` object. The backend's German
-message never reaches the user. Pinned as-is (honesty rule); fixing it in the
-new UI is an ADR-0004 divergence, and the *server-side* message contract is
-held by the error-contract characterization tests.
+error callback alerts `fehler.data` of an `Error` object. Pinned as-is on
+legacy (honesty rule). The stage-5 Angular UI surfaces the backend's German
+message instead — the expected alert text lives in the selector maps
+(`alert.rechnungDuplikat`), so ONE assertion pins both behaviours per stand.
+The *server-side* message contract (identical on both stands) is held by the
+error-contract characterization tests.
 
 ## Selector discipline
 
 Raw selectors never live in page objects — every element goes through
 `SelectorMap` intent keys (`SelectorMap.css`), non-selector per-target values
 through `SelectorMap.value`. The 2016 markup offers no ids for table cells, so
-cell access is positional (`nth-child` in the map or index in the page
-object); wherever that is unavoidable, the tests **pin the column headers**
-(or section headings on the dashboard) first, so a silent column/section
-reorder fails loudly instead of asserting the wrong cell.
+the legacy map's cell access is positional (`nth-child` in the map or index in
+the page object); wherever that is unavoidable, the tests **pin the column
+headers** (or section headings on the dashboard) first, so a silent
+column/section reorder fails loudly instead of asserting the wrong cell. The
+stage-5 Angular UI carries explicit `data-testid` anchors instead — the modern
+map addresses those, and the key sets of both maps are guarded byte-identical
+by `SelectorMapParityTest`.
 
 ## Run
 

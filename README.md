@@ -8,12 +8,14 @@
 Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 22 —
 safety net first, honest numbers, reusable German migration playbook.
 
-> **Status: stage 4 done — the modern backend runs Spring Boot 4.1.0 on Java 25**,
+> **Status: stage 5 done — the modern stand runs Spring Boot 4.1.0 / Java 25
+> with an Angular 22 UI**, migrated route by route via Strangler Fig with the
+> same Selenium scenarios green on the old AND the new UI throughout —
 > functionally equivalent to the frozen 2016 stand for all legitimate inputs
-> (proven per commit by golden masters + the same Selenium suite on both;
-> the one deliberate security divergence is registered in
+> (the deliberate divergences — security fix, absorbed admin page, fixed
+> "undefined" alert — are registered and pinned per stand in
 > [ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md)).
-> Next: AngularJS → Angular 22 (stage 5).
+> Next: measured AI test generation (G6).
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
