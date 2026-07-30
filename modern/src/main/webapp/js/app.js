@@ -8,23 +8,12 @@ var werkstattApp = angular.module('werkstattApp', ['ngRoute']);
 // Frontend leben, verlassen diese App per komplettem Seitenwechsel. Ein
 // Eintrag wandert pro portierter Route hierher, bis die App leer ist.
 var portierteRouten = [
-	/^\/start$/
+	/^\/start$/,
+	/^\/kunden(\/.*)?$/
 ];
 
 werkstattApp.config(['$routeProvider', function ($routeProvider) {
 	$routeProvider
-		.when('/kunden', {
-			templateUrl: 'views/kunden.html',
-			controller: 'KundenCtrl'
-		})
-		.when('/kunden/neu', {
-			templateUrl: 'views/kunde-detail.html',
-			controller: 'KundeDetailCtrl'
-		})
-		.when('/kunden/:id', {
-			templateUrl: 'views/kunde-detail.html',
-			controller: 'KundeDetailCtrl'
-		})
 		.when('/fahrzeuge', {
 			templateUrl: 'views/fahrzeuge.html',
 			controller: 'FahrzeugeCtrl'

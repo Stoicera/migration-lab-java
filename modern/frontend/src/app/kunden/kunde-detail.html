@@ -1,0 +1,169 @@
+@if (neu()) {
+  <h2>Neuer Kunde</h2>
+} @else {
+  <h2>Kunde: {{ kunde.anzeigeName }}</h2>
+}
+
+<div class="row">
+  <div class="col-md-6">
+    <form (ngSubmit)="speichern()">
+      <div class="form-group">
+        <label>Anrede</label>
+        <select class="form-control" name="anrede" [(ngModel)]="kunde.anrede" data-testid="feld-anrede">
+          <option>Herr</option>
+          <option>Frau</option>
+          <option>Firma</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Vorname</label>
+        <input type="text" class="form-control" name="vorname" [(ngModel)]="kunde.vorname" data-testid="feld-vorname" />
+      </div>
+      <div class="form-group">
+        <label>Nachname *</label>
+        <input type="text" class="form-control" name="nachname" [(ngModel)]="kunde.nachname" data-testid="feld-nachname" />
+      </div>
+      <div class="form-group">
+        <label>Telefon</label>
+        <input type="text" class="form-control" name="telefon" [(ngModel)]="kunde.telefon" data-testid="feld-telefon" />
+      </div>
+      <div class="form-group">
+        <label>E-Mail</label>
+        <input type="text" class="form-control" name="email" [(ngModel)]="kunde.email" data-testid="feld-email" />
+      </div>
+      <div class="form-group">
+        <label>Straße</label>
+        <input type="text" class="form-control" name="strasse" [(ngModel)]="kunde.strasse" data-testid="feld-strasse" />
+      </div>
+      <div class="row">
+        <div class="col-xs-4">
+          <div class="form-group">
+            <label>PLZ</label>
+            <input type="text" class="form-control" name="plz" [(ngModel)]="kunde.plz" data-testid="feld-plz" />
+          </div>
+        </div>
+        <div class="col-xs-8">
+          <div class="form-group">
+            <label>Ort</label>
+            <input type="text" class="form-control" name="ort" [(ngModel)]="kunde.ort" data-testid="feld-ort" />
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Notiz</label>
+        <textarea class="form-control" rows="2" name="notiz" [(ngModel)]="kunde.notiz" data-testid="feld-notiz"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" data-testid="btn-kunde-speichern">Speichern</button>
+      <a routerLink="/kunden" class="btn btn-default">Zurück zur Liste</a>
+    </form>
+  </div>
+
+  @if (!neu()) {
+    <div class="col-md-6">
+      <h4>Fahrzeuge</h4>
+      <table class="table table-condensed" data-testid="fahrzeuge-tabelle">
+        <tr>
+          <th>Kennzeichen</th>
+          <th>Fahrzeug</th>
+          <th>Baujahr</th>
+          <th>Pickerl bis</th>
+          <th></th>
+        </tr>
+        @for (f of fahrzeuge(); track f.id) {
+          <tr data-testid="fahrzeug-zeile">
+            <td>{{ f.kennzeichen }}</td>
+            <td>{{ f.marke }} {{ f.modell }}</td>
+            <td>{{ f.baujahr }}</td>
+            <td>{{ f.pickerlDatum | date: 'dd.MM.yyyy' }}</td>
+            <td class="text-right">
+              <button class="btn btn-xs btn-danger" (click)="fahrzeugLoeschen(f)">X</button>
+            </td>
+          </tr>
+        }
+        @if (fahrzeuge().length === 0) {
+          <tr>
+            <td colspan="5" class="text-muted">Noch kein Fahrzeug angelegt.</td>
+          </tr>
+        }
+      </table>
+
+      <button
+        class="btn btn-default btn-sm"
+        (click)="zeigeFahrzeugForm.set(!zeigeFahrzeugForm())"
+        data-testid="btn-fahrzeug-form"
+      >
+        Fahrzeug hinzufügen
+      </button>
+
+      @if (zeigeFahrzeugForm()) {
+        <div style="margin-top: 12px; border: 1px solid #dddddd; padding: 10px">
+          <div class="form-group">
+            <label>Kennzeichen *</label>
+            <input
+              type="text"
+              class="form-control"
+              name="fahrzeugKennzeichen"
+              [(ngModel)]="neuesFahrzeug.kennzeichen"
+              data-testid="feld-kennzeichen"
+            />
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label>Marke</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="fahrzeugMarke"
+                  [(ngModel)]="neuesFahrzeug.marke"
+                  data-testid="feld-marke"
+                />
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label>Modell</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="fahrzeugModell"
+                  [(ngModel)]="neuesFahrzeug.modell"
+                  data-testid="feld-modell"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label>Baujahr</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="fahrzeugBaujahr"
+                  [(ngModel)]="neuesFahrzeug.baujahr"
+                  data-testid="feld-baujahr"
+                />
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label>km-Stand</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="fahrzeugKmStand"
+                  [(ngModel)]="neuesFahrzeug.kmStand"
+                  data-testid="feld-kmstand"
+                />
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" (click)="fahrzeugSpeichern()" data-testid="btn-fahrzeug-speichern">
+            Fahrzeug speichern
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>
