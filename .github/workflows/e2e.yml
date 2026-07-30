@@ -49,6 +49,14 @@ jobs:
         if: steps.gate.outputs.present == 'true'
         run: ./mvnw -B verify -f e2e/pom.xml -Dtarget=${{ matrix.target }}
 
+      - name: Upload failure screenshots
+        if: failure() && steps.gate.outputs.present == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-screenshots-${{ matrix.target }}
+          path: e2e/target/screenshots/
+          if-no-files-found: ignore
+
       - name: Stop ${{ matrix.target }} stand
         if: always() && steps.gate.outputs.present == 'true'
         run: docker compose -f ${{ matrix.target }}/docker-compose.yml down -v

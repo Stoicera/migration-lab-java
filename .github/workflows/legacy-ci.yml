@@ -35,6 +35,44 @@ jobs:
           java-version: '8'
           cache: maven
 
-      - name: Build and verify (incl. characterization from stage 1)
+      - name: Build and verify legacy module
         if: steps.gate.outputs.present == 'true'
         run: ./mvnw -B verify -f legacy/pom.xml
+
+      # ---- characterization gate (armed since stage-1-safety-net) ----
+      - name: Check characterization presence
+        id: chargate
+        run: |
+          if [ -f characterization/pom.xml ] && [ -f legacy/docker-compose.yml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up JDK 25 (Temurin) for characterization
+        if: steps.chargate.outputs.present == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Start legacy stand
+        if: steps.chargate.outputs.present == 'true'
+        run: docker compose -f legacy/docker-compose.yml up -d --wait
+
+      - name: Run characterization tests (golden masters)
+        if: steps.chargate.outputs.present == 'true'
+        run: ./mvnw -B verify -f characterization/pom.xml
+
+      - name: Upload received captures on mismatch
+        if: failure() && steps.chargate.outputs.present == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: characterization-received
+          path: characterization/target/characterization-received/
+          if-no-files-found: ignore
+
+      - name: Stop legacy stand
+        if: always() && steps.chargate.outputs.present == 'true'
+        run: docker compose -f legacy/docker-compose.yml down -v
