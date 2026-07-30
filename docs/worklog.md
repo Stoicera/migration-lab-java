@@ -176,3 +176,35 @@ playbook ch. 2–3; tags `stage-2-jdk-build`, `stage-3-boot-2.7`.
 
 **Next:** stage 3 — Boot 1.5.22 → 2.7.18 + Java 17 in modern/, real breaks
 documented in playbook ch. 3, tag stage-3-boot-2.7.
+
+---
+
+## 2026-07-30 — G3b: Stage 3 — Boot 1.5.22 → 2.7.18 + Java 17 — session 5
+
+**What:** version bump in modern/ (parent 2.7.18, java.version 17, Dockerfile
+temurin-17; modern-ci picks the JDK from the pom automatically). Methodology:
+bump → build → run the net → document every break. **Three real breaks:**
+
+1. Compile: SpringBootServletInitializer moved to web.servlet.support (1 line).
+2. Startup: pinned gson 2.3.1 vs Boot 2.7 GsonAutoConfiguration
+   (NoSuchMethodError setLenient) → pin removed, version BOM-managed.
+3. **API contract drift, invisible in the UI:** java.sql.Date (pickerlDatum,
+   the only DATE column) serialized as "2027-04-30" under Jackson 2.8 but as
+   epoch number under 2.13. All 13 Selenium tests stayed green (Angular date
+   filter swallows both) — ONLY the golden masters caught it. Fixed via
+   explicit JacksonWireCompatConfig (configOverride java.sql.Date, pattern
+   yyyy-MM-dd): the API contract is part of functional equivalence; goldens
+   are never silently updated.
+
+What did NOT break, honestly noted: JdbcTemplate, JSP/JSTL (javax at 2.7),
+properties, PG driver via BOM, Java-17 compile of 2016 code — and the two big
+break drivers of this jump (Security, Actuator) are absent in this app;
+playbook ch. 3 carries the scaling caveat.
+
+Verified: characterization 17/17 vs Boot 2.7 stand; e2e 13/13 vs modern AND
+legacy (net unbroken end to end).
+
+**Hours:** 0.4
+
+**Next (G4):** Boot 2.7 → 3.x → 4.1 + Java 25: jakarta migration, constructor
+injection sweep, OpenRewrite used AND evaluated, tag stage-4-boot-4x.
