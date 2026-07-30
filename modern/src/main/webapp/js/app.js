@@ -12,15 +12,12 @@ var portierteRouten = [
 	/^\/kunden(\/.*)?$/,
 	/^\/fahrzeuge$/,
 	/^\/auftraege(\/.*)?$/,
-	/^\/rechnungen(\/.*)?$/
+	/^\/rechnungen(\/.*)?$/,
+	/^\/bericht$/
 ];
 
 werkstattApp.config(['$routeProvider', function ($routeProvider) {
 	$routeProvider
-		.when('/bericht', {
-			templateUrl: 'views/bericht.html',
-			controller: 'BerichtCtrl'
-		})
 		.otherwise({
 			redirectTo: '/start'
 		});

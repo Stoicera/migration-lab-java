@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { AltWeiche } from './alt-weiche';
+import { Bericht } from './bericht/bericht';
 import { Dashboard } from './dashboard/dashboard';
 import { Auftraege } from './auftraege/auftraege';
 import { AuftragDetail } from './auftraege/auftrag-detail';
@@ -25,6 +26,7 @@ export const routes: Routes = [
   { path: 'auftraege/:id', component: AuftragDetail },
   { path: 'rechnungen', component: Rechnungen },
   { path: 'rechnungen/:id', component: RechnungDetail },
+  { path: 'bericht', component: Bericht },
   { path: '', pathMatch: 'full', redirectTo: 'start' },
   { path: '**', component: AltWeiche },
 ];
