@@ -24,8 +24,18 @@ export class KundeDetail implements OnInit {
   protected readonly neu = signal(true);
   protected readonly fahrzeuge = signal<Fahrzeug[]>([]);
   protected readonly zeigeFahrzeugForm = signal(false);
-  protected kunde: Kunde = this.leererKunde();
+  // Zoneless lesson (found by the e2e suite, worklog session 9): state that an
+  // ASYNC callback replaces must be signal-tracked, or nothing schedules the
+  // re-render — a plain `kunde` property stayed green for eight runs only
+  // because the parallel fahrzeuge signal-set raced a render in afterwards.
+  // The getter keeps the template/ngModel syntax; user-input mutation of the
+  // current object is safe (DOM events schedule CD themselves).
+  private readonly kundeState = signal<Kunde>(this.leererKunde());
   protected neuesFahrzeug: Partial<Fahrzeug> = {};
+
+  protected get kunde(): Kunde {
+    return this.kundeState();
+  }
 
   ngOnInit(): void {
     // paramMap instead of a one-shot read: saving a NEW customer navigates
@@ -34,10 +44,10 @@ export class KundeDetail implements OnInit {
       const id = params.get('id');
       this.neu.set(id === null);
       if (id !== null) {
-        this.api.kunde(id).subscribe((kunde) => (this.kunde = kunde));
+        this.api.kunde(id).subscribe((kunde) => this.kundeState.set(kunde));
         this.fahrzeugeLaden(id);
       } else {
-        this.kunde = this.leererKunde();
+        this.kundeState.set(this.leererKunde());
         this.fahrzeuge.set([]);
       }
     });
@@ -50,7 +60,7 @@ export class KundeDetail implements OnInit {
     }
     this.api.kundeSpeichern(this.kunde).subscribe({
       next: (gespeichert) => {
-        this.kunde = gespeichert;
+        this.kundeState.set(gespeichert);
         this.neu.set(false);
         this.router.navigate(['/kunden', gespeichert.id]);
       },
