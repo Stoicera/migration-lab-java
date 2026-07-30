@@ -37,7 +37,7 @@ are logged as spent, never smoothed.
   SpringBootProperties_4_1) · JUnit 5.14.4 (JUnit 6.1.2 is current major) ·
   Java 25 LTS GA 2025-09-16, Temurin 25.0.4+7.
 
-**Hours:** 1.5
+**Hours:** 1.0 *(corrected 2026-07-30: measured wall time; initial 1.5 was an estimate)*
 
 **Decisions:**
 
@@ -89,7 +89,7 @@ Owner reviewed and merged G0 (PR #1), gave go for autonomous continuation.
   fresh checkouts get pristine seed regardless).
 - Deliberately NO tests anywhere in `legacy/` (that is the stage-0 point).
 
-**Hours:** 1.0
+**Hours:** 0.6 *(corrected: measured wall time; initial 1.0 was an estimate)*
 
 **Decisions:**
 
@@ -138,7 +138,7 @@ CI gates armed for good; playbook chapter 1; tag `stage-1-safety-net`.
 - Decision: **JUnit 5.14.4** (not JUnit 6) for e2e + characterization — the
   safety net must be boring-stable; revisit with a modern-stack ADR if wanted.
 
-**Hours:** 2.25 (suite 1.0 · stabilisation 0.5 · characterization 0.5 · CI 0.25)
+**Hours:** 0.8 *(corrected: measured wall time incl. CI-failure analysis; the 2.25 first logged was an estimate — rule: log measured time, and correct openly when wrong)*
 
 **Next (G3):** dependency audit, JDK raise under Boot-compatible ceiling,
 Boot 1.5→2.7 with documented breaks; safety net stays green throughout;
