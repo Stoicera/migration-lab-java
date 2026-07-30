@@ -11,7 +11,7 @@ RUN mvn -B -q package -DskipTests
 
 FROM eclipse-temurin:25-jre
 WORKDIR /app
-COPY --from=build /build/target/werkstatt-crm.war /app/werkstatt-crm.war
+# executable JAR since the stage-5 cutover (JSP retired with the admin page)
+COPY --from=build /build/target/werkstatt-crm.jar /app/werkstatt-crm.jar
 EXPOSE 8080
-# JSP funktioniert im ausfuehrbaren WAR mit eingebettetem Tomcat
-ENTRYPOINT ["java", "-jar", "/app/werkstatt-crm.war"]
+ENTRYPOINT ["java", "-jar", "/app/werkstatt-crm.jar"]

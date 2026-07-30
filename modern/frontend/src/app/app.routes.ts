@@ -1,21 +1,19 @@
 import { Routes } from '@angular/router';
 
 import { Admin } from './admin/admin';
-import { AltWeiche } from './alt-weiche';
-import { Bericht } from './bericht/bericht';
-import { Dashboard } from './dashboard/dashboard';
 import { Auftraege } from './auftraege/auftraege';
 import { AuftragDetail } from './auftraege/auftrag-detail';
 import { AuftragNeu } from './auftraege/auftrag-neu';
+import { Bericht } from './bericht/bericht';
+import { Dashboard } from './dashboard/dashboard';
 import { Fahrzeuge } from './fahrzeuge/fahrzeuge';
 import { Kunden } from './kunden/kunden';
 import { KundeDetail } from './kunden/kunde-detail';
 import { Rechnungen } from './rechnungen/rechnungen';
 import { RechnungDetail } from './rechnungen/rechnung-detail';
 
-/** Route table = Strangler-Fig scoreboard: a route appears here when its slice
- * is ported; everything else falls through to the AngularJS UI (AltWeiche).
- * The catch-all becomes a redirect to /start when the last slice lands. */
+/** Complete since the stage-5 cutover — the AngularJS app is gone. Unknown
+ * paths land on /start, exactly like ngRoute's .otherwise did. */
 export const routes: Routes = [
   { path: 'start', component: Dashboard },
   { path: 'kunden', component: Kunden },
@@ -30,5 +28,5 @@ export const routes: Routes = [
   { path: 'bericht', component: Bericht },
   { path: 'admin', component: Admin },
   { path: '', pathMatch: 'full', redirectTo: 'start' },
-  { path: '**', component: AltWeiche },
+  { path: '**', redirectTo: 'start' },
 ];

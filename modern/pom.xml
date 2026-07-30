@@ -6,7 +6,9 @@
 	<groupId>at.werkstatt</groupId>
 	<artifactId>werkstatt-crm</artifactId>
 	<version>1.4.2</version>
-	<packaging>war</packaging>
+	<!-- war -> jar at the stage-5 cutover: the JSP admin page (the only WAR
+	     reason) is absorbed, src/main/webapp is gone -->
+	<packaging>jar</packaging>
 
 	<name>WerkstattCRM</name>
 	<description>WerkstattCRM modern stand — grows stage by stage (see stages.md)</description>
