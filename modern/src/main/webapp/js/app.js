@@ -11,19 +11,12 @@ var portierteRouten = [
 	/^\/start$/,
 	/^\/kunden(\/.*)?$/,
 	/^\/fahrzeuge$/,
-	/^\/auftraege(\/.*)?$/
+	/^\/auftraege(\/.*)?$/,
+	/^\/rechnungen(\/.*)?$/
 ];
 
 werkstattApp.config(['$routeProvider', function ($routeProvider) {
 	$routeProvider
-		.when('/rechnungen', {
-			templateUrl: 'views/rechnungen.html',
-			controller: 'RechnungenCtrl'
-		})
-		.when('/rechnungen/:id', {
-			templateUrl: 'views/rechnung-detail.html',
-			controller: 'RechnungDetailCtrl'
-		})
 		.when('/bericht', {
 			templateUrl: 'views/bericht.html',
 			controller: 'BerichtCtrl'

@@ -1,0 +1,78 @@
+@if (rechnung(); as r) {
+  <p class="hidden-print">
+    <a routerLink="/rechnungen" class="btn btn-default">Zurück</a>
+    <button class="btn btn-primary" (click)="drucken()" data-testid="btn-drucken">Drucken</button>
+    @if (r.bezahlt) {
+      <span class="label label-success" style="margin-left: 10px">
+        bezahlt am {{ r.bezahltAm | date: 'dd.MM.yyyy' }}
+      </span>
+    } @else {
+      <span class="label label-danger" style="margin-left: 10px">offen</span>
+    }
+  </p>
+
+  <div class="rechnung-blatt" data-testid="rechnung-blatt">
+    <div class="row">
+      <div class="col-xs-6">
+        <h2>KFZ-Werkstatt Moser GmbH</h2>
+        <p>
+          Gewerbeparkstraße 12<br />
+          4320 Perg<br />
+          Tel: +43 7262 12345<br />
+          UID: ATU12345678
+        </p>
+      </div>
+      <div class="col-xs-6 text-right">
+        <h3 data-testid="rechnung-nummer">Rechnung {{ r.rechnungNr }}</h3>
+        <p>
+          Datum: {{ r.ausgestelltAm | date: 'dd.MM.yyyy' }}<br />
+          Auftrag: {{ r.auftragNr }}
+        </p>
+      </div>
+    </div>
+
+    @if (auftrag(); as a) {
+      <p>
+        <strong>Kunde:</strong> {{ r.kundeName }}<br />
+        <strong>Fahrzeug:</strong> {{ a.kennzeichen }} - {{ a.fahrzeugBezeichnung }}<br />
+        <strong>Arbeiten:</strong> {{ a.beschreibung }}
+      </p>
+
+      <table class="table" data-testid="rechnung-positionen">
+        <tr>
+          <th>Position</th>
+          <th class="text-right">Menge</th>
+          <th class="text-right">Einzelpreis</th>
+          <th class="text-right">Betrag</th>
+        </tr>
+        @for (p of a.positionen; track p.id) {
+          <tr data-testid="rechnung-position-zeile">
+            <td>{{ p.bezeichnung }}</td>
+            <td class="text-right">{{ p.menge }}</td>
+            <td class="text-right">{{ p.einzelpreis | euro }}</td>
+            <td class="text-right">{{ p.gesamtpreis | euro }}</td>
+          </tr>
+        }
+      </table>
+    }
+
+    <table class="table" style="max-width: 300px; margin-left: auto">
+      <tr>
+        <th>Summe netto</th>
+        <td class="text-right" data-testid="rechnung-netto">{{ r.summeNetto | euro }}</td>
+      </tr>
+      <tr>
+        <th>USt 20%</th>
+        <td class="text-right" data-testid="rechnung-ust">{{ r.ust | euro }}</td>
+      </tr>
+      <tr>
+        <th>Gesamt</th>
+        <td class="text-right" data-testid="rechnung-brutto"><strong>{{ r.summeBrutto | euro }}</strong></td>
+      </tr>
+    </table>
+
+    <p class="text-muted" style="margin-top: 30px; font-size: 11px">
+      Zahlbar prompt ohne Abzug. Es gelten unsere allgemeinen Geschäftsbedingungen.
+    </p>
+  </div>
+}

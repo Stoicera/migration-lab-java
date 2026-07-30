@@ -8,6 +8,8 @@ import { AuftragNeu } from './auftraege/auftrag-neu';
 import { Fahrzeuge } from './fahrzeuge/fahrzeuge';
 import { Kunden } from './kunden/kunden';
 import { KundeDetail } from './kunden/kunde-detail';
+import { Rechnungen } from './rechnungen/rechnungen';
+import { RechnungDetail } from './rechnungen/rechnung-detail';
 
 /** Route table = Strangler-Fig scoreboard: a route appears here when its slice
  * is ported; everything else falls through to the AngularJS UI (AltWeiche).
@@ -21,6 +23,8 @@ export const routes: Routes = [
   { path: 'auftraege', component: Auftraege },
   { path: 'auftraege/neu', component: AuftragNeu },
   { path: 'auftraege/:id', component: AuftragDetail },
+  { path: 'rechnungen', component: Rechnungen },
+  { path: 'rechnungen/:id', component: RechnungDetail },
   { path: '', pathMatch: 'full', redirectTo: 'start' },
   { path: '**', component: AltWeiche },
 ];
