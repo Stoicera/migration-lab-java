@@ -493,9 +493,11 @@ matrix as the equivalence bar for the new UI.
 twice vs legacy; characterization 36/36 vs both stands; modern verify green
 with all gates (frontend build, ng lint, prettier check, spotless check).
 
-**Hours:** 1.7 *(measured wall time: session start ≈23:35 (first tool call,
-baseline runs from 23:37) to PR merge ≈01:15 — verifiable via git/PR
-timestamps; agent wall-clock under supervision, see worklog header)*
+**Hours:** 1.25 *(measured wall time: session start ≈23:35 (first tool call,
+baseline runs from 23:37) to PR #14 merge 00:50 — verifiable via git/PR
+timestamps; agent wall-clock under supervision, see worklog header. Corrected
+2026-07-31: the entry was written BEFORE the merge with an estimated close of
+≈01:15 / 1.7 h; CI was faster — rule: log measured, correct openly.)*
 
 **Decisions:** ADR-0009 (strangler shape: URL seam, no ngUpgrade; zoneless
 wait contract; WAR→JAR); ADR-0004 register +SD-2/+SD-3 (both mandated by
