@@ -8,7 +8,7 @@
 Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 20 —
 safety net first, honest numbers, reusable German migration playbook.
 
-> **Status: G0 — kickoff & skeleton.** The legacy application lands in G1.
+> **Status: G1 done — `stage-0-legacy` is runnable.** Next: G2, the safety net.
 > Follow progress in [`stages.md`](stages.md) and [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
@@ -54,7 +54,10 @@ real effort numbers — how a senior team de-risks exactly this migration:
 
 ## Quickstart
 
-Arrives with `stage-0-legacy` (G1): `docker compose -f legacy/docker-compose.yml up`.
+```bash
+docker compose -f legacy/docker-compose.yml up -d
+# SPA: http://localhost:8080 · JSP admin: http://localhost:8080/admin
+```
 
 ---
 

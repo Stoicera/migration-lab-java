@@ -1,0 +1,39 @@
+<h2>Rechnungen</h2>
+
+<div class="checkbox">
+	<label>
+		<input type="checkbox" ng-model="nurOffene" id="check-nur-offene"> nur unbezahlte anzeigen
+	</label>
+</div>
+
+<table class="table table-striped table-hover" id="rechnungen-tabelle">
+	<tr>
+		<th>Nummer</th>
+		<th>Datum</th>
+		<th>Auftrag</th>
+		<th>Kunde</th>
+		<th class="text-right">Netto</th>
+		<th class="text-right">Brutto</th>
+		<th>Status</th>
+		<th></th>
+	</tr>
+	<tr ng-repeat="r in rechnungen" ng-if="anzeigen(r)">
+		<td><a href="#!/rechnungen/{{r.id}}">{{r.rechnungNr}}</a></td>
+		<td>{{r.ausgestelltAm | date:'dd.MM.yyyy'}}</td>
+		<td>{{r.auftragNr}}</td>
+		<td>{{r.kundeName}}</td>
+		<td class="text-right">{{r.summeNetto | euro}}</td>
+		<td class="text-right">{{r.summeBrutto | euro}}</td>
+		<td>
+			<span class="label label-success" ng-if="r.bezahlt">bezahlt</span>
+			<span class="label label-danger" ng-if="!r.bezahlt">offen</span>
+		</td>
+		<td class="text-right">
+			<button class="btn btn-xs btn-success" ng-if="!r.bezahlt"
+				ng-click="bezahltSetzen(r)">Bezahlt</button>
+		</td>
+	</tr>
+	<tr ng-if="rechnungen.length == 0">
+		<td colspan="8" class="text-muted">Noch keine Rechnungen.</td>
+	</tr>
+</table>
