@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AltWeiche } from './alt-weiche';
 import { Dashboard } from './dashboard/dashboard';
+import { Fahrzeuge } from './fahrzeuge/fahrzeuge';
 import { Kunden } from './kunden/kunden';
 import { KundeDetail } from './kunden/kunde-detail';
 
@@ -13,6 +14,7 @@ export const routes: Routes = [
   { path: 'kunden', component: Kunden },
   { path: 'kunden/neu', component: KundeDetail },
   { path: 'kunden/:id', component: KundeDetail },
+  { path: 'fahrzeuge', component: Fahrzeuge },
   { path: '', pathMatch: 'full', redirectTo: 'start' },
   { path: '**', component: AltWeiche },
 ];

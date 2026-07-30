@@ -14,20 +14,8 @@
 // ---------------------------------------------------------
 
 // ---------------------------------------------------------
-// Fahrzeuge (Gesamtliste)
+// Fahrzeuge (Gesamtliste): Stage 5 - portiert ins neue Angular-Frontend
 // ---------------------------------------------------------
-werkstattApp.controller('FahrzeugeCtrl', ['$scope', '$http', function ($scope, $http) {
-
-	$scope.fahrzeuge = [];
-	$scope.filter = '';
-
-	$http.get('api/fahrzeuge').then(function (antwort) {
-		$scope.fahrzeuge = antwort.data;
-	}, function () {
-		alert('Fahrzeuge konnten nicht geladen werden!');
-	});
-
-}]);
 
 // ---------------------------------------------------------
 // Auftraege

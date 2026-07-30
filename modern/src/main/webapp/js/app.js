@@ -9,15 +9,12 @@ var werkstattApp = angular.module('werkstattApp', ['ngRoute']);
 // Eintrag wandert pro portierter Route hierher, bis die App leer ist.
 var portierteRouten = [
 	/^\/start$/,
-	/^\/kunden(\/.*)?$/
+	/^\/kunden(\/.*)?$/,
+	/^\/fahrzeuge$/
 ];
 
 werkstattApp.config(['$routeProvider', function ($routeProvider) {
 	$routeProvider
-		.when('/fahrzeuge', {
-			templateUrl: 'views/fahrzeuge.html',
-			controller: 'FahrzeugeCtrl'
-		})
 		.when('/auftraege', {
 			templateUrl: 'views/auftraege.html',
 			controller: 'AuftraegeCtrl'
