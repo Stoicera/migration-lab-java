@@ -6,35 +6,8 @@
 // =========================================================
 
 // ---------------------------------------------------------
-// Startseite
+// Startseite: Stage 5 - portiert ins neue Angular-Frontend
 // ---------------------------------------------------------
-werkstattApp.controller('DashboardCtrl', ['$scope', '$http', function ($scope, $http) {
-
-	$scope.offeneAuftraege = [];
-	$scope.fertigeAuftraege = [];
-	$scope.offeneRechnungen = 0;
-
-	$http.get('api/auftraege').then(function (antwort) {
-		var alle = antwort.data;
-		$scope.offeneAuftraege = alle.filter(function (a) {
-			return a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT';
-		});
-		$scope.fertigeAuftraege = alle.filter(function (a) {
-			return a.status === 'FERTIG';
-		});
-	});
-
-	$http.get('api/rechnungen').then(function (antwort) {
-		var offen = 0;
-		for (var i = 0; i < antwort.data.length; i++) {
-			if (!antwort.data[i].bezahlt) {
-				offen++;
-			}
-		}
-		$scope.offeneRechnungen = offen;
-	});
-
-}]);
 
 // ---------------------------------------------------------
 // Kunden

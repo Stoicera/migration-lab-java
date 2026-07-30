@@ -1,0 +1,25 @@
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" routerLink="/start">WerkstattCRM</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <!-- Strangler-Fig hybrid nav: ported routes are routerLinks, everything
+           else full-page-loads into the AngularJS UI at /alt.html#!… (the same
+           href values are used in alt.html so the selector map holds on both
+           shells). One anchor flips per ported slice; see git history. -->
+      <li><a href="/alt.html#!/kunden">Kunden</a></li>
+      <li><a href="/alt.html#!/fahrzeuge">Fahrzeuge</a></li>
+      <li><a href="/alt.html#!/auftraege">Aufträge</a></li>
+      <li><a href="/alt.html#!/rechnungen">Rechnungen</a></li>
+      <li><a href="/alt.html#!/bericht">Monatsbericht</a></li>
+    </ul>
+    <p class="navbar-text navbar-right" style="margin-right: 10px">KFZ-Werkstatt Moser GmbH, Perg</p>
+  </div>
+</nav>
+
+<div class="container-fluid" id="inhalt">
+  <router-outlet />
+</div>
+
+<footer class="werkstatt-footer">WerkstattCRM 1.4.2 &middot; intern &middot; bei Problemen: Hr. B. anrufen</footer>

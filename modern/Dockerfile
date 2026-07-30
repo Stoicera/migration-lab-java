@@ -4,6 +4,8 @@ FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /build
 COPY pom.xml .
 RUN mvn -B -q dependency:go-offline
+# frontend first: its npm ci layer only busts when package/lockfile change
+COPY frontend ./frontend
 COPY src ./src
 RUN mvn -B -q package -DskipTests
 

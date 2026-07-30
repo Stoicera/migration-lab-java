@@ -1,0 +1,8 @@
+# keep the Docker build context lean and reproducible: the image build installs
+# its own Node + node_modules via frontend-maven-plugin / npm ci
+frontend/node_modules/
+frontend/node/
+frontend/dist/
+frontend/.angular/
+frontend/.vscode/
+target/

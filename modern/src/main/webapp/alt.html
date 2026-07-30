@@ -12,14 +12,18 @@
 	<nav class="navbar navbar-inverse navbar-static-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#!/start">WerkstattCRM</a>
+				<!-- Stage 5 (Strangler Fig): Startseite lebt schon im neuen Frontend -->
+				<a class="navbar-brand" href="/start">WerkstattCRM</a>
 			</div>
 			<ul class="nav navbar-nav">
-				<li><a href="#!/kunden">Kunden</a></li>
-				<li><a href="#!/fahrzeuge">Fahrzeuge</a></li>
-				<li><a href="#!/auftraege">Aufträge</a></li>
-				<li><a href="#!/rechnungen">Rechnungen</a></li>
-				<li><a href="#!/bericht">Monatsbericht</a></li>
+				<!-- Hybrid-Nav: portierte Routen zeigen absolut auf das neue Frontend,
+				     alle anderen absolut auf diese Seite - dieselben href-Werte wie in
+				     der Angular-Shell, damit die Selektor-Map auf beiden Shells greift -->
+				<li><a href="/alt.html#!/kunden">Kunden</a></li>
+				<li><a href="/alt.html#!/fahrzeuge">Fahrzeuge</a></li>
+				<li><a href="/alt.html#!/auftraege">Aufträge</a></li>
+				<li><a href="/alt.html#!/rechnungen">Rechnungen</a></li>
+				<li><a href="/alt.html#!/bericht">Monatsbericht</a></li>
 			</ul>
 			<p class="navbar-text navbar-right" style="margin-right: 10px;">
 				KFZ-Werkstatt Moser GmbH, Perg

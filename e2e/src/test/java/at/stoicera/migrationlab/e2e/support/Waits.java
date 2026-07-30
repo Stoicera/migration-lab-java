@@ -111,9 +111,15 @@ public final class Waits {
 			case "angularjs":
 				angularJsIdle();
 				break;
+			case "angular":
+				angularIdle();
+				break;
+			case "hybrid":
+				hybridIdle();
+				break;
 			default:
 				throw new IllegalStateException("Unknown wait.strategy '" + WAIT_STRATEGY
-						+ "' in the selector map — supported: 'angularjs' (stage 5 adds 'angular'). "
+						+ "' in the selector map — supported: 'angularjs', 'angular', 'hybrid'. "
 						+ "Fail-loud by design: weakening or skipping the idle wait is not an option "
 						+ "(see e2e/README.md, wait strategy).");
 		}
@@ -125,6 +131,35 @@ public final class Waits {
 				"return (window.angular !== undefined)"
 						+ " && (angular.element(document.body).injector() !== undefined)"
 						+ " && (angular.element(document.body).injector().get('$http').pendingRequests.length === 0);"));
+	}
+
+	/**
+	 * Angular (stage 5) strategy: the app is zoneless, so instead of the classic
+	 * Testability API the UI maintains a pending-request counter with the same
+	 * semantic as AngularJS' $http.pendingRequests (see
+	 * modern/frontend/src/app/offene-requests.interceptor.ts). Strictly typed
+	 * probe: a missing marker is "not idle", never "skip the gate".
+	 */
+	private void angularIdle() {
+		driverWait().until(d -> (Boolean) ((org.openqa.selenium.JavascriptExecutor) d).executeScript(
+				"return (typeof window.werkstattOffeneRequests === 'number')"
+						+ " && (window.werkstattOffeneRequests === 0);"));
+	}
+
+	/**
+	 * Hybrid strategy for the stage-5 Strangler-Fig window, when one flow can
+	 * cross between the Angular UI and the AngularJS UI: dispatches on whichever
+	 * framework marker the CURRENT document carries. Neither marker present =
+	 * not idle (e.g. mid page-swap) — the wait polls on, fail-loud on timeout.
+	 */
+	private void hybridIdle() {
+		driverWait().until(d -> (Boolean) ((org.openqa.selenium.JavascriptExecutor) d).executeScript(
+				"if (typeof window.werkstattOffeneRequests === 'number') {"
+						+ " return window.werkstattOffeneRequests === 0; }"
+						+ "if (window.angular !== undefined"
+						+ " && angular.element(document.body).injector() !== undefined) {"
+						+ " return angular.element(document.body).injector().get('$http').pendingRequests.length === 0; }"
+						+ "return false;"));
 	}
 
 	/** Generic condition on a located element (element must already exist). */
