@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,8 +16,11 @@ import at.werkstatt.crm.service.WerkstattService;
 @RequestMapping("/api/bericht")
 public class BerichtController {
 
-	@Autowired
-	private WerkstattService werkstattService;
+	private final WerkstattService werkstattService;
+
+	public BerichtController(WerkstattService werkstattService) {
+		this.werkstattService = werkstattService;
+	}
 
 	@GetMapping("/monat")
 	public List<MonatsBericht> monatsBericht(@RequestParam(value = "jahr", required = false) Integer jahr) {

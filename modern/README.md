@@ -29,6 +29,16 @@ equivalence is proven per commit, not claimed.
 
 ## Stage log
 
+- **Stage 4 (`stage-4-boot-4x`):** Boot 2.7 → 3.5.16 → 4.1.0, Java 17 → 25,
+  `javax` → `jakarta`. OpenRewrite used **and evaluated** ([ADR-0002](../docs/adr/0002-openrewrite-as-assistant-not-autopilot.md)):
+  recipes handled the parent bumps, the `web` → `webmvc` starter rename, the
+  taglib URI and a property key — but pinned javax JSTL instead of migrating it
+  (green build, dead JSP page at runtime) and ignored the Jackson 3 move.
+  Hand work with migration purpose: constructor-injection sweep (testability is
+  the next milestone's precondition) and the B4 SQL-injection fix, with
+  before/after proof in playbook ch. 4. God class deliberately left standing —
+  it is the study object for the AI test-generation experiment.
+
 - **Stage 3 (`stage-3-boot-2.7`):** Boot 1.5.22 → 2.7.18 + Java 17 in one jump.
   Three real breaks, all net-caught: `SpringBootServletInitializer` package
   move (compile); pinned gson 2.3.1 vs `GsonAutoConfiguration` (startup);

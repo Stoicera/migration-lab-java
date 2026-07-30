@@ -208,3 +208,37 @@ legacy (net unbroken end to end).
 
 **Next (G4):** Boot 2.7 → 3.x → 4.1 + Java 25: jakarta migration, constructor
 injection sweep, OpenRewrite used AND evaluated, tag stage-4-boot-4x.
+
+---
+
+## 2026-07-30 — G4: Stage 4 — Boot 3.5 → 4.1, Java 25, OpenRewrite evaluated — session 6
+
+**What:**
+
+- Boot 2.7.18 → **3.5.16** → **4.1.0**, Java 17 → **25** (Dockerfile temurin-25;
+  modern-ci reads the JDK from the pom).
+- **OpenRewrite measured** (rewrite-maven-plugin 6.45.0 / rewrite-spring 6.36.0)
+  → ADR-0002 "assistant, not autopilot". Caught: parent bumps, starter
+  web→webmvc, taglib URI → jakarta.tags.core, property key
+  spring.jackson.serialization.* → .datatype.datetime.* (self-reported 20m
+  saved). **Missed:** (a) pinned javax jstl 1.2 instead of migrating to the
+  Jakarta artifacts — build green, app started, REST fine, **JSP admin page
+  dead at runtime** (ClassNotFoundException on Tomcat 10.1), caught by the
+  admin-page golden master; (b) Jackson 3 move (tools.jackson) —
+  Jackson2ObjectMapperBuilderCustomizer → JsonMapperBuilderCustomizer, the only
+  compile break of the 4.x leg; (c) nothing structural, as expected. No full
+  UpgradeSpringBoot_4_1 composite exists — 4.1 bump manual.
+- Hand work **with migration purpose**: constructor-injection sweep (6
+  controllers + service; precondition for G6 testability) and **B4 SQL
+  injection closed**, with reproducible before/after: `?suche=%' OR '1'='1`
+  leaks all 10 customers on legacy, returns 0 on modern; legitimate search
+  identical on both. Status filter parameterized too. God class deliberately
+  left standing (study object for G6).
+- Net green at every step: characterization 17/17 and e2e 13/13 vs the 4.1
+  stand, e2e 13/13 vs legacy.
+
+**Hours:** 1.0
+
+**Next (G5):** AngularJS → Angular 20 via Strangler Fig; same E2E scenarios
+green on old AND new UI via selectors/modern.properties v2 — the headline
+result. JSP admin page gets absorbed (gson dies with it).
