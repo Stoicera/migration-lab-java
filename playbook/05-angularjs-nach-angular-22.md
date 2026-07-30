@@ -39,7 +39,7 @@ Wir haben den Strangler Fig so geschnitten:
    Selenium-Szenario. Das ist der eigentliche Beweis, dass die Naht trägt.
 
 **Warum kein ngUpgrade?** `@angular/upgrade` existiert auch für Angular 22
-(am 2026-07-31 live geprüft) und kann beide Frameworks **in einer Seite**
+(am 2026-07-30 zu Sitzungsbeginn live geprüft) und kann beide Frameworks **in einer Seite**
 mischen. Der Preis: doppelte Change Detection, AngularJS im Angular-Build,
 `$injector`-Brücken — Werkzeug für große Apps, deren Komponenten sich eine
 Seite teilen müssen. Bei zehn Views mit sauberen Routengrenzen ist die
@@ -63,8 +63,13 @@ aus drei Dingen:
   dessen führt die App selbst einen Pending-Request-Zähler (ein
   HTTP-Interceptor, 15 Zeilen) als **Testbarkeits-Vertrag**. In der
   Hybrid-Phase entscheidet eine `hybrid`-Strategie pro Seite, welches Framework
-  gerade antwortet; unbekannte Werte werfen — bewusst laut.
+  gerade antwortet; unbekannte Werte werfen — bewusst laut. (Der Zähler-
+  Interceptor ist ~10 Zeilen Code.)
 - **Ein sanktionierter Erwartungswert pro Stand:** siehe SD-3 unten.
+
+Grün gelaufen ist das Netz pro Slice gegen den modernen Stand; die Legacy-Läufe
+wurden risikobasiert wiederholt (immer wenn geteilter Suite-Code angefasst
+wurde) plus als volle Matrix an den Toren — der genaue Takt steht im Worklog.
 
 ### Formatierung ist Vertrag
 
@@ -124,8 +129,8 @@ die Aufteilung ist eine **gekennzeichnete Schätzung** über die gemessene Summe
 
 | Schritt | Anteil (geschätzt) |
 |---|---|
-| Shell, Build-Integration (frontend-maven-plugin, Docker), Hybrid-Mechanik, Wait-Strategien | ~30 % |
-| Sechs Routen-Slices portieren (Komponente + Map + Rückbau alt, je grün) | ~45 % |
+| Shell, Build-Integration (frontend-maven-plugin, Docker), Hybrid-Mechanik, Wait-Strategien, Dashboard | ~30 % |
+| Fünf weitere Routen-Slices portieren (Komponente + Map + Rückbau alt, je grün) | ~45 % |
 | Adminseite absorbieren (SD-2), Cutover WAR→JAR | ~10 % |
 | Lint/Format-Gates + Zoneless-Bugfix | ~15 % |
 
@@ -149,3 +154,36 @@ zehnte Tabelle kostet fast nichts mehr, das erste Inline-Formular kostet.
 - **Server-Fallbacks nicht vergessen:** Pfad-Routing braucht ein
   Forward-auf-die-Shell für jede SPA-Route (Deep-Links, Reload) — die Liste
   wächst pro Slice mit und ist am Ende die Routentabelle des Servers.
+
+## Nachtrag: Was die feindliche Review danach noch fand (Session 10)
+
+Die Etappe wurde nach Abschluss einer kommissionierten feindlichen Review
+unterzogen (Forscher- und Enterprise-Architekten-Brille) — Methode wie nach
+Etappe 4, Befunde öffentlich im Worklog. Die lehrreichsten, alle behoben:
+
+1. **Neue Fläche ist ungeschützte Fläche.** Die absorbierte Adminseite, die
+   SPA-Deep-Link-Routen und die neu geschriebenen Listen-Filter hatte nach dem
+   Umbau **kein Test mehr im Blick** — die alte Coverage-Argumentation („hält
+   die Charakterisierungs-Schicht") galt für die JSP, nicht für ihren
+   Nachfolger. Regel: *Jede Migrations-Etappe muss die Coverage-Argumente neu
+   führen, die sie geerbt hat.* Jetzt gepinnt: Admin-Flow per Selenium auf
+   beiden Ständen, alle SPA-Dokumentrouten, Status-Filter, Unbezahlt-Toggle.
+2. **Semantik-Reste verstecken sich in Framework-Filtern.** AngularJS'
+   `filter:filter` kann mit führendem `!` negieren — der Port konnte es nicht.
+   Und das leere Kundenformular schickte `""`-Felder, wo das Original die Keys
+   wegließ (DB: `''` statt `NULL`). Beides unsichtbar in jeder UI-Prüfung,
+   beides Wire-/Verhaltens-Drift. Behoben und Regel notiert: *Payload-Formen
+   gegen das Original diffen, nicht nur Screens.*
+3. **Alte Lesezeichen sterben still.** Nach dem Cutover führte jedes
+   `#!`-Lesezeichen auf die Startseite. Ein 4-Zeilen-Shim in `main.ts`
+   schreibt den Hash vor der Router-Initialisierung auf die Pfad-Route um —
+   jetzt per E2E auf beiden Ständen gepinnt.
+4. **Das Zoneless-Muster kam wieder.** Zwei weitere asynchron beschriebene
+   Plain-Properties (Formular-Resets) überlebten das „vollständige" Audit aus
+   Session 9 — deterministisch abgesichert nur durch benachbarte Signal-Writes.
+   Jetzt Signale; die Audit-Aussage im Worklog korrigiert. *Ein Audit-Claim
+   gehört mit einem Grep belegt, nicht mit Erinnerung.*
+5. **Formulierungs-Inflation.** „Grün auf beiden Ständen bei jedem Commit"
+   war eine Rundung — tatsächlich: modern pro Slice, legacy risikobasiert plus
+   volle Matrix an den Toren. Die Dokumente sagen jetzt das Präzise. Ehrlichkeit
+   ist billig, solange man sie sofort bezahlt.

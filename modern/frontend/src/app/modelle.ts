@@ -7,8 +7,9 @@ export type AuftragStatus = 'ANGENOMMEN' | 'IN_ARBEIT' | 'FERTIG' | 'ABGEHOLT' |
 export interface Kunde {
   id?: number;
   anrede: string;
-  vorname: string;
-  nachname: string;
+  /** optional on the wire: the create form omits untouched fields (NULL, not '') */
+  vorname?: string;
+  nachname?: string;
   anzeigeName?: string;
   telefon?: string;
   email?: string;

@@ -30,6 +30,30 @@ public class RechnungenPage {
     return row(rechnungNr).findElement(css("rechnungen.rowStatusLabel")).getText();
   }
 
+  public int rowCount() {
+    return driver.findElements(css("rechnungen.rows")).size();
+  }
+
+  public void waitForRowCount(int expected) {
+    waits.countIs(css("rechnungen.rows"), expected);
+  }
+
+  /** Header texts — tests pin these before any cell-position access. */
+  public java.util.List<String> headerTexte() {
+    return waits.allVisible(css("rechnungen.headerCells")).stream()
+        .map(WebElement::getText)
+        .toList();
+  }
+
+  /** Sets the "nur unbezahlte anzeigen" checkbox to the wanted state (client-side filter). */
+  public RechnungenPage nurOffene(boolean an) {
+    WebElement checkbox = waits.clickable(css("rechnungen.nurOffeneCheckbox"));
+    if (checkbox.isSelected() != an) {
+      checkbox.click();
+    }
+    return this;
+  }
+
   public RechnungDetailPage openRechnung(String rechnungNr) {
     row(rechnungNr).findElement(css("rechnungen.rowNumberLink")).click();
     waits.visible(css("rechnungDetail.nummer"));

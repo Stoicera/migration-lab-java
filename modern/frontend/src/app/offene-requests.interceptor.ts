@@ -11,6 +11,10 @@ const zaehler = window as unknown as { werkstattOffeneRequests: number };
  * `angular`, see e2e/README.md). The counter is part of the app's testability
  * contract, not debug tooling: the app is zoneless, so the classic
  * Testability#isStable probe has nothing to observe.
+ *
+ * Contract boundary: only HttpClient traffic is counted. Backend calls must
+ * go through ApiService/HttpClient — a raw fetch()/XHR would bypass the idle
+ * gate silently (documented limit, e2e/README.md).
  */
 export function offeneRequestsInterceptor(
   req: HttpRequest<unknown>,

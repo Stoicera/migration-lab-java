@@ -306,6 +306,21 @@ class DbStateCharacterizationTest {
     assertThat(response.statusCode()).isEqualTo(200);
     assertThat(response.body())
         .contains(erwartetGeloescht.size() + " stornierte Aufträge wurden endgültig gelöscht.");
+    if (Stand.isModern()) {
+      // SD-2: the modern endpoint answers JSON the SPA depends on — pin the
+      // exact shape, not just the substring (review session 10: renaming the
+      // "meldung" key would have kept the contains() green while silently
+      // breaking the admin page's result display).
+      assertThat(response.headers().firstValue("Content-Type").orElse(""))
+          .contains("application/json");
+      var json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(response.body());
+      List<String> felder = new ArrayList<>();
+      json.fieldNames().forEachRemaining(felder::add);
+      assertThat(felder).containsExactlyInAnyOrder("geloescht", "meldung");
+      assertThat(json.get("geloescht").intValue()).isEqualTo(erwartetGeloescht.size());
+      assertThat(json.get("meldung").asText())
+          .isEqualTo(erwartetGeloescht.size() + " stornierte Aufträge wurden endgültig gelöscht.");
+    }
 
     try (Connection c = Stand.connect();
         Statement s = c.createStatement()) {

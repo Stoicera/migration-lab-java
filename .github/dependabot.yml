@@ -26,3 +26,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+  # stage 5 added the Angular frontend — its npm ecosystem is scanned too
+  # (was a silent gap for one day; review session 10, docs/DEVIATIONS.md)
+  - package-ecosystem: npm
+    directory: /modern/frontend
+    schedule:
+      interval: weekly

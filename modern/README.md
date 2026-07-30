@@ -72,8 +72,10 @@ THIS table is the disposition of each wart on the migrating stand, so
   Fig on a URL seam ([ADR-0009](../docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md)):
   the Angular app took `/` with path routes from the first slice, the old app
   stayed fully functional at `/alt.html#!/…` until each route ported over —
-  one commit per route group, suites green at every step, cross-framework
-  handovers as full page loads. JSP admin page absorbed (SD-2), the legacy
+  one commit per route group — each verified green against the modern stand,
+  legacy legs re-run when shared suite code changed, full both-stand matrix at
+  the gate (cadence recorded in the worklog) — cross-framework handovers as
+  full page loads. JSP admin page absorbed (SD-2), the legacy
   "undefined" error alert replaced by the real server message (SD-3),
   packaging WAR→JAR, `src/main/webapp/` deleted at cutover. Formatting parity
   is enforced (EuroPipe replicates the 2016 `euro` filter byte-for-byte;

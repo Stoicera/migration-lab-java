@@ -507,3 +507,106 @@ SPEC §4/MILESTONES G5 wording); lint deviation closed.
 accepted 2026-07-30; freeze checklist + tag at G6 start), decide Arm B, run
 the experiment strictly per protocol. The constructor-injected, JSP-free
 modern stand is the precondition G6 was waiting for.
+
+---
+
+## 2026-07-31 — Hostile review of stage 5 + full remediation — session 10
+
+Owner-commissioned, same method as session 7: three parallel review agents
+(port fidelity vs the stage-4 tree, safety-net gaps, docs honesty + standards
+compliance), every claim cross-verified against the tree before any fix; the
+false/overreaching agent claims were discarded with evidence (e.g. "twice vs
+legacy unverifiable" — both runs exist in the session record; "~23 s stale" —
+re-measured at 26–28 s, the claim was essentially honest). All confirmed
+findings fixed in this session, prioritised list:
+
+**Equivalence breaks in the port (all fixed, suites prove it):**
+
+1. AngularJS `filter:filter`'s leading-`!` negation was not ported — the
+   vehicle filter silently lost a feature. Reimplemented incl. the bare-`!`
+   edge (matches nothing, like the original).
+2. The empty customer form POSTed `"vorname": ""` where the 2016 controller
+   omitted untouched keys → `''` instead of `NULL` in the DB. `leererKunde()`
+   is now `{ anrede: 'Herr' }`, wire-faithful.
+3. Every legacy `#!`-bookmark landed on the dashboard after cutover. A shim in
+   main.ts rewrites the hash to the path route pre-router; pinned by the new
+   `DeepLinkTest` on BOTH stands (legacy: native ngRoute).
+
+**Safety-net gaps stage 5 itself created (all closed):**
+
+4. The modern admin page was pinned by NOTHING — deletable with every suite
+   green (the characterization fork proved shell + JSON, not the page; the
+   JSP-era "held by characterization" argument had silently expired with its
+   subject). New `AdminTest` drives the SAME flow on JSP and SPA via the map
+   (Kennzahlen, confirm-guarded Bereinigung, exact meldung, refreshed table).
+5. No suite ever loaded an SPA route as a document — deleting a
+   SpaForward mapping would have 404'd every bookmark, green. Now: 11
+   parameterized characterization pins (modern 200+shell / legacy 404).
+6. The stage-5 REWRITES of the status filter and the "nur unbezahlte" toggle
+   were new code with zero coverage. New `ListenFilterTest` (+ the missing
+   header pins for the kunden/auftraege/rechnungen tables — the README's
+   header-pin promise now holds for every positional table).
+7. `POST /admin/bereinigen`'s modern JSON was only substring-checked — a
+   renamed `meldung` key would have broken the UI, green. Now: exact key set,
+   values, Content-Type; `/api/admin/statistik` upgraded from coercing spot
+   checks to strict shape/type/value pins.
+8. Two `Waits.idle()` weaknesses on the Angular UI: the pre-bootstrap window
+   (marker existed at 0 before any request could be pending) and
+   counter-zero-before-render-flush (zoneless scheduler). Closed app-side
+   (marker created only at/after bootstrap, `??=`) and probe-side (double
+   requestAnimationFrame). Interceptor documents the HttpClient-only boundary.
+9. The zoneless pattern from session 9 had TWO surviving instances
+   (`neuePosition`, `neuesFahrzeug` — form resets in subscribe callbacks,
+   saved only by adjacent signal writes). Both signal-backed now.
+
+**Honesty findings (all corrected in place):**
+
+10. "Green on both stands at every commit" (stages.md, ADR-0009, worklog,
+    README, modern/README) rounded a risk-based cadence up to a measurement.
+    Actual: modern legs per slice; legacy legs at every commit touching shared
+    suite code (slices 1, 4, 7, format pass) + full matrix at the gates. All
+    five documents now say the precise thing.
+11. Silent standards deviations: the DEVIATIONS ledger was missing the entire
+    §4 security baseline (AuthN/AuthZ incl. the inherited unauthenticated
+    destructive admin POST — flagged as a G7 hard requirement; headers/CSRF/
+    rate limiting; audit log; SECURITY.md), ArchUnit, load test, static
+    analysis, the releases-"ab Milestone 2" contradiction, README
+    diagram/screenshots, and the npm ecosystem Dependabot gap stage 5 opened
+    (fixed same commit: npm entry for modern/frontend). All leddered with
+    dispositions and "silent until 2026-07-31" honesty markers.
+12. Smaller precision fixes: live-check date unified to 2026-07-30 (ADR-0009
+    and Kap. 5 said 07-31 across midnight); e2e runtime re-measured and dated;
+    "Sechs Routen-Slices" → five + dashboard; interceptor line count; e2e.yml
+    header comment; playbook Kap. 5 gained a review-Nachtrag section.
+
+**Corrections to earlier entries (visible, not rewritten):**
+
+- Session 9 / commit c4d4f31 claimed "all other components audited: remaining
+  plain properties are written only from template event handlers" — that was
+  wrong (finding 9 above); the audit criterion is now enforced by grep, and
+  the two instances are fixed.
+- Session 9 "ADR-0004 register +SD-2/+SD-3 (both mandated by SPEC §4/
+  MILESTONES G5 wording)": only SD-2 is mandated there; SD-3 is sanctioned on
+  ADR-0004's own criteria (defect, not relied-upon behaviour) — a judgment
+  call, not a mandate.
+- Session 9's fix commit and format commit share one timestamp (00:37:36);
+  the recorded verification runs covered the combined tree, not each
+  intermediate tree in isolation.
+- Session 8's handoff line "take the 26-test matrix as the equivalence bar"
+  should have read 27 — the session's own verification said 27/27.
+
+**Verification at session end:** e2e 34/34 (12 scenario classes + parity
+guard) vs modern AND legacy; characterization 47/47 (36 + 11 SPA-route pins)
+vs both stands; modern verify green with all gates. Suite runtime ~26–28 s
+per stand, measured.
+
+**Hours:** 0.5 *(measured wall time: review kickoff ≈01:05 to the remediation
+branch's push 01:36 — anchored on the push, not the merge: the CI wait and
+merge click add no work; anchor choice is the lesson from the session-9
+hours correction)*
+
+**Decisions:** none new — all fixes restore either equivalence, coverage of
+stage-5-created surface, or ledger/doc honesty; the auth deviation explicitly
+awaits owner re-scoping (G7 hard requirement noted).
+
+**Next (G6):** unchanged from session 9.

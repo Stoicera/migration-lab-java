@@ -42,6 +42,28 @@ public class AuftraegePage {
     return driver.findElements(css("auftraege.rows")).size();
   }
 
+  public void waitForRowCount(int expected) {
+    waits.countIs(css("auftraege.rows"), expected);
+  }
+
+  /** Header texts — tests pin these before any cell-position access. */
+  public java.util.List<String> headerTexte() {
+    return waits.allVisible(css("auftraege.headerCells")).stream()
+        .map(WebElement::getText)
+        .toList();
+  }
+
+  /** Clicks the status-filter button with the given caption (server-side re-query). */
+  public AuftraegePage statusFilter(String beschriftung) {
+    for (WebElement button : driver.findElements(css("auftraege.statusFilterButtons"))) {
+      if (button.getText().equals(beschriftung)) {
+        button.click();
+        return this;
+      }
+    }
+    throw new AssertionError("Status-Filter button not found: " + beschriftung);
+  }
+
   public AuftragDetailPage openAuftrag(String auftragNr) {
     row(auftragNr).click();
     waits.visible(css("auftragDetail.statusLabel"));

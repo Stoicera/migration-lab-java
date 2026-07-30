@@ -16,7 +16,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 /**
  * Golden-master captures of every read endpoint against the seeded stand. Comparison is on parsed
  * JSON trees (key order and whitespace irrelevant, values exact). A mismatch means: the migration
- * changed observable behaviour — which is exactly what these tests exist to catch.
+ * changed observable behaviour — which is exactly what these tests exist to catch. The one
+ * modern-only endpoint (/api/admin/statistik, SD-2) has no legacy golden by definition; it is
+ * pinned inline with the same strictness (exact key sets, types, values) in the admin test below.
  *
  * <p>The B4 search endpoint additionally carries the suite's only SANCTIONED divergence (ADR-0004):
  * hostile input behaves differently per stand, so those pins fork on the {@code stand} system
@@ -134,22 +136,43 @@ class ApiCharacterizationTest {
 
     if (Stand.isModern()) {
       // SD-2 (ADR-0004): stage 5 absorbed the JSP admin page into the SPA.
-      // Pinned modern behaviour: /admin serves the Angular shell, and the
-      // page's numbers come from /api/admin/statistik — asserted against
-      // the same seed-derived values the JSP golden shows.
+      // Pinned modern behaviour: /admin serves the Angular shell; the page's
+      // numbers come from /api/admin/statistik, pinned STRICTLY below (exact
+      // key sets, JSON number types, exact seed values — review session 10
+      // replaced spot checks that coerced types and ignored extra fields).
+      // The admin UI FLOW itself is pinned by e2e AdminTest on both stands.
       assertThat(response.body()).contains("<app-root");
 
-      var statistik = MAPPER.readTree(Stand.get("/api/admin/statistik").body());
-      assertThat(statistik.path("firmaName").asText()).isEqualTo("KFZ-Werkstatt Moser GmbH");
-      assertThat(statistik.path("version").asText()).isEqualTo("1.4.2");
-      JsonNode zahlen = statistik.path("statistik");
-      assertThat(zahlen.path("kunden").asInt()).isEqualTo(10);
-      assertThat(zahlen.path("fahrzeuge").asInt()).isEqualTo(13);
-      assertThat(zahlen.path("auftraege").asInt()).isEqualTo(16);
-      assertThat(zahlen.path("auftraegeOffen").asInt()).isEqualTo(4);
-      assertThat(zahlen.path("rechnungen").asInt()).isEqualTo(8);
-      assertThat(zahlen.path("rechnungenOffen").asInt()).isEqualTo(1);
-      assertThat(zahlen.path("stand").asText()).matches("\\d{2}\\.\\d{2}\\.\\d{4}");
+      JsonNode wurzel = MAPPER.readTree(Stand.get("/api/admin/statistik").body());
+      assertThat(feldNamen(wurzel)).containsExactlyInAnyOrder("firmaName", "version", "statistik");
+      assertThat(wurzel.get("firmaName").asText()).isEqualTo("KFZ-Werkstatt Moser GmbH");
+      assertThat(wurzel.get("version").asText()).isEqualTo("1.4.2");
+
+      JsonNode zahlen = wurzel.get("statistik");
+      assertThat(feldNamen(zahlen))
+          .containsExactlyInAnyOrder(
+              "kunden",
+              "fahrzeuge",
+              "auftraege",
+              "auftraegeOffen",
+              "rechnungen",
+              "rechnungenOffen",
+              "stand");
+      for (String feld :
+          new String[] {
+            "kunden", "fahrzeuge", "auftraege", "auftraegeOffen", "rechnungen", "rechnungenOffen"
+          }) {
+        assertThat(zahlen.get(feld).isIntegralNumber())
+            .as("statistik.%s is a JSON number", feld)
+            .isTrue();
+      }
+      assertThat(zahlen.get("kunden").intValue()).isEqualTo(10);
+      assertThat(zahlen.get("fahrzeuge").intValue()).isEqualTo(13);
+      assertThat(zahlen.get("auftraege").intValue()).isEqualTo(16);
+      assertThat(zahlen.get("auftraegeOffen").intValue()).isEqualTo(4);
+      assertThat(zahlen.get("rechnungen").intValue()).isEqualTo(8);
+      assertThat(zahlen.get("rechnungenOffen").intValue()).isEqualTo(1);
+      assertThat(zahlen.get("stand").asText()).matches("\\d{2}\\.\\d{2}\\.\\d{4}");
       return;
     }
 
@@ -170,6 +193,47 @@ class ApiCharacterizationTest {
   static String normalizeAdminHtml(String html) {
     // the JSP renders the current date — the only volatile value on the page
     return html.replaceAll("\\d{2}\\.\\d{2}\\.\\d{4}", "XX.XX.XXXX");
+  }
+
+  private static java.util.List<String> feldNamen(JsonNode node) {
+    java.util.List<String> namen = new java.util.ArrayList<>();
+    node.fieldNames().forEachRemaining(namen::add);
+    return namen;
+  }
+
+  /**
+   * Stage 5 made the modern UI path-routed, so every SPA route must answer a DOCUMENT request (deep
+   * link, reload) with the shell — the reason SpaForwardController exists. Review session 10 found
+   * none of its mappings pinned: deleting one would 404 every bookmark of that page with all suites
+   * green. Legacy serves no path documents (hash routing) — its 404 is pinned as the observed
+   * contrast, not as a divergence: the surface is new with stage 5. (/admin is absent here on
+   * purpose: it exists on BOTH stands and is pinned by adminPageMatchesGolden.)
+   */
+  @ParameterizedTest(name = "SPA-Dokumentroute {0}")
+  @org.junit.jupiter.params.provider.ValueSource(
+      strings = {
+        "/start",
+        "/kunden",
+        "/kunden/neu",
+        "/kunden/1",
+        "/fahrzeuge",
+        "/auftraege",
+        "/auftraege/neu",
+        "/auftraege/5",
+        "/rechnungen",
+        "/rechnungen/4",
+        "/bericht"
+      })
+  void spaRouteServesDocument(String pfad) {
+    var response = Stand.get(pfad);
+    if (Stand.isModern()) {
+      assertThat(response.statusCode()).as("GET %s", pfad).isEqualTo(200);
+      assertThat(response.body()).as("GET %s serves the SPA shell", pfad).contains("<app-root");
+    } else {
+      assertThat(response.statusCode())
+          .as("GET %s (legacy: hash routing only)", pfad)
+          .isEqualTo(404);
+    }
   }
 
   private JsonNode readGolden(String name) throws Exception {

@@ -21,9 +21,11 @@ export class Bericht implements OnInit {
 
   protected readonly monate = signal<MonatsBericht[]>([]);
   protected readonly topKunden = signal<TopKunde[]>([]);
-  protected readonly summeNetto = signal(0);
-  protected readonly summeBrutto = signal(0);
-  protected readonly summeAuftraege = signal(0);
+  // null until the first response, like the 2016 controller's undefined —
+  // the Gesamt row renders BLANK, not "0 / 0,00 €" (parity, session 10)
+  protected readonly summeNetto = signal<number | null>(null);
+  protected readonly summeBrutto = signal<number | null>(null);
+  protected readonly summeAuftraege = signal<number | null>(null);
 
   constructor() {
     for (let j = this.jahr; j >= 2016; j--) {

@@ -8,10 +8,14 @@ Three suites (Java 25, JUnit 5, no framework beyond JDK http + Jackson + JDBC):
 
 - **`ApiCharacterizationTest`** — read endpoints (incl. the B4 search endpoint
   `/api/kunden?suche=`) vs. `src/test/resources/golden/`. Comparison on parsed
-  JSON trees (key order/whitespace irrelevant, values exact); the JSP admin
-  page as normalized HTML (dates masked). On mismatch the received document
-  lands in `target/characterization-received/` for diffing. Also carries the
-  suite's only sanctioned divergence: hostile search input (see below).
+  JSON trees (key order/whitespace irrelevant, values exact); the admin page
+  forks per stand since SD-2 (legacy: JSP golden as normalized HTML, dates
+  masked; modern: SPA shell + strict `/api/admin/statistik` pin — exact key
+  sets, types, seed values; the modern admin UI FLOW is e2e `AdminTest`).
+  Since session 10 it also pins every SPA document route per stand (modern:
+  200 + shell; legacy: 404, hash routing has no path documents). On mismatch
+  the received document lands in `target/characterization-received/` for
+  diffing. Also carries the sanctioned hostile-search divergence (see below).
 - **`ErrorContractCharacterizationTest`** — the 4xx/5xx surface the UIs
   consume: 404-without-body for missing resources, the 500-with-German-message
   contract of the write paths (illegal status transition, invoice on a
