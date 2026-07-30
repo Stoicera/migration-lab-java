@@ -120,6 +120,11 @@ CI gates armed for good; playbook chapter 1; tag `stage-1-safety-net`.
   2. ngRoute does not re-instantiate the controller when clicking the nav link
      of the CURRENT route → test stuck on stale filtered view (screenshot
      evidence); fix: open() = full page load + real route change.
+  3. Found in CI only (slower hardware): saving an EDIT produces zero visible
+     DOM change, the heading wait was vacuous, navigation aborted the in-flight
+     PUT → lost update. Fix: explicit angularIdle() wait ($http.pendingRequests
+     == 0) in speichern(). Side finding for the migration backlog: missing save
+     feedback is a data-loss risk for real users too.
 - **3 consecutive green runs** locally (13/13, exit 0). Suite runtime ~10 s.
 - **Characterization** (`characterization/`): 11 JSON golden masters (tree
   comparison, received copy written on mismatch) + JSP admin HTML (date masked)

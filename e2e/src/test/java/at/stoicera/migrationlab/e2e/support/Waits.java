@@ -65,6 +65,20 @@ public final class Waits {
 		driver.switchTo().alert().accept();
 	}
 
+	/**
+	 * Explicit wait until AngularJS has no pending $http requests. Needed after
+	 * writes whose success produces NO visible DOM change (the legacy UI gives
+	 * no save feedback — flaky log #3: navigating away too early aborts the
+	 * in-flight PUT and silently loses the update). AngularJS-specific; the
+	 * stage-5 Angular UI will need its own idle strategy in this method.
+	 */
+	public void angularIdle() {
+		driverWait().until(d -> (Boolean) ((org.openqa.selenium.JavascriptExecutor) d).executeScript(
+				"return (window.angular !== undefined)"
+						+ " && (angular.element(document.body).injector() !== undefined)"
+						+ " && (angular.element(document.body).injector().get('$http').pendingRequests.length === 0);"));
+	}
+
 	/** Generic condition on a located element (element must already exist). */
 	public void until(By locator, java.util.function.Predicate<WebElement> condition) {
 		driverWait().until(d -> {

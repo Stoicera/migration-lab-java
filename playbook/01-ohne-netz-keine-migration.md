@@ -68,9 +68,22 @@ ersten Lauf, beide deterministisch behoben, kein einziger Retry:
    Altansicht. *Behebung:* `open()` beginnt mit einem vollständigen Seitenladen
    und navigiert dann per echtem Routenwechsel.
 
-Beide Funde sind Eigenschaften der Legacy-Anwendung, nicht der Testsuite — und
-genau deshalb wertvoll: Sie dokumentieren Verhalten, das auch echte Benutzer
-trifft, und sie wären mit «Retry bis grün» unsichtbar geblieben.
+3. **Speichern ohne Rückmeldung — der CI-Fund.** Lokal dreimal grün, in der CI
+   dann rot: Beim *Ändern* eines Kunden zeigt die Oberfläche nach dem Speichern
+   **keinerlei sichtbare Veränderung** — unser Warte-Kriterium (Überschrift)
+   war für diesen Fall wirkungslos, der Test navigierte sofort weiter, und der
+   Seitenwechsel brach den noch laufenden PUT-Request ab: **Update verloren,**
+   auf schneller Hardware fast nie, auf langsamer CI-Hardware reproduzierbar.
+   *Behebung:* explizites Warten darauf, dass AngularJS keine offenen
+   HTTP-Requests mehr hat, bevor weiternavigiert wird. *Nebenbefund fürs
+   Migrations-Backlog:* fehlendes Speicher-Feedback ist auch für echte
+   Benutzer ein Datenverlust-Risiko (schnelles Weiterklicken!).
+
+Alle drei Funde sind Eigenschaften der Legacy-Anwendung, nicht der Testsuite —
+und genau deshalb wertvoll: Sie dokumentieren Verhalten, das auch echte
+Benutzer trifft, und sie wären mit «Retry bis grün» unsichtbar geblieben.
+Fund 3 zeigt außerdem, warum «lokal grün» nicht reicht: Erst die langsamere
+CI-Umgebung machte das Zeitfenster groß genug.
 
 Weitere Regeln, die Flakiness strukturell verhindern: Screenshots bei jedem
 Fehlschlag (Analyse beginnt mit Beweismaterial), ein einziger Timeout-Standard

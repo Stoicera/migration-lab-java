@@ -46,9 +46,15 @@ public class KundeDetailPage {
 		return this;
 	}
 
-	/** Saves and waits until the heading shows the persisted display name. */
+	/**
+	 * Saves and waits for the round trip to COMPLETE. The heading check alone
+	 * is vacuous for edits (it already shows the name before saving) and the
+	 * legacy UI gives no save feedback — without the idle wait, navigating on
+	 * can abort the in-flight PUT and lose the update (flaky log #3, found in CI).
+	 */
 	public KundeDetailPage speichern(String erwarteterAnzeigeName) {
 		waits.clickable(css("kundeDetail.saveButton")).click();
+		waits.angularIdle();
 		waits.textIn(css("kundeDetail.heading"), erwarteterAnzeigeName);
 		return this;
 	}
