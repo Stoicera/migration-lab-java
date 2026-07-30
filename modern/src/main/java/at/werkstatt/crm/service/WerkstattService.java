@@ -101,7 +101,7 @@ public class WerkstattService {
 	}
 
 	public Kunde getKunde(long id) {
-		List<Kunde> liste = jdbcTemplate.query("SELECT * FROM kunde WHERE id = " + id, new RowMapper<Kunde>() {
+		List<Kunde> liste = jdbcTemplate.query("SELECT * FROM kunde WHERE id = ?", new RowMapper<Kunde>() {
 			public Kunde mapRow(ResultSet rs, int rowNum) throws SQLException {
 				Kunde k = new Kunde();
 				k.setId(rs.getLong("id"));
@@ -117,7 +117,7 @@ public class WerkstattService {
 				k.setAngelegtAm(rs.getTimestamp("angelegt_am"));
 				return k;
 			}
-		});
+		}, id);
 		if (liste.isEmpty()) {
 			return null;
 		}
@@ -145,7 +145,7 @@ public class WerkstattService {
 	public void loescheKunde(long id) {
 		// Fahrzeuge und Auftraege bleiben stehen, hat noch nie Probleme gemacht
 		LOG.info("Loesche Kunde " + id);
-		jdbcTemplate.update("DELETE FROM kunde WHERE id = " + id);
+		jdbcTemplate.update("DELETE FROM kunde WHERE id = ?", id);
 	}
 
 	// =====================================================================
@@ -168,20 +168,20 @@ public class WerkstattService {
 	}
 
 	public List<Fahrzeug> getFahrzeugeZuKunde(long kundeId) {
-		return jdbcTemplate.query("SELECT * FROM fahrzeug WHERE kunde_id = " + kundeId + " ORDER BY kennzeichen",
+		return jdbcTemplate.query("SELECT * FROM fahrzeug WHERE kunde_id = ? ORDER BY kennzeichen",
 				new RowMapper<Fahrzeug>() {
 					public Fahrzeug mapRow(ResultSet rs, int rowNum) throws SQLException {
 						return mapFahrzeug(rs);
 					}
-				});
+				}, kundeId);
 	}
 
 	public Fahrzeug getFahrzeug(long id) {
-		List<Fahrzeug> liste = jdbcTemplate.query("SELECT * FROM fahrzeug WHERE id = " + id, new RowMapper<Fahrzeug>() {
+		List<Fahrzeug> liste = jdbcTemplate.query("SELECT * FROM fahrzeug WHERE id = ?", new RowMapper<Fahrzeug>() {
 			public Fahrzeug mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return mapFahrzeug(rs);
 			}
-		});
+		}, id);
 		return liste.isEmpty() ? null : liste.get(0);
 	}
 
@@ -227,7 +227,7 @@ public class WerkstattService {
 	}
 
 	public void loescheFahrzeug(long id) {
-		jdbcTemplate.update("DELETE FROM fahrzeug WHERE id = " + id);
+		jdbcTemplate.update("DELETE FROM fahrzeug WHERE id = ?", id);
 	}
 
 	// =====================================================================
@@ -260,7 +260,7 @@ public class WerkstattService {
 	public Auftrag getAuftrag(long id) {
 		String sql = "SELECT a.*, k.nachname, k.vorname, f.kennzeichen, f.marke, f.modell "
 				+ "FROM auftrag a LEFT JOIN kunde k ON k.id = a.kunde_id LEFT JOIN fahrzeug f ON f.id = a.fahrzeug_id "
-				+ "WHERE a.id = " + id;
+				+ "WHERE a.id = ?";
 		List<Auftrag> liste = jdbcTemplate.query(sql, new RowMapper<Auftrag>() {
 			public Auftrag mapRow(ResultSet rs, int rowNum) throws SQLException {
 				Auftrag a = mapAuftrag(rs);
@@ -272,7 +272,7 @@ public class WerkstattService {
 				a.setFahrzeugBezeichnung(defaultString(rs.getString("marke")) + " " + defaultString(rs.getString("modell")));
 				return a;
 			}
-		});
+		}, id);
 		if (liste.isEmpty()) {
 			return null;
 		}
@@ -300,7 +300,7 @@ public class WerkstattService {
 	}
 
 	public List<AuftragPosition> getPositionen(long auftragId) {
-		return jdbcTemplate.query("SELECT * FROM auftrag_position WHERE auftrag_id = " + auftragId + " ORDER BY id",
+		return jdbcTemplate.query("SELECT * FROM auftrag_position WHERE auftrag_id = ? ORDER BY id",
 				new RowMapper<AuftragPosition>() {
 					public AuftragPosition mapRow(ResultSet rs, int rowNum) throws SQLException {
 						AuftragPosition p = new AuftragPosition();
@@ -312,7 +312,7 @@ public class WerkstattService {
 						p.setEinzelpreis(rs.getDouble("einzelpreis"));
 						return p;
 					}
-				});
+				}, auftragId);
 	}
 
 	/**
@@ -323,8 +323,8 @@ public class WerkstattService {
 	public Auftrag neuerAuftrag(Auftrag auftrag) {
 		int jahr = Calendar.getInstance().get(Calendar.YEAR);
 		Integer max = jdbcTemplate.queryForObject(
-				"SELECT COALESCE(MAX(CAST(SUBSTRING(auftrag_nr FROM 8) AS INTEGER)), 0) FROM auftrag WHERE auftrag_nr LIKE 'A-" + jahr + "-%'",
-				Integer.class);
+				"SELECT COALESCE(MAX(CAST(SUBSTRING(auftrag_nr FROM 8) AS INTEGER)), 0) FROM auftrag WHERE auftrag_nr LIKE ?",
+				Integer.class, "A-" + jahr + "-%");
 		String nr = "A-" + jahr + "-" + String.format("%04d", max + 1);
 		auftrag.setAuftragNr(nr);
 		auftrag.setStatus(Auftrag.STATUS_ANGENOMMEN);
@@ -338,8 +338,8 @@ public class WerkstattService {
 
 		// km-Stand gleich am Fahrzeug mitziehen (ohne Transaktion, siehe Notizen)
 		if (auftrag.getKmStand() != null) {
-			jdbcTemplate.update("UPDATE fahrzeug SET km_stand = " + auftrag.getKmStand() + " WHERE id = "
-					+ auftrag.getFahrzeugId());
+			jdbcTemplate.update("UPDATE fahrzeug SET km_stand = ? WHERE id = ?", auftrag.getKmStand(),
+					auftrag.getFahrzeugId());
 		}
 
 		LOG.info("Auftrag " + nr + " angelegt fuer Fahrzeug " + auftrag.getFahrzeugId());
@@ -380,15 +380,15 @@ public class WerkstattService {
 			throw new RuntimeException("Statuswechsel " + alt + " -> " + neuerStatus + " ist nicht erlaubt");
 		}
 
-		String sql = "UPDATE auftrag SET status = '" + neuerStatus + "'";
+		String sql = "UPDATE auftrag SET status = ?";
 		if (neuerStatus.equals(Auftrag.STATUS_FERTIG)) {
 			sql = sql + ", fertig_am = now()";
 		}
 		if (neuerStatus.equals(Auftrag.STATUS_ABGEHOLT)) {
 			sql = sql + ", abgeholt_am = now()";
 		}
-		sql = sql + " WHERE id = " + auftragId;
-		jdbcTemplate.update(sql);
+		sql = sql + " WHERE id = ?";
+		jdbcTemplate.update(sql, neuerStatus, auftragId);
 
 		LOG.info("Auftrag " + auftrag.getAuftragNr() + ": " + alt + " -> " + neuerStatus);
 		return getAuftrag(auftragId);
@@ -412,7 +412,7 @@ public class WerkstattService {
 	}
 
 	public void loeschePosition(long positionId) {
-		jdbcTemplate.update("DELETE FROM auftrag_position WHERE id = " + positionId);
+		jdbcTemplate.update("DELETE FROM auftrag_position WHERE id = ?", positionId);
 	}
 
 	// =====================================================================
@@ -438,7 +438,7 @@ public class WerkstattService {
 
 	public Rechnung getRechnung(long id) {
 		String sql = "SELECT r.*, a.auftrag_nr, k.nachname, k.vorname FROM rechnung r "
-				+ "LEFT JOIN auftrag a ON a.id = r.auftrag_id LEFT JOIN kunde k ON k.id = a.kunde_id WHERE r.id = " + id;
+				+ "LEFT JOIN auftrag a ON a.id = r.auftrag_id LEFT JOIN kunde k ON k.id = a.kunde_id WHERE r.id = ?";
 		List<Rechnung> liste = jdbcTemplate.query(sql, new RowMapper<Rechnung>() {
 			public Rechnung mapRow(ResultSet rs, int rowNum) throws SQLException {
 				Rechnung r = mapRechnung(rs);
@@ -449,7 +449,7 @@ public class WerkstattService {
 				}
 				return r;
 			}
-		});
+		}, id);
 		return liste.isEmpty() ? null : liste.get(0);
 	}
 
@@ -481,7 +481,7 @@ public class WerkstattService {
 					"Rechnung geht nur bei Status FERTIG, Auftrag " + auftrag.getAuftragNr() + " ist " + auftrag.getStatus());
 		}
 		Integer vorhanden = jdbcTemplate.queryForObject(
-				"SELECT COUNT(*) FROM rechnung WHERE auftrag_id = " + auftragId, Integer.class);
+				"SELECT COUNT(*) FROM rechnung WHERE auftrag_id = ?", Integer.class, auftragId);
 		if (vorhanden != null && vorhanden > 0) {
 			throw new RuntimeException("Zum Auftrag " + auftrag.getAuftragNr() + " gibt es schon eine Rechnung");
 		}
@@ -496,8 +496,8 @@ public class WerkstattService {
 
 		int jahr = Calendar.getInstance().get(Calendar.YEAR);
 		Integer max = jdbcTemplate.queryForObject(
-				"SELECT COALESCE(MAX(CAST(SUBSTRING(rechnung_nr FROM 8) AS INTEGER)), 0) FROM rechnung WHERE rechnung_nr LIKE 'R-" + jahr + "-%'",
-				Integer.class);
+				"SELECT COALESCE(MAX(CAST(SUBSTRING(rechnung_nr FROM 8) AS INTEGER)), 0) FROM rechnung WHERE rechnung_nr LIKE ?",
+				Integer.class, "R-" + jahr + "-%");
 		String nr = "R-" + jahr + "-" + String.format("%04d", max + 1);
 
 		Long neueId = jdbcTemplate.queryForObject(
@@ -510,7 +510,7 @@ public class WerkstattService {
 	}
 
 	public Rechnung setzeBezahlt(long rechnungId) {
-		jdbcTemplate.update("UPDATE rechnung SET bezahlt = true, bezahlt_am = now() WHERE id = " + rechnungId);
+		jdbcTemplate.update("UPDATE rechnung SET bezahlt = true, bezahlt_am = now() WHERE id = ?", rechnungId);
 		return getRechnung(rechnungId);
 	}
 
@@ -521,13 +521,13 @@ public class WerkstattService {
 	public List<MonatsBericht> getMonatsBericht(int jahr) {
 		// Auftraege und Rechnungen je Monat; Umsatz nur aus Rechnungen
 		String sql = "SELECT m.monat, "
-				+ " (SELECT COUNT(*) FROM auftrag a WHERE EXTRACT(YEAR FROM a.angenommen_am) = " + jahr
+				+ " (SELECT COUNT(*) FROM auftrag a WHERE EXTRACT(YEAR FROM a.angenommen_am) = ? "
 				+ "   AND EXTRACT(MONTH FROM a.angenommen_am) = m.monat) AS anzahl_auftraege, "
-				+ " (SELECT COUNT(*) FROM rechnung r WHERE EXTRACT(YEAR FROM r.ausgestellt_am) = " + jahr
+				+ " (SELECT COUNT(*) FROM rechnung r WHERE EXTRACT(YEAR FROM r.ausgestellt_am) = ? "
 				+ "   AND EXTRACT(MONTH FROM r.ausgestellt_am) = m.monat) AS anzahl_rechnungen, "
-				+ " (SELECT COALESCE(SUM(r.summe_netto),0) FROM rechnung r WHERE EXTRACT(YEAR FROM r.ausgestellt_am) = " + jahr
+				+ " (SELECT COALESCE(SUM(r.summe_netto),0) FROM rechnung r WHERE EXTRACT(YEAR FROM r.ausgestellt_am) = ? "
 				+ "   AND EXTRACT(MONTH FROM r.ausgestellt_am) = m.monat) AS umsatz_netto, "
-				+ " (SELECT COALESCE(SUM(r.summe_brutto),0) FROM rechnung r WHERE EXTRACT(YEAR FROM r.ausgestellt_am) = " + jahr
+				+ " (SELECT COALESCE(SUM(r.summe_brutto),0) FROM rechnung r WHERE EXTRACT(YEAR FROM r.ausgestellt_am) = ? "
 				+ "   AND EXTRACT(MONTH FROM r.ausgestellt_am) = m.monat) AS umsatz_brutto "
 				+ "FROM generate_series(1,12) AS m(monat) ORDER BY m.monat";
 		final int j = jahr;
@@ -542,17 +542,17 @@ public class WerkstattService {
 				b.setUmsatzBrutto(rs.getDouble("umsatz_brutto"));
 				return b;
 			}
-		});
+		}, jahr, jahr, jahr, jahr);
 	}
 
 	public List<Map<String, Object>> getTopKunden(int jahr) {
 		String sql = "SELECT k.id, k.nachname, k.vorname, COUNT(DISTINCT a.id) AS anzahl_auftraege, "
 				+ "COALESCE(SUM(r.summe_brutto),0) AS umsatz "
 				+ "FROM kunde k JOIN auftrag a ON a.kunde_id = k.id "
-				+ "LEFT JOIN rechnung r ON r.auftrag_id = a.id AND EXTRACT(YEAR FROM r.ausgestellt_am) = " + jahr + " "
-				+ "WHERE EXTRACT(YEAR FROM a.angenommen_am) = " + jahr + " "
+				+ "LEFT JOIN rechnung r ON r.auftrag_id = a.id AND EXTRACT(YEAR FROM r.ausgestellt_am) = ? "
+				+ "WHERE EXTRACT(YEAR FROM a.angenommen_am) = ? "
 				+ "GROUP BY k.id, k.nachname, k.vorname ORDER BY umsatz DESC, anzahl_auftraege DESC LIMIT 10";
-		return jdbcTemplate.queryForList(sql);
+		return jdbcTemplate.queryForList(sql, jahr, jahr);
 	}
 
 	// =====================================================================
@@ -582,8 +582,8 @@ public class WerkstattService {
 				"SELECT id FROM auftrag WHERE status = 'STORNIERT' AND angenommen_am < now() - interval '90 days'",
 				Long.class);
 		for (Long id : ids) {
-			jdbcTemplate.update("DELETE FROM auftrag_position WHERE auftrag_id = " + id);
-			jdbcTemplate.update("DELETE FROM auftrag WHERE id = " + id);
+			jdbcTemplate.update("DELETE FROM auftrag_position WHERE auftrag_id = ?", id);
+			jdbcTemplate.update("DELETE FROM auftrag WHERE id = ?", id);
 		}
 		LOG.warn("Bereinigung: " + ids.size() + " stornierte Auftraege geloescht");
 		return ids.size();
