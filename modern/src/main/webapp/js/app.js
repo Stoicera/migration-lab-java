@@ -10,23 +10,12 @@ var werkstattApp = angular.module('werkstattApp', ['ngRoute']);
 var portierteRouten = [
 	/^\/start$/,
 	/^\/kunden(\/.*)?$/,
-	/^\/fahrzeuge$/
+	/^\/fahrzeuge$/,
+	/^\/auftraege(\/.*)?$/
 ];
 
 werkstattApp.config(['$routeProvider', function ($routeProvider) {
 	$routeProvider
-		.when('/auftraege', {
-			templateUrl: 'views/auftraege.html',
-			controller: 'AuftraegeCtrl'
-		})
-		.when('/auftraege/neu', {
-			templateUrl: 'views/auftrag-neu.html',
-			controller: 'AuftragNeuCtrl'
-		})
-		.when('/auftraege/:id', {
-			templateUrl: 'views/auftrag-detail.html',
-			controller: 'AuftragDetailCtrl'
-		})
 		.when('/rechnungen', {
 			templateUrl: 'views/rechnungen.html',
 			controller: 'RechnungenCtrl'

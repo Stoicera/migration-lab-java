@@ -12,6 +12,7 @@ import at.stoicera.migrationlab.e2e.pages.AuftragDetailPage;
 import at.stoicera.migrationlab.e2e.pages.AuftraegePage;
 import at.stoicera.migrationlab.e2e.pages.RechnungDetailPage;
 import at.stoicera.migrationlab.e2e.pages.RechnungenPage;
+import at.stoicera.migrationlab.e2e.selectors.SelectorMap;
 import at.stoicera.migrationlab.e2e.support.ScenarioTest;
 import at.stoicera.migrationlab.e2e.support.Seed;
 
@@ -76,19 +77,20 @@ class RechnungTest extends ScenarioTest {
 	void zweiteRechnungZumSelbenAuftragWirdAbgelehnt() {
 		// A-2026-0009 stays FERTIG after invoicing (test 1), so the button is still
 		// there — the backend rejects the duplicate with 500 and the message
-		// "Zum Auftrag ... gibt es schon eine Rechnung". The USER, however, sees an
-		// alert reading literally "undefined": Spring Boot 1.5 content-negotiates
-		// the plain-String error body to Content-Type application/json for XHR
-		// Accept headers (body is NOT valid JSON), AngularJS 1.8's response
-		// transform throws [$http:baddata], the error callback receives that Error
-		// instead of the response, and alert(fehler.data) prints undefined.
-		// Pinned as-is (honesty rule): this IS the legacy behavior the stage-5 UI
-		// replaces — sanctioned via ADR-0004, see e2e/README.md.
+		// "Zum Auftrag ... gibt es schon eine Rechnung". What the USER sees is
+		// per-stand (sanctioned divergence SD-3, ADR-0004), so the expected alert
+		// text lives in the selector map: the LEGACY UI shows literally
+		// "undefined" (Boot 1.5 labels the plain-String 500 body as JSON,
+		// AngularJS 1.8's response transform throws [$http:baddata], the error
+		// callback alerts fehler.data of an Error — pinned as-is, honesty rule);
+		// the stage-5 Angular UI surfaces the backend's German message. The
+		// HTTP-level message contract itself is pinned by the error-contract
+		// characterization tests, identically on both stands.
 		AuftragDetailPage auftrag = new AuftraegePage(driver, waits).open().openAuftrag("A-2026-0009");
 		assertThat(auftrag.status()).isEqualTo("Fertig");
 
 		String meldung = auftrag.rechnungErstellenErwarteFehler();
-		assertThat(meldung).isEqualTo("undefined");
+		assertThat(meldung).isEqualTo(SelectorMap.value("alert.rechnungDuplikat"));
 		// the rejection left no trace: the order is still FERTIG, no second invoice
 		assertThat(auftrag.status()).isEqualTo("Fertig");
 	}

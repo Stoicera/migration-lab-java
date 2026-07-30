@@ -1,0 +1,162 @@
+@if (auftrag(); as a) {
+  <h2>
+    Auftrag {{ a.auftragNr }}
+    <span class="label label-default label-status status-{{ a.status }}" data-testid="auftrag-status">{{
+      a.status | statusText
+    }}</span>
+  </h2>
+
+  <div class="row">
+    <div class="col-md-4">
+      <table class="table table-condensed">
+        <tr>
+          <th>Kunde</th>
+          <td><a [routerLink]="['/kunden', a.kundeId]">{{ a.kundeName }}</a></td>
+        </tr>
+        <tr>
+          <th>Fahrzeug</th>
+          <td>{{ a.kennzeichen }} - {{ a.fahrzeugBezeichnung }}</td>
+        </tr>
+        <tr>
+          <th>km-Stand</th>
+          <td>{{ a.kmStand }}</td>
+        </tr>
+        <tr>
+          <th>Angenommen</th>
+          <td>{{ a.angenommenAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+        </tr>
+        @if (a.fertigAm) {
+          <tr>
+            <th>Fertig</th>
+            <td>{{ a.fertigAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+          </tr>
+        }
+        @if (a.abgeholtAm) {
+          <tr>
+            <th>Abgeholt</th>
+            <td>{{ a.abgeholtAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+          </tr>
+        }
+      </table>
+      <p><strong>Beschreibung:</strong><br />{{ a.beschreibung }}</p>
+
+      <div data-testid="status-aktionen">
+        @if (a.status === 'ANGENOMMEN') {
+          <button class="btn btn-warning" data-testid="btn-in-arbeit" (click)="statusSetzen('IN_ARBEIT')">
+            In Arbeit nehmen
+          </button>
+        }
+        @if (a.status === 'IN_ARBEIT') {
+          <button class="btn btn-success" data-testid="btn-fertig" (click)="statusSetzen('FERTIG')">
+            Fertig melden
+          </button>
+        }
+        @if (a.status === 'FERTIG') {
+          <button class="btn btn-warning" data-testid="btn-wieder-arbeit" (click)="statusSetzen('IN_ARBEIT')">
+            Zurück in Arbeit
+          </button>
+        }
+        @if (a.status === 'FERTIG') {
+          <button class="btn btn-info" data-testid="btn-abgeholt" (click)="statusSetzen('ABGEHOLT')">Abgeholt</button>
+        }
+        @if (a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT') {
+          <button class="btn btn-danger" data-testid="btn-storno" (click)="statusSetzen('STORNIERT')">
+            Stornieren
+          </button>
+        }
+        @if (a.status === 'FERTIG') {
+          <button class="btn btn-primary" data-testid="btn-rechnung-erstellen" (click)="rechnungErstellen()">
+            Rechnung erstellen
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <h4>Positionen</h4>
+      <table class="table table-striped" data-testid="positionen-tabelle">
+        <tr>
+          <th>Typ</th>
+          <th>Bezeichnung</th>
+          <th class="text-right">Menge</th>
+          <th class="text-right">Einzelpreis</th>
+          <th class="text-right">Gesamt</th>
+          <th></th>
+        </tr>
+        @for (p of a.positionen; track p.id) {
+          <tr data-testid="position-zeile">
+            <td>{{ p.typ === 'ARBEIT' ? 'Arbeit' : 'Material' }}</td>
+            <td>{{ p.bezeichnung }}</td>
+            <td class="text-right">{{ p.menge }}</td>
+            <td class="text-right">{{ p.einzelpreis | euro }}</td>
+            <td class="text-right">{{ p.gesamtpreis | euro }}</td>
+            <td class="text-right">
+              @if (a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT') {
+                <button class="btn btn-xs btn-danger" (click)="positionLoeschen(p)">X</button>
+              }
+            </td>
+          </tr>
+        }
+        <tr>
+          <th colspan="4" class="text-right">Summe netto</th>
+          <th class="text-right" data-testid="summe-netto">{{ a.summeNetto | euro }}</th>
+          <th></th>
+        </tr>
+      </table>
+
+      @if (a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT') {
+        <div style="border: 1px solid #dddddd; padding: 10px" data-testid="position-form">
+          <div class="row">
+            <div class="col-sm-2">
+              <select class="form-control" name="posTyp" [(ngModel)]="neuePosition.typ" data-testid="feld-pos-typ">
+                <option value="ARBEIT">Arbeit</option>
+                <option value="MATERIAL">Material</option>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Bezeichnung"
+                name="posBezeichnung"
+                [(ngModel)]="neuePosition.bezeichnung"
+                data-testid="feld-pos-bezeichnung"
+              />
+            </div>
+            <div class="col-sm-2">
+              <input
+                type="number"
+                step="0.5"
+                class="form-control"
+                placeholder="Menge"
+                name="posMenge"
+                [(ngModel)]="neuePosition.menge"
+                data-testid="feld-pos-menge"
+              />
+            </div>
+            <div class="col-sm-2">
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                placeholder="Einzelpreis"
+                name="posPreis"
+                [(ngModel)]="neuePosition.einzelpreis"
+                data-testid="feld-pos-preis"
+              />
+            </div>
+            <div class="col-sm-2">
+              <button class="btn btn-primary btn-block" (click)="positionSpeichern()" data-testid="btn-pos-speichern">
+                Hinzufügen
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <p style="margin-top: 15px">
+    <a routerLink="/auftraege" class="btn btn-default">Zurück zur Liste</a>
+  </p>
+}
