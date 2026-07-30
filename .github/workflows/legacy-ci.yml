@@ -1,0 +1,40 @@
+# Legacy stand: build + characterization tests.
+# HARD RULE: from tag stage-1-safety-net onward this workflow must stay green
+# on every commit. Red = stop and fix, never "fix later".
+name: legacy-ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Skeleton gate (G0): the legacy module lands in G1 (stage-0-legacy).
+      # Until legacy/pom.xml exists, this workflow passes as an empty scaffold.
+      - name: Check module presence
+        id: gate
+        run: |
+          if [ -f legacy/pom.xml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "legacy/ not yet present (starts in G1) — skeleton pass."
+          fi
+
+      - name: Set up JDK 8 (Temurin)
+        if: steps.gate.outputs.present == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Build and verify (incl. characterization from stage 1)
+        if: steps.gate.outputs.present == 'true'
+        run: ./mvnw -B verify -f legacy/pom.xml
