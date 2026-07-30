@@ -6,7 +6,7 @@ Git tags are first-class deliverables: every tag is a checkout-and-run state
 | Tag | State | Playbook chapter | Status |
 |-----|-------|------------------|--------|
 | `stage-0-legacy` | WerkstattCRM as found: Java 8, Spring Boot 1.5.22, AngularJS 1.8.2, JSP admin page, PostgreSQL 9.6, **no tests** — wart catalogue in `legacy/LEGACY_NOTES.md` | — (Ausgangslage described in ch. 1) | **done** (2026-07-30) |
-| `stage-1-safety-net` | Selenium E2E suite + characterization tests green against legacy; CI gates active — **from here on, no commit may break them** | Kap. 1 — Ohne Netz keine Migration | pending (G2) |
+| `stage-1-safety-net` | Selenium E2E suite (13 tests, selector-map abstraction) + characterization tests (12 golden masters, 5 DB transitions) green against legacy; CI gates active — **from here on, no commit may break them** | [Kap. 1 — Ohne Netz keine Migration](playbook/01-ohne-netz-keine-migration.md) | **done** (2026-07-30) |
 | `stage-2-jdk-build` | Maven hygiene, dependency audit, JDK raised under Boot-compatible ceiling, logging unified | Kap. 2 — Fundament: Build & JDK | pending (G3) |
 | `stage-3-boot-2.7` | Spring Boot 1.5 → 2.7 (the documented long jump) | Kap. 3 — Der weite Sprung: Boot 1.5 → 2.7 | pending (G3) |
 | `stage-4-boot-4x` | Boot 2.7 → 3.x → 4.1, Java 25, `javax`→`jakarta`, security rewrite, OpenRewrite used & evaluated | Kap. 4 — Boot 3/4 & Java 25 | pending (G4) |
