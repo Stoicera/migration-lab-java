@@ -1,0 +1,45 @@
+{
+    "id": 5,
+    "auftragNr": "A-2026-0005",
+    "fahrzeugId": 5,
+    "kundeId": 4,
+    "status": "ABGEHOLT",
+    "beschreibung": "Zahnriemen + Wasserpumpe lt. Serviceplan",
+    "kmStand": 140100,
+    "angenommenAm": 1772526000000,
+    "fertigAm": 1772644500000,
+    "abgeholtAm": 1772701200000,
+    "kundeName": "Brunner Elisabeth",
+    "kennzeichen": "L-345IJ",
+    "fahrzeugBezeichnung": "Audi A4 Avant 2.0 TDI",
+    "positionen": [
+        {
+            "id": 9,
+            "auftragId": 5,
+            "typ": "ARBEIT",
+            "bezeichnung": "Zahnriemen + WaPu tauschen",
+            "menge": 4.5,
+            "einzelpreis": 88.0,
+            "gesamtpreis": 396.0
+        },
+        {
+            "id": 10,
+            "auftragId": 5,
+            "typ": "MATERIAL",
+            "bezeichnung": "Zahnriemensatz",
+            "menge": 1.0,
+            "einzelpreis": 185.0,
+            "gesamtpreis": 185.0
+        },
+        {
+            "id": 11,
+            "auftragId": 5,
+            "typ": "MATERIAL",
+            "bezeichnung": "Wasserpumpe",
+            "menge": 1.0,
+            "einzelpreis": 98.0,
+            "gesamtpreis": 98.0
+        }
+    ],
+    "summeNetto": 679.0
+}

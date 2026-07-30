@@ -1,13 +1,34 @@
 # characterization/ — golden-master tests
 
-Approval/golden-master tests captured from the legacy application's actual behaviour
-(REST/JSP responses, DB state transitions), built in **G2 (stage 1)**.
+Captures of the legacy application's **actual** behaviour. They define functional
+equivalence for the whole migration: a migration step is correct when these still
+pass — quirks included.
 
-These tests **define functional equivalence** for the migration: they describe what
-the system *does* (including its quirks), not what it *should* do. A migration step
-is correct when these captures still match.
+Two suites (Java 25, JUnit 5, no framework beyond JDK http + Jackson + JDBC):
 
-Together with the Selenium suite in [`../e2e/`](../e2e/) they form the safety net —
-from tag `stage-1-safety-net` onward, no commit may break them.
+- **`ApiCharacterizationTest`** — every read endpoint vs. `src/test/resources/golden/`.
+  Comparison on parsed JSON trees (key order/whitespace irrelevant, values exact);
+  the JSP admin page as normalized HTML (date masked). On mismatch the received
+  document lands in `target/characterization-received/` for diffing.
+- **`DbStateCharacterizationTest`** — DB state transitions of the write paths,
+  including the documented quirks: the vehicle-km side effect on order creation
+  and the orphaned rows after customer deletion (LEGACY_NOTES B13).
 
-Status: **empty — work starts in G2.** See [`../stages.md`](../stages.md).
+## Determinism
+
+Every suite class resets the database to the committed seed
+(`legacy/db/init/02-daten.sql`) in `@BeforeAll` — captures are reproducible on
+any machine, any order, any time.
+
+## Run
+
+```bash
+docker compose -f legacy/docker-compose.yml up -d   # stand must be running
+./mvnw verify -f characterization/pom.xml
+```
+
+## Re-capturing goldens
+
+Only when a behaviour change is INTENDED (ADR + playbook entry required).
+Reset the stand, then re-run the capture commands documented in the git history
+of `golden/` — never hand-edit a golden file.

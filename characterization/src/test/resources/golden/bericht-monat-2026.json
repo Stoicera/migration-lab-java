@@ -1,0 +1,110 @@
+[
+    {
+        "jahr": 2026,
+        "monat": 1,
+        "anzahlAuftraege": 2,
+        "anzahlRechnungen": 2,
+        "umsatzNetto": 580.4,
+        "umsatzBrutto": 696.48,
+        "monatName": "J\u00e4nner"
+    },
+    {
+        "jahr": 2026,
+        "monat": 2,
+        "anzahlAuftraege": 2,
+        "anzahlRechnungen": 1,
+        "umsatzNetto": 84.0,
+        "umsatzBrutto": 100.8,
+        "monatName": "Februar"
+    },
+    {
+        "jahr": 2026,
+        "monat": 3,
+        "anzahlAuftraege": 2,
+        "anzahlRechnungen": 2,
+        "umsatzNetto": 1439.0,
+        "umsatzBrutto": 1726.8,
+        "monatName": "M\u00e4rz"
+    },
+    {
+        "jahr": 2026,
+        "monat": 4,
+        "anzahlAuftraege": 1,
+        "anzahlRechnungen": 1,
+        "umsatzNetto": 149.6,
+        "umsatzBrutto": 179.52,
+        "monatName": "April"
+    },
+    {
+        "jahr": 2026,
+        "monat": 5,
+        "anzahlAuftraege": 2,
+        "anzahlRechnungen": 1,
+        "umsatzNetto": 340.0,
+        "umsatzBrutto": 408.0,
+        "monatName": "Mai"
+    },
+    {
+        "jahr": 2026,
+        "monat": 6,
+        "anzahlAuftraege": 2,
+        "anzahlRechnungen": 1,
+        "umsatzNetto": 245.0,
+        "umsatzBrutto": 294.0,
+        "monatName": "Juni"
+    },
+    {
+        "jahr": 2026,
+        "monat": 7,
+        "anzahlAuftraege": 5,
+        "anzahlRechnungen": 0,
+        "umsatzNetto": 0.0,
+        "umsatzBrutto": 0.0,
+        "monatName": "Juli"
+    },
+    {
+        "jahr": 2026,
+        "monat": 8,
+        "anzahlAuftraege": 0,
+        "anzahlRechnungen": 0,
+        "umsatzNetto": 0.0,
+        "umsatzBrutto": 0.0,
+        "monatName": "August"
+    },
+    {
+        "jahr": 2026,
+        "monat": 9,
+        "anzahlAuftraege": 0,
+        "anzahlRechnungen": 0,
+        "umsatzNetto": 0.0,
+        "umsatzBrutto": 0.0,
+        "monatName": "September"
+    },
+    {
+        "jahr": 2026,
+        "monat": 10,
+        "anzahlAuftraege": 0,
+        "anzahlRechnungen": 0,
+        "umsatzNetto": 0.0,
+        "umsatzBrutto": 0.0,
+        "monatName": "Oktober"
+    },
+    {
+        "jahr": 2026,
+        "monat": 11,
+        "anzahlAuftraege": 0,
+        "anzahlRechnungen": 0,
+        "umsatzNetto": 0.0,
+        "umsatzBrutto": 0.0,
+        "monatName": "November"
+    },
+    {
+        "jahr": 2026,
+        "monat": 12,
+        "anzahlAuftraege": 0,
+        "anzahlRechnungen": 0,
+        "umsatzNetto": 0.0,
+        "umsatzBrutto": 0.0,
+        "monatName": "Dezember"
+    }
+]
