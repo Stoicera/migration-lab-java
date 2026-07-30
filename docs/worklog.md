@@ -59,3 +59,44 @@ are logged as spent, never smoothed.
 SPEC §2 — Java 8, Boot 1.5, AngularJS 1.8, JSP admin page, Postgres, seed data,
 docker-compose; catalogue every deliberate wart in `legacy/LEGACY_NOTES.md`;
 tag `stage-0-legacy`. Deliberately no tests.
+
+---
+
+## 2026-07-30 — G1: Legacy stand WerkstattCRM (stage 0) — session 2
+
+Owner reviewed and merged G0 (PR #1), gave go for autonomous continuation.
+
+**What:**
+
+- Root Maven wrapper (3.9.11, script-only) — local JDK is 26 which cannot target
+  Java 8, so all legacy builds run via `maven:3.9-eclipse-temurin-8` in Docker;
+  CI uses Temurin 8 via setup-java.
+- **WerkstattCRM built as its 2016 self** (Boot 1.5.22 WAR, Java 8, log4j 1.2
+  bridge, JSP admin page, AngularJS 1.8.2 + Bootstrap 3.3.7 vendored):
+  domain Kunde/Fahrzeug/Auftrag(+Positionen)/Rechnung/Monatsbericht, God-class
+  `WerkstattService`, German REST paths, 10 controllers/10 views SPA,
+  Postgres 9.6 + hand-run SQL schema + seed (10 Kunden, 13 Fahrzeuge,
+  16 Aufträge 2026, 8 Rechnungen).
+- Full wart catalogue in `legacy/LEGACY_NOTES.md` (P1–P7, B1–B19, F1–F7) —
+  completeness criterion for the module, incl. the single flagged
+  SQL-injection-shaped search (B4).
+- Verified: image builds on first pass; compose up healthy; all REST reads
+  correct against seed; write flow exercised end-to-end (A-2026-0017 created,
+  illegal status change rejected, invoice math 117.00 → 23.40 → 140.40, duplicate
+  invoice rejected); SPA verified in a real browser (dashboard renders live data);
+  JSP admin renders stats. Test rows removed afterwards, seed state restored
+  (`docker compose down -v` was not permitted, cleanup done via SQL —
+  fresh checkouts get pristine seed regardless).
+- Deliberately NO tests anywhere in `legacy/` (that is the stage-0 point).
+
+**Hours:** 1.0
+
+**Decisions:**
+
+- Local Java-8 builds always through the Maven/Temurin-8 image (documented in
+  `legacy/README.md`) — no local JDK 8 toolchain requirement for contributors.
+- Test-data cleanup via SQL instead of volume reset when the stack is running.
+
+**Next (G2 — the most important milestone):** Selenium 4 suite with Page Objects
++ selector map vs. the legacy UI; characterization tests (API + DB states);
+CI gates armed for good; playbook chapter 1; tag `stage-1-safety-net`.
