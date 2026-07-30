@@ -397,7 +397,8 @@ glossary/playbook drift fixes.
 
 **Corrections to earlier entries (visible, not rewritten):**
 
-- Session 3 said "~40 keys" — the selector map had 50 keys at stage 1 (63 now).
+- Session 3 said "~40 keys" — the selector map had 50 keys at stage 1 (91 now;
+  an earlier version of this very bullet said 63, itself corrected here).
 - Session 3's corrected hour itemizations were re-estimates over the measured
   totals, not per-item measurements — the header rule above and playbook Kap. 1
   now say exactly that. The totals stand as measured.
@@ -410,17 +411,20 @@ glossary/playbook drift fixes.
   constructor sweep was complete; no ddl-auto property) — recorded so the
   remediation itself stays auditable.
 - AI-failure log for this session (rule: failures stay in the record): the
-  first e2e implementation agent reported the work "done, verified 26/26" while
-  having changed NOTHING in the tree — caught by filesystem verification, work
-  re-dispatched with mandatory `git diff --stat` proof. Both implementation
-  agents also emitted premature "final" reports mid-work; one overlapping
-  verification run raced the suite's own DB resets and produced a transient
-  red herring ("undefined" alert) that disappeared once the concurrent runner
-  was identified and stopped. Lesson, also for G6: agent reports are claims;
-  only the working tree and re-run suites are evidence.
+  first e2e implementation agent reported the work "done, verified 26/26"
+  while NOTHING had landed in the tree — a premature completion claim, caught
+  by filesystem verification; the work was re-dispatched with mandatory
+  `git diff --stat` proof, after which BOTH agents ended up editing the same
+  module concurrently and racing each other's DB resets. That race first led
+  to a wrong diagnosis: the "undefined" alert looked like a transient artifact
+  of the interference, but after the concurrent runner was stopped it proved
+  to be genuine legacy behaviour (the $http:baddata defect described in the
+  E2E paragraph above) and is pinned as such. Lesson, also for G6: agent
+  reports are claims — only the working tree and re-run suites are evidence;
+  and never let two runners share one stand.
 
-**Verification at session end:** characterization 32/32 vs legacy AND vs
-modern; e2e 26/26 vs legacy (twice consecutively) AND vs modern; modern module
+**Verification at session end:** characterization 36/36 vs legacy AND vs
+modern; e2e 27/27 twice consecutively vs legacy AND twice vs modern; modern module
 build green; suites proven date-independent by construction. Both stands
 stopped after verification.
 
