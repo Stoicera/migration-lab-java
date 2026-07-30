@@ -281,3 +281,48 @@ preserved).
    values change), JSP admin page absorbed (gson dies with it).
 4. Deliverables: playbook Kap. 5, tag `stage-5-angular`, E2E matrix green on
    BOTH UIs — that is the headline result of the whole project.
+
+---
+
+## 2026-07-30 — Hostile review G0–G4 + G6 protocol draft — session 7
+
+**What:**
+
+- Net verified live before reviewing: both stands up, characterization 17/17 vs
+  legacy AND modern, e2e 13/13 vs modern, 13/13 twice consecutively vs legacy.
+  Stands stopped again afterwards.
+- **Hostile review of stages 0–4** (JKU-researcher + enterprise-architect lens),
+  owner-commissioned: five parallel AI review agents (e2e, characterization, CI
+  gates, docs/honesty, code/stage discipline); all findings cross-verified before
+  reporting — three agent claims were discarded as FALSE after direct checks
+  (legacy freeze DOES hold: `git diff stage-0-legacy..HEAD -- legacy/` empty;
+  constructor-injection sweep IS complete: zero `@Autowired` in modern/; no
+  ddl-auto property exists). Prioritised findings list delivered to owner
+  in-session; per owner instruction NOTHING fixed yet. Headline findings: AI
+  execution of the work not disclosed where playbook/README readers look;
+  "measured" hour corrections are themselves re-estimates; both suites are
+  year-coupled and go red 2027-01-01; e2e blind to dashboard/Fahrzeuge/all error
+  paths; B4 search endpoint unpinned on both stands incl. the deliberate
+  divergence; zero error-contract (4xx/5xx) pins; master branch has no
+  protection — every hard rule is convention, not enforcement.
+- **`ai-testgen/PROTOCOL.md` drafted (v0.1 — NOT frozen):** stratified N=6
+  selection (God service, 3 REST controllers, JSP admin, 1 data-holder negative
+  control; SPEC's "mappers" stratum doesn't exist as classes — deviation
+  recorded), 2 OpenRouter arms with IDs+prices verified live today
+  (claude-sonnet-5; qwen3-coder-next proposed), k=1 at temperature 0, single-shot
+  generation + 30-min time-boxed categorized human repair, metrics: compile rate,
+  pass rate, JaCoCo on target class, PIT mutation score, human-fix minutes,
+  token/EUR cost; pre-declared threats to validity incl. training-data
+  contamination; freeze checklist incl. harness dry-run. **No generation runs
+  before the owner freezes the protocol.**
+
+**Hours:** 0.4 *(bounded by session tool-artifact timestamps ≈19:05–19:40, ±10
+min — the exact start was not instrumented; logged as the bounded measurement,
+not an estimate)*
+
+**Decisions:** none taken — all review findings await owner triage; protocol
+freeze is explicitly owner-only.
+
+**Next:** owner triages findings (the net-coverage and year-coupling items gate
+G5; the disclosure items gate the credibility of every artifact incl. the G6
+report), then freeze PROTOCOL.md or schedule remediation first.
