@@ -21,6 +21,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * values exact). A mismatch means: the migration changed observable
  * behaviour — which is exactly what these tests exist to catch.
  *
+ * The B4 search endpoint additionally carries the suite's only SANCTIONED
+ * divergence (ADR-0004): hostile input behaves differently per stand, so
+ * those pins fork on the {@code stand} system property.
+ *
  * On failure the received document is written to
  * target/characterization-received/ for diffing against src/test/resources/golden/.
  */
@@ -37,6 +41,8 @@ class ApiCharacterizationTest {
 	@ParameterizedTest(name = "{0}")
 	@CsvSource({
 			"kunden.json,               /api/kunden",
+			"kunden-suche-hofer.json,   /api/kunden?suche=Hofer",
+			"kunden-suche-meier-leer.json, /api/kunden?suche=Meier",
 			"kunde-1.json,              /api/kunden/1",
 			"kunde-1-fahrzeuge.json,    /api/kunden/1/fahrzeuge",
 			"fahrzeuge.json,            /api/fahrzeuge",
@@ -64,6 +70,58 @@ class ApiCharacterizationTest {
 							+ " — received copy written to " + out)
 					.isEqualTo(golden);
 		}
+	}
+
+	// -----------------------------------------------------------------
+	// B4 search endpoint under HOSTILE input. The one place legacy and
+	// modern legally differ: stage 4 replaced the string-concatenated
+	// search SQL (LEGACY_NOTES B4) with bind parameters. ADR-0004
+	// (sanctioned divergence): BOTH sides' exact observed behaviour is
+	// pinned; -Dstand=legacy|modern selects which expectation applies.
+	// -----------------------------------------------------------------
+
+	@Test
+	@DisplayName("B4-Suche, Injektionseingabe %' OR '1'='1 — sanktionierte Divergenz (ADR-0004)")
+	void sucheMitInjektionsEingabe() throws Exception {
+		var response = Stand.get("/api/kunden?suche=" + urlEncode("%' OR '1'='1"));
+		assertThat(response.statusCode()).isEqualTo(200);
+
+		JsonNode body = MAPPER.readTree(response.body());
+		assertThat(body.isArray()).isTrue();
+		if (Stand.isModern()) {
+			// bind parameter: the whole input is one literal — matches nothing
+			assertThat(body.size()).as("modern: Injektionseingabe trifft nichts").isZero();
+		} else {
+			// concatenated SQL: OR '1'='1 disables the filter — the whole
+			// customer table (10 seed rows) leaks
+			assertThat(body.size()).as("legacy: Injektionseingabe leakt alle Kunden").isEqualTo(10);
+		}
+	}
+
+	@Test
+	@DisplayName("B4-Suche, einzelnes Hochkomma — sanktionierte Divergenz (ADR-0004)")
+	void sucheMitEinzelnemHochkomma() throws Exception {
+		var response = Stand.get("/api/kunden?suche=" + urlEncode("'"));
+		if (Stand.isModern()) {
+			// bind parameter: a lone quote is just a character nobody is named after
+			assertThat(response.statusCode()).isEqualTo(200);
+			JsonNode body = MAPPER.readTree(response.body());
+			assertThat(body.isArray()).isTrue();
+			assertThat(body.size()).isZero();
+		} else {
+			// broken SQL — Boot 1.5 answers with its default error JSON
+			// (observed: the driver dies with ArrayIndexOutOfBoundsException)
+			assertThat(response.statusCode()).isEqualTo(500);
+			JsonNode body = MAPPER.readTree(response.body());
+			assertThat(body.path("status").asInt()).isEqualTo(500);
+			assertThat(body.path("error").asText()).isEqualTo("Internal Server Error");
+			assertThat(body.path("exception").asText()).isEqualTo("java.lang.ArrayIndexOutOfBoundsException");
+			assertThat(body.path("path").asText()).isEqualTo("/api/kunden");
+		}
+	}
+
+	private static String urlEncode(String value) {
+		return java.net.URLEncoder.encode(value, java.nio.charset.StandardCharsets.UTF_8);
 	}
 
 	@Test
