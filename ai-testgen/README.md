@@ -6,9 +6,13 @@ their migrated counterparts, run in **G6**. The empirical protocol is **pre-regi
 `ai-testgen-protocol-v1`, 2026-07-31) *before* any generation ran, and results are never
 curated afterwards. Failed generations stay in the repo.
 
-**Status: infrastructure complete and validated, generation pending an API key.**
-Everything that does not need a credential is done and green: protocol frozen, both
-testbeds building, harness tested, dry-run through the full measurement pipeline.
+**Status: generation executed (2026-07-31, 24 calls, €0.65), Phase A measured and reported
+in [`REPORT.md`](REPORT.md). Phase B — the time-boxed repair — is next.**
+
+Phase-A headline: 12 of 24 generated test classes compiled; where they compiled, they reached
+100 % line and branch coverage on the target class and a 99.2 % PIT mutation score — but the
+613-line God service, the one class that actually needs the help, produced nothing usable in
+any of its four cells.
 
 ## Layout
 

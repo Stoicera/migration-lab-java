@@ -1,0 +1,19 @@
+{
+  "unit" : "s1-werkstattservice",
+  "stratum" : "S1",
+  "corpus" : "A",
+  "classUnderTest" : "at.werkstatt.crm.service.WerkstattService",
+  "model" : "anthropic/claude-sonnet-5",
+  "runDate" : "2026-07-31",
+  "provider" : "Amazon Bedrock",
+  "promptTokens" : 16030,
+  "completionTokens" : 16000,
+  "latencyMillis" : 145900,
+  "transportRetries" : 0,
+  "extraction" : "EXTRACTION-FAILED",
+  "costUsd" : 0.192060,
+  "ecbRateDate" : "2026-07-31",
+  "usdPerEur" : 1.1485,
+  "costEur" : 0.167227,
+  "protocolSha256" : "e7d02d2adfe03ca0cfc690794fbcb7db834a967781eab2aec1f6884c97c41037"
+}

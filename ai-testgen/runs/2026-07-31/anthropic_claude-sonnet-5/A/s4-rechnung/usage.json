@@ -1,0 +1,19 @@
+{
+  "unit" : "s4-rechnung",
+  "stratum" : "S4",
+  "corpus" : "A",
+  "classUnderTest" : "at.werkstatt.crm.model.Rechnung",
+  "model" : "anthropic/claude-sonnet-5",
+  "runDate" : "2026-07-31",
+  "provider" : "Amazon Bedrock",
+  "promptTokens" : 1272,
+  "completionTokens" : 3395,
+  "latencyMillis" : 22450,
+  "transportRetries" : 0,
+  "extraction" : "OK",
+  "costUsd" : 0.036494,
+  "ecbRateDate" : "2026-07-31",
+  "usdPerEur" : 1.1485,
+  "costEur" : 0.031775,
+  "protocolSha256" : "e7d02d2adfe03ca0cfc690794fbcb7db834a967781eab2aec1f6884c97c41037"
+}

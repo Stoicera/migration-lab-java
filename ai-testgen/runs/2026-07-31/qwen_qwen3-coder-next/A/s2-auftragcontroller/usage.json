@@ -1,0 +1,19 @@
+{
+  "unit" : "s2-auftragcontroller",
+  "stratum" : "S2",
+  "corpus" : "A",
+  "classUnderTest" : "at.werkstatt.crm.controller.AuftragController",
+  "model" : "qwen/qwen3-coder-next",
+  "runDate" : "2026-07-31",
+  "provider" : "Novita",
+  "promptTokens" : 1690,
+  "completionTokens" : 2651,
+  "latencyMillis" : 10571,
+  "transportRetries" : 0,
+  "extraction" : "OK",
+  "costUsd" : 0.002324,
+  "ecbRateDate" : "2026-07-31",
+  "usdPerEur" : 1.1485,
+  "costEur" : 0.002024,
+  "protocolSha256" : "e7d02d2adfe03ca0cfc690794fbcb7db834a967781eab2aec1f6884c97c41037"
+}

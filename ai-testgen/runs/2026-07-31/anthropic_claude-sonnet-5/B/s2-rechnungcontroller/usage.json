@@ -1,0 +1,19 @@
+{
+  "unit" : "s2-rechnungcontroller",
+  "stratum" : "S2",
+  "corpus" : "B",
+  "classUnderTest" : "at.werkstatt.crm.controller.RechnungController",
+  "model" : "anthropic/claude-sonnet-5",
+  "runDate" : "2026-07-31",
+  "provider" : "Amazon Bedrock",
+  "promptTokens" : 2034,
+  "completionTokens" : 2264,
+  "latencyMillis" : 16862,
+  "transportRetries" : 0,
+  "extraction" : "OK",
+  "costUsd" : 0.026708,
+  "ecbRateDate" : "2026-07-31",
+  "usdPerEur" : 1.1485,
+  "costEur" : 0.023255,
+  "protocolSha256" : "e7d02d2adfe03ca0cfc690794fbcb7db834a967781eab2aec1f6884c97c41037"
+}

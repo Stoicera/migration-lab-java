@@ -1,0 +1,180 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/home/skern/.m2/wrapper/dists/apache-maven-3.9.11/a2d47e15/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+WARNING: Final field _cipher in class org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher has been mutated reflectively by class org.eclipse.sisu.bean.BeanPropertyField in unnamed module @402e37bc (file:/home/skern/.m2/wrapper/dists/apache-maven-3.9.11/a2d47e15/lib/org.eclipse.sisu.inject-0.9.0.M4.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< at.stoicera.migrationlab:testbed-legacy >---------------
+[INFO] Building ai-testgen testbed — corpus A (legacy) 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ testbed-legacy ---
+[INFO] Deleting /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/target
+[INFO] 
+[INFO] --- dependency:3.11.0:properties (resolve-agent-paths) @ testbed-legacy ---
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-agent) @ testbed-legacy ---
+[INFO] argLine set to -javaagent:/home/skern/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/target/jacoco.exec,excludes=at/werkstatt/crm/gen/**
+[INFO] 
+[INFO] --- build-helper:3.6.1:add-source (add-code-under-test) @ testbed-legacy ---
+[INFO] Source directory: /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/../../../legacy/src/main/java added.
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ testbed-legacy ---
+[INFO] skip non existing resourceDirectory /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ testbed-legacy ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 14 source files with javac [debug release 8] to target/classes
+[WARNING] source value 8 is obsolete and will be removed in a future release
+[WARNING] target value 8 is obsolete and will be removed in a future release
+[WARNING] To suppress warnings about obsolete options, use -Xlint:-options.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ testbed-legacy ---
+[INFO] skip non existing resourceDirectory /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ testbed-legacy ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 25] to target/test-classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[15,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[15,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[33,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[33,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[75,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[75,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[89,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[89,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[101,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[101,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[115,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[115,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[129,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[129,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[144,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[144,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[159,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[159,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[172,9] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[172,33] cannot find symbol
+  symbol:   class Rechnung
+  location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[INFO] 20 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.882 s
+[INFO] Finished at: 2026-07-31T23:44:22+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.15.0:testCompile (default-testCompile) on project testbed-legacy: Compilation failure: Compilation failure: 
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[15,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[15,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[33,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[33,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[75,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[75,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[89,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[89,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[101,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[101,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[115,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[115,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[129,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[129,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[144,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[144,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[159,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[159,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[172,9] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] /home/skern/Work/projects-01/migration-lab/ai-testgen/testbed/legacy/src/test/java/at/werkstatt/crm/gen/RechnungGeneratedTest.java:[172,33] cannot find symbol
+[ERROR]   symbol:   class Rechnung
+[ERROR]   location: class at.werkstatt.crm.gen.RechnungGeneratedTest
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

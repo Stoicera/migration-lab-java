@@ -1,0 +1,19 @@
+{
+  "unit" : "s3-admincontroller",
+  "stratum" : "S3",
+  "corpus" : "B",
+  "classUnderTest" : "at.werkstatt.crm.controller.AdminController",
+  "model" : "qwen/qwen3-coder-next",
+  "runDate" : "2026-07-31",
+  "provider" : "Parasail",
+  "promptTokens" : 1017,
+  "completionTokens" : 965,
+  "latencyMillis" : 12479,
+  "transportRetries" : 0,
+  "extraction" : "OK",
+  "costUsd" : 0.000894,
+  "ecbRateDate" : "2026-07-31",
+  "usdPerEur" : 1.1485,
+  "costEur" : 0.000778,
+  "protocolSha256" : "e7d02d2adfe03ca0cfc690794fbcb7db834a967781eab2aec1f6884c97c41037"
+}

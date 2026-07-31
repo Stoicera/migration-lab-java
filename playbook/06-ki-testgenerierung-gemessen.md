@@ -2,11 +2,12 @@
 
 *Meilenstein: G6 · Protokoll eingefroren: `ai-testgen-protocol-v1` (2026-07-31)*
 
-> **Status dieses Kapitels:** Der Teil, den Sie unten lesen, ist **vor** der ersten
-> Modell-Anfrage geschrieben — das ist der ganze Punkt. Die Ergebnisse (Zahlen,
-> Tabellen, Kosten) folgen nach der Durchführung in `ai-testgen/REPORT.md` und
-> werden hier zusammengefasst. Sollte das Ergebnis unbequem ausfallen, steht es
-> trotzdem hier: Ein Protokoll, das man nach dem Ergebnis ändert, ist Werbung.
+> **Status dieses Kapitels:** Der Methodenteil unten ist **vor** der ersten
+> Modell-Anfrage geschrieben — das ist der ganze Punkt. Die Ergebnisse aus Phase A
+> (wie generiert) stehen seit 2026-07-31 weiter unten; der Nachbesserungsaufwand
+> (Phase B) folgt. Vollständige Zahlen: `ai-testgen/REPORT.md`. Sollte das Ergebnis
+> unbequem ausfallen, steht es trotzdem hier: Ein Protokoll, das man nach dem
+> Ergebnis ändert, ist Werbung.
 
 ## Ausgangslage: die teuerste Frage im Migrationsgespräch
 
@@ -119,7 +120,50 @@ Merksatz für Ihr Projekt: **Ein Gate, das Sie nicht erreichen können, schalten
 Sie nicht „später" scharf — Sie schalten es als Ratsche scharf und ziehen sie
 hoch.** Alles andere endet in `-DskipTests`.
 
-## Entscheidungsregeln (Zwischenstand, vor den Ergebnissen)
+## Ergebnisse Phase A (wie generiert), 2026-07-31
+
+24 Aufrufe, **€ 0,65 gesamt**. Die Zahlen im Überblick:
+
+| Kennzahl | Wert |
+|---|---|
+| Kompilierrate | **12 von 24 (50 %)** |
+| Pass-Rate der kompilierenden Klassen | 151/154 Testmethoden (98,1 %) |
+| Line-/Branch-Coverage auf der Zielklasse | 100 % / 100 % |
+| Mutation-Score (PIT, grüne Teilmenge) | 129/130 (99,2 %) |
+| Kosten | M1 € 0,614 · M2 € 0,034 |
+
+**Der Befund, der die Intuition umdreht:** Die 55–80 Zeilen langen Controller wurden
+mühelos und exzellent getestet. Die **613-Zeilen-Gottklasse — genau die Klasse, für die
+man sich die KI-Hilfe wünscht — lieferte in allen vier Zellen nichts Brauchbares.**
+Das kommerzielle Modell verbrauchte sein gesamtes Ausgabebudget für internes
+„Nachdenken“ und gab **gar keine Antwort** aus (in beiden Korpora), das offene Modell
+lieferte nicht kompilierenden Code. *Der Reflex „die KI macht das schon“ trägt dort am
+wenigsten, wo der Schmerz am größten ist.*
+
+Zwei weitere Punkte für die Kalkulation:
+
+- **Wo es klappte, war es echte Qualität, keine Coverage-Kosmetik.** 100 % Abdeckung
+  *und* 99,2 % Mutation-Score: die Tests fangen eingebaute Fehler wirklich. Genau
+  diesen Unterschied zeigt ein Coverage-Report allein nie — deshalb PIT.
+- **Billig ist nicht „fast so gut“.** Das offene Modell war 18-mal günstiger und
+  kompilierte in 3 von 12 statt 9 von 12 Fällen.
+
+**Was diese Zahlen noch NICHT beantworten:** Was kostet der Weg von „generiert“ zu
+„brauchbar“? Die Hälfte der Zellen ist reparaturbedürftig — die Fehler sind ausnahmslos
+billige Sorten (fehlende Imports, ein verstümmelter Import, abgeschnittene Ausgabe),
+aber „billig aussehend“ ist keine Messung. Erst Phase B liefert die Zahl, und ohne sie
+ist jede Wirtschaftlichkeitsaussage unvollständig. Deshalb steht hier keine.
+
+**Eine Ehrlichkeitsnotiz zum Ausgabebudget:** Die 16 000-Token-Grenze pro Antwort haben
+*wir* im Protokoll festgelegt, nicht das Modell. Dass ein Reasoning-Modell sie mit
+Nachdenken füllt, bevor es zur Antwort kommt, ist ein Zusammentreffen von unserem
+Design und dem Modellverhalten — und wird als solches berichtet, nicht dem Modell
+angelastet. Für Ihr Projekt heißt das trotzdem etwas Praktisches: **Reasoning-Tokens
+werden bezahlt, ob sie zu einer Antwort führen oder nicht.** Über die Hälfte der
+Ausgabe-Tokens des teuren Modells entfiel auf die zwei Aufrufe, die nie eine Antwort
+lieferten.
+
+## Entscheidungsregeln (Stand: Phase A gemessen, Phase B offen)
 
 1. **Kein KI-Test ohne Netz darunter.** Generierte Tests zementieren das
    Verhalten, das sie vorfinden — inklusive Fehler. Ohne Charakterisierungs-
@@ -127,10 +171,12 @@ hoch.** Alles andere endet in `-DskipTests`.
    Richtiges festhält.
 2. **Erst migrieren, wo es die Testbarkeit blockiert.** Feldinjektion und
    verkettetes SQL sind keine Stilfragen, sondern Testkosten pro Klasse.
-3. **Messen Sie mit Mutation-Score, nicht mit Coverage.** Deshalb liegt der
-   Datenhalter als Negativkontrolle im Versuch: Er wird hohe Coverage und
-   niedrigen Mutationswert zeigen — genau das Muster, das Coverage-Reports in
-   Angeboten so gefährlich macht.
+3. **Messen Sie mit Mutation-Score, nicht mit Coverage.** Dafür liegt der
+   Datenhalter als Negativkontrolle im Versuch. Phase A hat die Erwartung nur zur
+   Hälfte bestätigt: hohe Coverage ja, aber die Mutanten wurden alle erlegt. Was
+   sich zeigte, ist die *Ausbeute pro Zeile* — 12 Mutanten auf 34 abgedeckten
+   Zeilen beim Datenhalter gegen 17 Mutanten auf 19 Zeilen beim Controller. Wir
+   berichten das wie gemessen, nicht wie erwartet.
 4. **Rechnen Sie mit Reparatur.** Die interessante Zahl ist nicht „schreibt die
    KI Tests?", sondern „wie viel kostet der Weg von generiert zu brauchbar, und
    in welchen Kategorien?".

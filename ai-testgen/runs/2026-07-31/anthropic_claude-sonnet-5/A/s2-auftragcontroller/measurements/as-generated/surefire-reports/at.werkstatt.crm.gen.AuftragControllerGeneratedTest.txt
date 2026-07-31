@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: at.werkstatt.crm.gen.AuftragControllerGeneratedTest
+-------------------------------------------------------------------------------
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.260 s -- in at.werkstatt.crm.gen.AuftragControllerGeneratedTest

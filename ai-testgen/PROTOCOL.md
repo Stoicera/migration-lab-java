@@ -328,4 +328,27 @@ report states this limitation explicitly and reports raw numbers, medians and ra
 
 ## Amendments
 
-*(empty — permitted only after freeze, dated, only for steps not yet executed)*
+Permitted only after freeze, dated, and only for steps not yet executed.
+
+### A1 — 2026-07-31, after the generation step, before Phase B
+
+**What changed:** the harness now records `finish_reason` and `assistantTextPresent` in
+`usage.json`, and writes a header into `EXTRACTION-FAILED.txt` naming both.
+
+**Why:** three of the 24 calls stopped with `finish_reason=length` — they hit the pinned
+`max_tokens 16000` (§3). In two of them (arm M1 on S1, both corpora) the entire output budget
+went into *reasoning* tokens, so the assistant message content was JSON `null` and the harness
+recorded the literal string `null` as the failed extraction. Nothing was lost — the full
+response including the reasoning text is in `response.json` — but the artifact was unreadable
+without opening the raw response.
+
+**What did NOT change, deliberately:** the affected cells are **not** re-run, **not**
+re-recorded, and **not** re-prompted. `max_tokens 16000` was pre-registered, so a cell that
+exhausted it is a measured result under this protocol, not an accident to be corrected. The
+three cells stay counted as non-compiling with their original artifacts. The amendment
+improves the evidence trail for Phase B, for replications and for any future run — steps that
+had not executed when it was made.
+
+**Reading rule this forces on the report:** a `finish_reason=length` cell must be reported as
+*"no answer was produced within the pinned output budget"*, never as *"the model produced
+broken code"*. They are different findings and only one of them is about the model.

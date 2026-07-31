@@ -729,3 +729,73 @@ The new `ai-testgen` workflow was added to the branch-protection required checks
 the moment it went green (ADR-0008 addendum): a CI job that nothing requires is
 decoration, and the pre-registered pipeline is exactly the thing that must not rot
 between the freeze and a replication. Required checks are now seven.
+
+---
+
+## 2026-07-31 — G6 part 2: generation executed, Phase A measured — session 12
+
+Owner supplied the OpenRouter key (the milestone's one manual step) and asked to
+continue. Separate late-evening session, not a continuation of session 11.
+
+**Executed strictly per the frozen protocol** (v1.0, SHA-256 `e7d02d2a…`, recorded
+in every `usage.json`): 24 calls = 6 units × 2 model arms × 2 corpora, k = 1,
+temperature 0, order corpus A before B, M1 before M2. **Total cost €0.6482**
+(cap €20, estimate had been €1.20–1.50), ECB rate of the run day recorded.
+No call retried, none re-prompted.
+
+**Phase A (as generated), measured on every cell including the failures:**
+
+- **Compile rate 12/24 (50 %)** — M1/A 4/6 · M2/A 3/6 · M1/B 5/6 · M2/B 0/6.
+- Of the compiling classes: 151/154 test methods pass (98.1 %), **100 % line and
+  branch coverage on the target class**, **PIT mutation score 129/130 (99.2 %)**.
+- **The God class produced nothing usable in all four of its cells** — the one
+  class the whole experiment is about. M1 spent its entire 16k output budget on
+  reasoning tokens and never began an answer (both corpora); M2 emitted
+  non-compiling code (both corpora). The 55–80-line controllers, by contrast, were
+  handled flawlessly. That inversion is the headline finding.
+- Failure taxonomy: 3 × output budget exhausted, 8 × missing imports (M2), 1 ×
+  malformed import (`org.assertj.org.assertj.core.api`, M1).
+- Cost asymmetry: M1 €0.614 vs M2 €0.034 — 18× — for 9/12 vs 3/12 compiling.
+
+**Surprising results were checked before being believed** (the standing rule):
+M2/B failing all six looked like a testbed fault, so the compiler output was read
+directly — M1 compiled 5/6 in the *same* testbed and the errors are `cannot find
+symbol: class Rechnung / ResponseEntity / ArgumentCaptor`, i.e. missing imports in
+the generated code. Model output, not environment.
+
+**One honest complication, handled by the protocol rather than around it.** The two
+M1 God-class cells recorded the literal string `null` as their failed extraction —
+because the assistant message content genuinely *was* null: the whole budget went
+into reasoning. Options were (a) re-run with a bigger cap, (b) keep as measured.
+`max_tokens 16000` was **our** pre-registered parameter, so (a) would have been
+curating a result after seeing it. Kept as measured; **amendment A1** (dated, for
+steps not yet executed) improves the *recording* for Phase B and replications:
+`finish_reason` and `assistantTextPresent` now land in `usage.json`, and
+`EXTRACTION-FAILED.txt` gets a header. A1 explicitly re-runs and re-records nothing.
+The reading rule it forces: a `finish_reason=length` cell means *"no answer within
+the pinned budget"*, never *"the model produced broken code"*.
+
+**Written:** `ai-testgen/REPORT.md` (German summary + English detail, Phase A
+complete, Phase B marked not-yet-run), `runs/2026-07-31/README.md` (how to read the
+artifacts, incl. the two caveats above), playbook Kap. 6 gained its Phase-A results
+section, status lines in README/ai-testgen README updated.
+
+**Threat T3 is now evidence, not a hypothesis:** one model ID, five different
+serving backends inside twelve calls (Ionstream, Novita, Alibaba, Parasail,
+StreamLake) with no request-side difference; M1 was Bedrock 12/12.
+
+**Verification:** harness 24/24 + format gate after the A1 change; the safety net
+was not touched by this session (no `legacy/`, `modern/`, `e2e/` or
+`characterization/` source changed) — CI re-runs it on the PR regardless.
+
+**Hours:** 0.4 *(measured wall time: ≈23:27 first tool call of the session to the
+commit; agent wall-clock under supervision, see the worklog header)*
+
+**Decisions:** amendment A1 (recording only, nothing re-run). No result was
+re-generated, re-prompted or excluded.
+
+**Next (G6 part 3):** Phase B — time-boxed repair, 30 min cap per cell, live
+`fix-log.csv` with the fixed categories, re-measure, then complete `REPORT.md`
+(compile/pass/coverage/mutation after repair + repair effort per category) and
+decide on adopting the repaired corpus-B tests into `modern/src/test` (ADR-0010),
+which is what raises the coverage ratchet toward the §3 target of 80 %.
