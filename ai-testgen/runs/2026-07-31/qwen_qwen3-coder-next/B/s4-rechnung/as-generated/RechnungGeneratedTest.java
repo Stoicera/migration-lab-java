@@ -1,0 +1,146 @@
+package at.werkstatt.crm.gen;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Date;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class RechnungGeneratedTest {
+
+    private Rechnung rechnung;
+
+    @BeforeEach
+    void setUp() {
+        rechnung = new Rechnung();
+    }
+
+    @Test
+    void defaultConstructorInitializesAllFieldsToNullOrFalse() {
+        assertThat(rechnung.getId()).isNull();
+        assertThat(rechnung.getRechnungNr()).isNull();
+        assertThat(rechnung.getAuftragId()).isNull();
+        assertThat(rechnung.getAusgestelltAm()).isNull();
+        assertThat(rechnung.getSummeNetto()).isEqualTo(0.0);
+        assertThat(rechnung.getUst()).isEqualTo(0.0);
+        assertThat(rechnung.getSummeBrutto()).isEqualTo(0.0);
+        assertThat(rechnung.isBezahlt()).isFalse();
+        assertThat(rechnung.getBezahltAm()).isNull();
+        assertThat(rechnung.getAuftragNr()).isNull();
+        assertThat(rechnung.getKundeName()).isNull();
+    }
+
+    @Test
+    void settersAndGettersWorkCorrectly() {
+        Long id = 1L;
+        String rechnungNr = "R2024-001";
+        Long auftragId = 100L;
+        Date ausgestelltAm = new Date();
+        double summeNetto = 100.50;
+        double ust = 20.10;
+        double summeBrutto = 120.60;
+        boolean bezahlt = true;
+        Date bezahltAm = new Date();
+        String auftragNr = "A2024-50";
+        String kundeName = "Max Mustermann";
+
+        rechnung.setId(id);
+        rechnung.setRechnungNr(rechnungNr);
+        rechnung.setAuftragId(auftragId);
+        rechnung.setAusgestelltAm(ausgestelltAm);
+        rechnung.setSummeNetto(summeNetto);
+        rechnung.setUst(ust);
+        rechnung.setSummeBrutto(summeBrutto);
+        rechnung.setBezahlt(bezahlt);
+        rechnung.setBezahltAm(bezahltAm);
+        rechnung.setAuftragNr(auftragNr);
+        rechnung.setKundeName(kundeName);
+
+        assertThat(rechnung.getId()).isEqualTo(id);
+        assertThat(rechnung.getRechnungNr()).isEqualTo(rechnungNr);
+        assertThat(rechnung.getAuftragId()).isEqualTo(auftragId);
+        assertThat(rechnung.getAusgestelltAm()).isEqualTo(ausgestelltAm);
+        assertThat(rechnung.getSummeNetto()).isEqualTo(summeNetto);
+        assertThat(rechnung.getUst()).isEqualTo(ust);
+        assertThat(rechnung.getSummeBrutto()).isEqualTo(summeBrutto);
+        assertThat(rechnung.isBezahlt()).isTrue();
+        assertThat(rechnung.getBezahltAm()).isEqualTo(bezahltAm);
+        assertThat(rechnung.getAuftragNr()).isEqualTo(auftragNr);
+        assertThat(rechnung.getKundeName()).isEqualTo(kundeName);
+    }
+
+    @Test
+    void doubleValuesCanBeSetToZeroAndNegative() {
+        rechnung.setSummeNetto(0.0);
+        rechnung.setUst(-5.0);
+        rechnung.setSummeBrutto(-10.5);
+
+        assertThat(rechnung.getSummeNetto()).isEqualTo(0.0);
+        assertThat(rechnung.getUst()).isEqualTo(-5.0);
+        assertThat(rechnung.getSummeBrutto()).isEqualTo(-10.5);
+    }
+
+    @Test
+    void booleanBezahltCanBeSetToFalse() {
+        rechnung.setBezahlt(false);
+        assertThat(rechnung.isBezahlt()).isFalse();
+    }
+
+    @Test
+    void dateFieldsCanBeSetToNull() {
+        rechnung.setAusgestelltAm(null);
+        rechnung.setBezahltAm(null);
+
+        assertThat(rechnung.getAusgestelltAm()).isNull();
+        assertThat(rechnung.getBezahltAm()).isNull();
+    }
+
+    @Test
+    void stringFieldsCanBeSetToEmptyString() {
+        rechnung.setRechnungNr("");
+        rechnung.setAuftragNr("");
+        rechnung.setKundeName("");
+
+        assertThat(rechnung.getRechnungNr()).isEqualTo("");
+        assertThat(rechnung.getAuftragNr()).isEqualTo("");
+        assertThat(rechnung.getKundeName()).isEqualTo("");
+    }
+
+    @Test
+    void allFieldsCanBeSetInSequenceAndRetrievedConsistently() {
+        rechnung.setId(42L);
+        assertThat(rechnung.getId()).isEqualTo(42L);
+
+        rechnung.setRechnungNr("R-2024-123");
+        assertThat(rechnung.getRechnungNr()).isEqualTo("R-2024-123");
+
+        rechnung.setAuftragId(999L);
+        assertThat(rechnung.getAuftragId()).isEqualTo(999L);
+
+        Date now = new Date();
+        rechnung.setAusgestelltAm(now);
+        assertThat(rechnung.getAusgestelltAm()).isEqualTo(now);
+
+        rechnung.setSummeNetto(123.456);
+        assertThat(rechnung.getSummeNetto()).isEqualTo(123.456);
+
+        rechnung.setUst(24.691);
+        assertThat(rechnung.getUst()).isEqualTo(24.691);
+
+        rechnung.setSummeBrutto(148.147);
+        assertThat(rechnung.getSummeBrutto()).isEqualTo(148.147);
+
+        rechnung.setBezahlt(true);
+        assertThat(rechnung.isBezahlt()).isTrue();
+
+        rechnung.setBezahltAm(now);
+        assertThat(rechnung.getBezahltAm()).isEqualTo(now);
+
+        rechnung.setAuftragNr("A-2024-777");
+        assertThat(rechnung.getAuftragNr()).isEqualTo("A-2024-777");
+
+        rechnung.setKundeName("Erika Musterfrau");
+        assertThat(rechnung.getKundeName()).isEqualTo("Erika Musterfrau");
+    }
+}

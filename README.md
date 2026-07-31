@@ -16,9 +16,10 @@ safety net first, honest numbers, reusable German migration playbook.
 > (the deliberate divergences — security fix, absorbed admin page, fixed
 > "undefined" alert — are registered and pinned per stand in
 > [ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md)).
-> Next: measured AI test generation (G6) — protocol **frozen** before anything runs
-> (tag `ai-testgen-protocol-v1`), harness and both measurement testbeds validated;
-> the generation runs need an API key.
+> Next: measured AI test generation (G6) — protocol **frozen before anything ran**
+> (tag `ai-testgen-protocol-v1`); 24 generation calls executed 2026-07-31 for €0.65,
+> Phase A measured in [`ai-testgen/REPORT.md`](ai-testgen/REPORT.md). Phase B (repair
+> effort) follows.
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists

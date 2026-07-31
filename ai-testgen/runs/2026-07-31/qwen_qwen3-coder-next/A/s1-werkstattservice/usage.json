@@ -1,0 +1,19 @@
+{
+  "unit" : "s1-werkstattservice",
+  "stratum" : "S1",
+  "corpus" : "A",
+  "classUnderTest" : "at.werkstatt.crm.service.WerkstattService",
+  "model" : "qwen/qwen3-coder-next",
+  "runDate" : "2026-07-31",
+  "provider" : "Ionstream",
+  "promptTokens" : 9109,
+  "completionTokens" : 6354,
+  "latencyMillis" : 68496,
+  "transportRetries" : 0,
+  "extraction" : "OK",
+  "costUsd" : 0.006176,
+  "ecbRateDate" : "2026-07-31",
+  "usdPerEur" : 1.1485,
+  "costEur" : 0.005377,
+  "protocolSha256" : "e7d02d2adfe03ca0cfc690794fbcb7db834a967781eab2aec1f6884c97c41037"
+}

@@ -58,20 +58,27 @@ public final class OpenRouterClient implements LlmClient {
           "OpenRouter returned HTTP " + response.statusCode() + ": " + response.body());
     }
     JsonNode body = json.readTree(response.body());
-    JsonNode message = body.path("choices").path(0).path("message");
-    if (message.path("content").isMissingNode()) {
-      throw new IOException("OpenRouter response contained no message content: " + response.body());
-    }
+    JsonNode choice = body.path("choices").path(0);
+    JsonNode message = choice.path("message");
+    JsonNode content = message.path("content");
     JsonNode usage = body.path("usage");
+    // A reasoning model can spend the whole output budget on thinking and be cut off before it
+    // emits any answer — then `content` is JSON null, not missing. Reading that with asText()
+    // yields the literal string "null", which is how the 2026-07-31 run recorded it (amendment
+    // A1). Distinguishing the two is what makes such a cell readable as "no answer produced"
+    // rather than "the model wrote the word null".
+    String text = content.isNull() || content.isMissingNode() ? "" : content.asText();
     return new Completion(
         payload,
         response.body(),
-        message.path("content").asText(),
+        text,
         body.path("provider").asText("unknown"),
         usage.path("prompt_tokens").asLong(-1),
         usage.path("completion_tokens").asLong(-1),
         latencyMillis,
-        retries);
+        retries,
+        choice.path("finish_reason").asText("unknown"),
+        !text.isBlank());
   }
 
   private HttpResponse<String> send(String payload) throws IOException, InterruptedException {

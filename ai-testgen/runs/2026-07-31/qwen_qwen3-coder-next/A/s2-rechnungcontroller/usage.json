@@ -1,0 +1,19 @@
+{
+  "unit" : "s2-rechnungcontroller",
+  "stratum" : "S2",
+  "corpus" : "A",
+  "classUnderTest" : "at.werkstatt.crm.controller.RechnungController",
+  "model" : "qwen/qwen3-coder-next",
+  "runDate" : "2026-07-31",
+  "provider" : "Ionstream",
+  "promptTokens" : 1185,
+  "completionTokens" : 1830,
+  "latencyMillis" : 22424,
+  "transportRetries" : 0,
+  "extraction" : "OK",
+  "costUsd" : 0.001606,
+  "ecbRateDate" : "2026-07-31",
+  "usdPerEur" : 1.1485,
+  "costEur" : 0.001398,
+  "protocolSha256" : "e7d02d2adfe03ca0cfc690794fbcb7db834a967781eab2aec1f6884c97c41037"
+}

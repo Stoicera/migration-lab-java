@@ -22,6 +22,10 @@ public interface LlmClient {
    * @param content the assistant message text (before code extraction)
    * @param provider the backend that actually served the call (threat T3)
    * @param transportRetries 0 or 1 — a retried call is still one generation
+   * @param finishReason why the model stopped; {@code length} means the output budget ran out,
+   *     which is a property of the pinned {@code max_tokens}, not of the model's ability
+   * @param hasContent false when the model produced no assistant text at all (e.g. the whole budget
+   *     went into reasoning tokens) — a different failure than "produced unusable text"
    */
   record Completion(
       String requestJson,
@@ -31,5 +35,7 @@ public interface LlmClient {
       long promptTokens,
       long completionTokens,
       long latencyMillis,
-      int transportRetries) {}
+      int transportRetries,
+      String finishReason,
+      boolean hasContent) {}
 }

@@ -1,0 +1,7 @@
+unit,classUnderTest,compile,testsRun,failures,errors,lineCovered,lineMissed,branchCovered,branchMissed,mutationsGenerated,mutationsKilled
+s1-werkstattservice,at.werkstatt.crm.service.WerkstattService,COMPILE_FAILED,0,0,0,0,0,0,0,0,0
+s2-auftragcontroller,at.werkstatt.crm.controller.AuftragController,NO_CODE,0,0,0,0,0,0,0,0,0
+s2-kundencontroller,at.werkstatt.crm.controller.KundenController,COMPILE_FAILED,0,0,0,0,0,0,0,0,0
+s2-rechnungcontroller,at.werkstatt.crm.controller.RechnungController,COMPILE_FAILED,0,0,0,0,0,0,0,0,0
+s3-admincontroller,at.werkstatt.crm.controller.AdminController,COMPILE_FAILED,0,0,0,0,0,0,0,0,0
+s4-rechnung,at.werkstatt.crm.model.Rechnung,COMPILE_FAILED,0,0,0,0,0,0,0,0,0

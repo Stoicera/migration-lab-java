@@ -120,8 +120,17 @@ public final class Harness {
       if (code.isPresent()) {
         write(generated.resolve(unit.testClassName() + ".java"), code.get());
       } else {
-        // PROTOCOL.md §5: counts as non-compiling, is not re-prompted, stays in the repo
-        write(generated.resolve("EXTRACTION-FAILED.txt"), completion.content());
+        // PROTOCOL.md §5: counts as non-compiling, is not re-prompted, stays in the repo.
+        // The header states WHY, so a reader does not have to reverse-engineer an empty file.
+        write(
+            generated.resolve("EXTRACTION-FAILED.txt"),
+            "# EXTRACTION-FAILED — finish_reason="
+                + completion.finishReason()
+                + ", assistant text present: "
+                + completion.hasContent()
+                + "\n# Counted as non-compiling and NOT re-prompted (PROTOCOL.md §5).\n"
+                + "# The full response, including any reasoning tokens, is in response.json.\n\n"
+                + completion.content());
       }
       write(
           unitDirectory.resolve("usage.json"),
@@ -157,6 +166,8 @@ public final class Harness {
     usage.put("completionTokens", completion.completionTokens());
     usage.put("latencyMillis", completion.latencyMillis());
     usage.put("transportRetries", completion.transportRetries());
+    usage.put("finishReason", completion.finishReason());
+    usage.put("assistantTextPresent", completion.hasContent());
     usage.put("extraction", extracted ? "OK" : "EXTRACTION-FAILED");
     usage.put("costUsd", usd);
     usage.put("ecbRateDate", rate.publishedOn());
