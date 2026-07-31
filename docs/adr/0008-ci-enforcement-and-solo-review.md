@@ -15,8 +15,10 @@ mechanical wherever a machine can do it — and honestly labelled where it canno
 ## Decision
 
 1. **Branch protection on `master`:** required status checks (`legacy-build`,
-   `modern-build`, `e2e (legacy)`, `e2e (modern)`), strict up-to-date merges,
-   force-pushes and deletions blocked, PRs required.
+   `modern-build`, `e2e (legacy)`, `e2e (modern)`; since 2026-07-31 also
+   `harness`, `testbed-validation (legacy)`, `testbed-validation (modern)` —
+   see the addendum), strict up-to-date merges, force-pushes and deletions
+   blocked, PRs required.
 2. **No required human review count.** This is a solo-maintainer repo; a
    required-approvals rule would either block all work or be satisfied by the
    author's own approval — enforcement theatre. The honest model, stated
@@ -41,3 +43,18 @@ mechanical wherever a machine can do it — and honestly labelled where it canno
   review (JKU, clients) is invited rather than implied.
 - CI runs a few seconds longer (healthcheck waits) in exchange for the race
   the review predicted ("green by compile-time luck") being closed.
+
+## Addendum 2026-07-31 (G6) — the experiment pipeline is enforced too
+
+The `ai-testgen` workflow (`harness`, `testbed-validation (legacy|modern)`) was
+added to the required checks the day it went green. Reason, straight from this
+ADR's own logic: a pre-registered experiment whose measurement environment can
+rot unnoticed between the freeze and a replication is not reproducible — and a
+CI job that nothing requires is decoration, which is exactly what point 3 above
+retired. Concretely, these checks keep alive: the drift test that pins
+`PROTOCOL.md`'s prompt templates to the code that sends them, the guards that a
+testbed classpath still matches its module, and the dry-run through
+compile → test → JaCoCo → PIT on both corpora.
+
+No API key is involved: CI never generates, so the required checks cost nothing
+in credentials or tokens.

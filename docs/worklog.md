@@ -723,6 +723,9 @@ with T8); protocol frozen as v1.0.
 **Blocked / next:** the generation runs are the only part that needs a credential.
 With `OPENROUTER_API_KEY` set, four `generate` invocations (2 models × 2 corpora,
 24 calls, ≈ €1.20–1.50) produce the artifacts; then `measure.sh` per phase,
-Phase-B repair per the fixed categories, and `REPORT.md`. Also open for the owner:
-adding the new `ai-testgen` workflow to the branch-protection required checks
-(ADR-0008 currently lists four).
+Phase-B repair per the fixed categories, and `REPORT.md`.
+
+The new `ai-testgen` workflow was added to the branch-protection required checks
+the moment it went green (ADR-0008 addendum): a CI job that nothing requires is
+decoration, and the pre-registered pipeline is exactly the thing that must not rot
+between the freeze and a replication. Required checks are now seven.
