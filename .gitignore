@@ -11,6 +11,10 @@ modern/frontend/node/
 !.mvn/wrapper/maven-wrapper.jar
 *.war
 
+# ai-testgen testbed workspace: the harness copies the class under evaluation here.
+# The canonical, committed copies live in ai-testgen/runs/ — this directory is scratch.
+ai-testgen/testbed/*/src/test/java/at/werkstatt/crm/gen/*.java
+
 # Environment / secrets — never commit; keep .env.example current instead
 .env
 .env.local
@@ -30,5 +34,8 @@ Thumbs.db
 
 # Logs & temp
 *.log
+# …except the experiment's build logs: a COMPILE_FAILED verdict is only auditable
+# with the compiler output that produced it (PROTOCOL.md §6 step 7)
+!ai-testgen/runs/**/*.log
 hs_err_pid*
 .playwright-mcp/

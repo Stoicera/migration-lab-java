@@ -1,0 +1,7 @@
+{
+  "note" : "SELF-TEST, not an experiment run — deliberately invalid Java, proves the COMPILE_FAILED path records zeros. Excluded from every result.",
+  "unit" : "s2-kundencontroller",
+  "classUnderTest" : "at.werkstatt.crm.controller.KundenController",
+  "extraction" : "OK",
+  "costEur" : 0
+}

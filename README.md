@@ -16,7 +16,9 @@ safety net first, honest numbers, reusable German migration playbook.
 > (the deliberate divergences — security fix, absorbed admin page, fixed
 > "undefined" alert — are registered and pinned per stand in
 > [ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md)).
-> Next: measured AI test generation (G6).
+> Next: measured AI test generation (G6) — protocol **frozen** before anything runs
+> (tag `ai-testgen-protocol-v1`), harness and both measurement testbeds validated;
+> the generation runs need an API key.
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
@@ -32,10 +34,13 @@ measured effort numbers — how such a migration is de-risked:
    must stay green through every stage.
 2. **Reproducible stages:** every stage is a git tag; checkout → `docker compose up`
    → working application. See [`stages.md`](stages.md).
-3. **Measured AI-assisted test generation (planned, G6):** LLM-generated unit tests
-   for legacy code, to be evaluated with JaCoCo coverage **and PIT mutation scores**
-   under a pre-registered protocol ([`ai-testgen/PROTOCOL.md`](ai-testgen/PROTOCOL.md),
-   frozen before anything runs). Failures will stay in the repo.
+3. **Measured AI-assisted test generation (G6, in progress):** LLM-generated unit tests
+   for the same six classes **twice** — once as 2016 legacy, once as their migrated
+   counterparts — evaluated with JaCoCo coverage **and PIT mutation scores** under a
+   protocol that was frozen before the first API call
+   ([`ai-testgen/PROTOCOL.md`](ai-testgen/PROTOCOL.md), tag `ai-testgen-protocol-v1`).
+   That second corpus turns the experiment into a migration statement: *does
+   modernizing pay off in testability, measurably?* Failures stay in the repo.
 4. **A German migration playbook** ([`playbook/`](playbook/)) with honest effort
    figures and decision rules, reusable for real projects.
 
@@ -70,7 +75,7 @@ changes how the numbers transfer:
 | [`modern/`](modern/) | The migrated application, growing stage by stage |
 | [`e2e/`](e2e/) | Selenium 4 suite — same scenarios vs. both UIs via selector maps |
 | [`characterization/`](characterization/) | Golden-master tests = the definition of functional equivalence |
-| [`ai-testgen/`](ai-testgen/) | Pre-registered AI test-generation experiment (starts G6; protocol drafted) |
+| [`ai-testgen/`](ai-testgen/) | Pre-registered AI test-generation experiment (G6; protocol frozen, harness + testbeds validated) |
 | [`playbook/`](playbook/) | German playbook, one chapter per stage |
 | [`docs/`](docs/) | PRD, SPEC, milestones, ADRs, worklog, deviations ledger, glossary |
 

@@ -610,3 +610,119 @@ stage-5-created surface, or ledger/doc honesty; the auth deviation explicitly
 awaits owner re-scoping (G7 hard requirement noted).
 
 **Next (G6):** unchanged from session 9.
+
+---
+
+## 2026-07-31 — G6 part 1: protocol frozen + measurement infrastructure — session 11
+
+Owner instruction: start the next milestone, decide the open points as recommended,
+implement everything not blocked by manual actions, then report what is blocked.
+Baseline verified first (surefire/failsafe XML, not log claims): characterization
+47/47 vs legacy AND modern, e2e 34/34 vs both.
+
+**The two open decisions, taken and recorded (ADR-0010):**
+
+- **Corpus B is IN.** The six units are measured twice — as 2016 legacy and as
+  their Boot 4.1 / Java 25 counterparts. That turns "can an LLM test legacy
+  code?" into the question the audience actually has: *does migrating pay off in
+  testability, measurably?* It is also what the stage-4 constructor sweep was a
+  precondition for, and the only route by which `modern/` gets a test suite at
+  all. Cost: ~€0.60 more against a €20 cap. Vocabulary cleaned up in the same
+  move: **model arms M1/M2** vs. **corpora A/B** — the draft used "arm" for both.
+- **M2 = `qwen/qwen3-coder-next`**, both model IDs and prices re-read live from
+  the OpenRouter model list on freeze day.
+
+**`PROTOCOL.md` frozen as v1.0, tag `ai-testgen-protocol-v1`** — every checklist
+box ticked with evidence, not by assertion. Pre-freeze edits (free by the
+protocol's own rule, and all of them made because building the thing exposed
+something):
+
+1. **`spring-test` (ReflectionTestUtils only) added to both corpora.** Withholding
+   it would have handicapped corpus A against what every real Spring shop has and
+   made the A/B result look better than reality. MockMvc and Spring contexts stay
+   forbidden by the prompt.
+2. **Threat T7 added:** corpus B is *not* "corpus A with constructor injection" —
+   stage 4 also parameterized the SQL, stage 5 absorbed the JSP admin page (so S3
+   compares a JSP+gson `@Controller` with a JSON `@RestController`), stage 5
+   reformatted. An A/B delta is a **migration** effect; the report may not claim
+   otherwise.
+3. **Threat T8 added, and the metric renamed.** Phase-B repair is done by the
+   executing agent under supervision, not by a human with a stopwatch — so the
+   column is **"repair effort in agent wall-clock minutes under supervision"**,
+   never person-minutes, and the repairer (Claude) is same-family with arm M1,
+   which may flatter M1 exactly in the repair metric. Said in the protocol, the
+   ADR and the playbook chapter, next to the number rather than in a footnote.
+4. **`skipFailingTests=true` for PIT.** PIT refuses to analyse a red suite at all,
+   and Phase-A suites are expected to be red — so Phase-A mutation scores are the
+   score of the **green subset**, stated at every such number. The alternative
+   ("not measurable") would have thrown away the most interesting cases.
+
+**Built and verified (nothing here needs a key):**
+
+- **Two testbed modules**, one per corpus: each compiles its module's
+  `src/main/java` as an extra source root (corpus A at `--release 8` — works on
+  JDK 26 with the expected obsolescence warning) and hosts the generated tests in
+  `at.werkstatt.crm.gen`, which JaCoCo and PIT exclude from measurement.
+  `legacy/pom.xml` is untouched and `legacy/` stays test-free (guarded by a test).
+  Each testbed copies its module's dependency block verbatim — `PomDriftGuardTest`
+  fails the build if the copy and the original ever diverge. Plugin versions
+  pinned (compiler 3.15.0, surefire 3.5.6): a measurement environment that
+  inherits its compiler from the replicator's Maven is not reproducible.
+- **Harness** (Java, Jackson + `java.net.http`, nothing else — it must still build
+  years from now): `plan` / `render` / `generate`, `LlmClient` seam,
+  temperature 0, one retry on transport error only, verbatim recording of
+  request/response/usage incl. serving provider, mechanical extraction (first
+  ```java block; otherwise `EXTRACTION-FAILED`, counted as non-compiling, never
+  re-prompted), pinned price table, global €20 budget guard across all recorded
+  usage, EUR via the ECB daily reference rate (fails loudly rather than inventing
+  a rate). 24 own tests, incl. **`PromptTemplateDriftTest`, which compares the
+  prompt templates printed in PROTOCOL.md character by character with the
+  constants the harness sends** — pre-registration is worth only as much as that
+  guarantee.
+- **Dry-run of the whole pipeline on both corpora** (the §5 freeze gate): 8 and 7
+  hand-written smoke tests through compile → run → JaCoCo → PIT, 326 / 328
+  mutations generated.
+- **`measure.sh`** — step 4 of §6 as a script, plus a **self-test with synthetic
+  inputs including deliberately broken Java** (`runs/pipeline-selftest/`). That
+  self-test earned its keep: it found that stale `target/` content made a
+  compile-failed unit inherit the *previous* unit's coverage and mutation score,
+  and that PIT invoked as a separate Maven call sees no compiled code at all.
+  Both fixed; the failure path now records honest zeros. *A measurement pipeline
+  that has never been shown a failing input has not been validated.*
+
+**Three DEVIATIONS rows closed in `modern/` (they all waited on this milestone):**
+
+- **ArchUnit** — five rules with a migration purpose, not taste: no field
+  injection (this is what permanently pins the stage-4 sweep), injected fields
+  final, service does not know controllers, `JdbcTemplate` only in the service
+  package, models free of Spring. The God class stays a God class on purpose.
+- **Testcontainers** — PostgreSQL 9.6 (the version the stands actually run)
+  started from the very same `modern/db/init` scripts compose mounts, so there is
+  no second schema copy to drift. Six tests over real SQL, incl. the SD-1 hostile
+  input one layer below the golden masters.
+- **Coverage gate** — armed as a **ratchet** at 35 %, just under the **measured**
+  37.3 % line / 14.2 % branch the module's first suite reaches. The §3 target of
+  80 % follows with the adopted experiment tests. A gate nobody can reach is not
+  "strict", it is the reason `-DskipTests` exists.
+
+**Verification at session end:** modern `verify` green incl. frontend build, ng
+lint, prettier, Spotless, the new coverage ratchet and 11 module tests (5 ArchUnit
++ 6 Testcontainers) · harness 24/24 + format gate · testbed dry-run green on both
+corpora · characterization 47/47 vs legacy AND modern · e2e 34/34 vs legacy AND
+modern. The safety net is untouched by all of this, which is the point.
+
+**Hours:** 0.75 *(measured wall time: session start 07:57 — first tool call, the
+baseline runs follow at 08:01 — to the freeze commit at 08:41. Anchored on the
+commit, not on the later merge: the CI wait and the merge click add no work
+(the anchoring lesson from session 9). Agent wall-clock under supervision, see
+the worklog header.)*
+
+**Decisions:** ADR-0010 (corpus B in, spring-test allowance, agent-as-repairer
+with T8); protocol frozen as v1.0.
+
+**Blocked / next:** the generation runs are the only part that needs a credential.
+With `OPENROUTER_API_KEY` set, four `generate` invocations (2 models × 2 corpora,
+24 calls, ≈ €1.20–1.50) produce the artifacts; then `measure.sh` per phase,
+Phase-B repair per the fixed categories, and `REPORT.md`. Also open for the owner:
+adding the new `ai-testgen` workflow to the branch-protection required checks
+(ADR-0008 currently lists four).

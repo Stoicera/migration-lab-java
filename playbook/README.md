@@ -18,4 +18,6 @@ Regeln:
   **Feldwerte/Personentage** sind Erfahrungsschätzungen und werden immer als
   solche gekennzeichnet. Die beiden werden nie vermischt.
 
-Status: **Kapitel 1–5 fertig (Etappen 1–5); Schlusskapitel + PDF-Export folgen mit G7.**
+Status: **Kapitel 1–5 fertig (Etappen 1–5); Kapitel 6 (KI-Testgenerierung) mit dem
+Methodenteil vorab veröffentlicht — die Ergebnisse folgen nach der Durchführung, das ist
+bei einer Präregistrierung so gewollt; Schlusskapitel + PDF-Export folgen mit G7.**

@@ -1,0 +1,7 @@
+{
+  "note" : "SELF-TEST, not an experiment run — synthetic input that proves measure.sh (PROTOCOL.md §5). Excluded from every result.",
+  "unit" : "s4-rechnung",
+  "classUnderTest" : "at.werkstatt.crm.model.Rechnung",
+  "extraction" : "OK",
+  "costEur" : 0
+}

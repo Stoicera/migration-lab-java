@@ -14,4 +14,10 @@ Git tags are first-class deliverables: every tag is a checkout-and-run state
 | `stage-6-cloud-ops` | Docker multi-stage, OTel, health checks, deploy of both stands (Hetzner + Dokploy) | Kap. 6 — Betrieb & Cloud + Schlusskapitel | pending (G7) |
 
 The AI test-generation experiment (G6) is not a migration stage; its artefacts live
-in [`ai-testgen/`](ai-testgen/) and are referenced from the playbook.
+in [`ai-testgen/`](ai-testgen/) and are referenced from the playbook
+([Kap. 6](playbook/06-ki-testgenerierung-gemessen.md)). It carries one tag of its own,
+which is a **pre-registration marker, not a checkout-and-run state**:
+
+| Tag | Meaning | Status |
+|-----|---------|--------|
+| `ai-testgen-protocol-v1` | `ai-testgen/PROTOCOL.md` frozen — selection, prompts, models, metrics and threats fixed **before** the first API call; every recorded call carries this file's SHA-256. Harness + both measurement testbeds validated ([ADR-0010](docs/adr/0010-ai-testgen-scope-corpus-b-and-agent-repair.md)) | **frozen** (2026-07-31) |

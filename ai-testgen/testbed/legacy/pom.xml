@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>at.stoicera.migrationlab</groupId>
+	<artifactId>testbed-legacy</artifactId>
+	<version>1.0.0</version>
+	<packaging>jar</packaging>
+
+	<name>ai-testgen testbed — corpus A (legacy)</name>
+	<description>Measurement environment for PROTOCOL.md corpus A: compiles legacy/src/main/java as an
+		additional source root at --release 8 and hosts the generated unit tests. legacy/pom.xml is
+		never touched and no test ever lands in legacy/ — the exhibit stays test-free (hard rule).
+		The dependency block below is a VERBATIM copy of legacy/pom.xml's; PomDriftGuardTest fails
+		the build if the two ever diverge.</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- the code under test is Java 8; the tests around it are compiled modern -->
+		<cut.release>8</cut.release>
+		<test.release>25</test.release>
+		<boot.version>1.5.22.RELEASE</boot.version>
+
+		<junit.version>5.14.4</junit.version>
+		<mockito.version>5.23.0</mockito.version>
+		<assertj.version>3.27.7</assertj.version>
+		<jacoco.version>0.8.15</jacoco.version>
+		<!-- pinned, not inherited from the Maven super-POM: a measurement environment that
+		     silently changes its compiler or test runner with the local Maven version is not
+		     reproducible. Verified live 2026-07-31. -->
+		<compiler.plugin.version>3.15.0</compiler.plugin.version>
+		<surefire.plugin.version>3.5.6</surefire.plugin.version>
+		<pitest.version>1.25.8</pitest.version>
+		<pitest.junit5.version>1.2.3</pitest.junit5.version>
+
+		<!-- per-run scope, overridden by the harness: PIT mutates the class under test only -->
+		<pit.targetClasses>at.werkstatt.crm.*</pit.targetClasses>
+		<pit.targetTests>at.werkstatt.crm.gen.*</pit.targetTests>
+
+		<!-- Phase A runs on purpose against tests that may fail: a failing generated
+		     test is a measurement, not a broken build. measure.sh flips this to true. -->
+		<testFailureIgnore>false</testFailureIgnore>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- === verbatim from legacy/pom.xml (guarded by PomDriftGuardTest) === -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<!-- === end verbatim block === -->
+
+		<!-- the test stack the prompt pins (PROTOCOL.md §4) — nothing else is offered -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- spring-test is on the classpath for ReflectionTestUtils ONLY (field/@Value
+		     injection without a container). Withholding it would handicap corpus A against
+		     what every real Spring shop has; the prompt forbids MockMvc and any Spring
+		     context explicitly, so the "unit test, no container" rule still holds. -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.6.1</version>
+				<executions>
+					<execution>
+						<id>add-code-under-test</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.basedir}/../../../legacy/src/main/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${compiler.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<release>${cut.release}</release>
+							<!-- "source value 8 is obsolete" on JDK 25+: expected, not an error -->
+							<showDeprecation>false</showDeprecation>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-testCompile</id>
+						<configuration>
+							<release>${test.release}</release>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- resolves ${org.mockito:mockito-core:jar} for the surefire agent below -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.11.0</version>
+				<executions>
+					<execution>
+						<id>resolve-agent-paths</id>
+						<goals>
+							<goal>properties</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire.plugin.version}</version>
+				<configuration>
+					<!-- a run that discovers zero tests is a broken gate, not a pass -->
+					<failIfNoTests>true</failIfNoTests>
+					<!-- generated tests may fail: that IS a measurement (Phase A), so the
+					     harness collects reports even on failure -->
+					<testFailureIgnore>${testFailureIgnore}</testFailureIgnore>
+					<!-- Mockito as an explicit agent: self-attachment still works on JDK 25/26
+					     but warns and is going away. @{argLine} keeps JaCoCo's agent. -->
+					<argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<configuration>
+					<!-- coverage is reported on the code under test only; the tests
+					     themselves are not subjects of measurement -->
+					<excludes>
+						<exclude>at/werkstatt/crm/gen/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>${pitest.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.pitest</groupId>
+						<artifactId>pitest-junit5-plugin</artifactId>
+						<version>${pitest.junit5.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<!-- DEFAULTS mutator set, pinned by PROTOCOL.md §5 -->
+					<targetClasses>
+						<param>${pit.targetClasses}</param>
+					</targetClasses>
+					<targetTests>
+						<param>${pit.targetTests}</param>
+					</targetTests>
+					<outputFormats>
+						<param>XML</param>
+						<param>HTML</param>
+					</outputFormats>
+					<timestampedReports>false</timestampedReports>
+					<failWhenNoMutations>false</failWhenNoMutations>
+					<!-- Phase A suites are frequently red, and PIT refuses to analyse a red
+					     suite at all. Skipping the failing tests measures the mutation score
+					     of the GREEN SUBSET — which is the honest reading of "what do these
+					     tests actually catch". The failures stay counted in the pass rate,
+					     and the report states the subset at every Phase-A number
+					     (PROTOCOL.md §5/§7). -->
+					<skipFailingTests>true</skipFailingTests>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<!-- Harness dry-run (PROTOCOL.md §5): hand-written smoke tests, one per stratum
+		     shape, flow through compile -> run -> JaCoCo -> PIT. They validate the
+		     PIPELINE and are excluded from every experiment result. -->
+		<profile>
+			<id>validation</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.6.1</version>
+						<executions>
+							<execution>
+								<id>add-validation-tests</id>
+								<phase>generate-test-sources</phase>
+								<goals>
+									<goal>add-test-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>${project.basedir}/../../harness-validation/legacy</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<properties>
+				<pit.targetClasses>at.werkstatt.crm.*</pit.targetClasses>
+				<pit.targetTests>at.werkstatt.crm.validation.*</pit.targetTests>
+			</properties>
+		</profile>
+	</profiles>
+
+</project>
