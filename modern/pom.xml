@@ -24,7 +24,25 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>25</java.version>
+		<!-- ratchet, set just below the value the G6 suite actually reaches
+		     (measured 2026-07-31: 37.3 % line, 14.2 % branch) — see the jacoco
+		     plugin comment below and docs/DEVIATIONS.md -->
+		<jacoco.line.minimum>0.35</jacoco.line.minimum>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Boot 4.1 no longer imports the Testcontainers BOM, so the version is pinned
+			     here; verified live on Maven Central 2026-07-31 -->
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.21.4</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -44,6 +62,37 @@
 		<!-- JSP/JSTL/gson: retired in stage 5 with the absorbed admin page
 		     (SD-2, ADR-0004) — the app is JSP-free; WAR->JAR follows at the
 		     stage-5 cutover when the last webapp/ content goes -->
+
+		<!-- G6: the module's first tests. Two DEVIATIONS items land here —
+		     ArchUnit (§3) and Testcontainers integration tests (§6). Versions
+		     verified live on Maven Central 2026-07-31; Testcontainers is
+		     BOM-managed by Boot 4.1. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.tngtech.archunit</groupId>
+			<artifactId>archunit-junit5</artifactId>
+			<version>1.4.2</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -114,6 +163,52 @@
 						</goals>
 						<configuration>
 							<arguments>run format:check</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Coverage (DEVIATIONS "Coverage-Gate", deferred(G6) → armed here).
+			     The rule is a RATCHET, not the §3 target of 80 %: it pins what the
+			     module's first suite actually reaches (G6) so coverage cannot fall,
+			     and is raised when the ai-testgen tests are adopted. A gate whose
+			     number was never measured is decoration. Version verified 2026-07-31. -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.15</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>ratchet</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>${jacoco.line.minimum}</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
 						</configuration>
 					</execution>
 				</executions>

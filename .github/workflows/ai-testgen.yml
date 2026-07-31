@@ -1,0 +1,66 @@
+# G6 experiment infrastructure. This workflow runs NO generation and needs NO API key:
+# it keeps the pre-registered pipeline alive, so the measurement environment cannot rot
+# between the freeze and a later replication.
+#
+#   harness            — prompt rendering, extraction rule, catalogue, and the drift test
+#                        that pins PROTOCOL.md's templates to the code that sends them
+#   testbed-validation — the §5 dry-run: hand-written smoke tests through
+#                        compile -> run -> JaCoCo -> PIT, on both corpora
+#
+# All steps run unconditionally (ADR-0008).
+name: ai-testgen
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up JDK 25 (Temurin)
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Harness tests + format gate
+        run: ./mvnw -B verify -f ai-testgen/harness/pom.xml
+
+  testbed-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        corpus: [legacy, modern]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up JDK 25 (Temurin)
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      # corpus A compiles the frozen legacy sources at --release 8, corpus B at 25;
+      # PomDriftGuardTest fails here if a testbed classpath drifts from its module
+      - name: Pipeline dry-run (compile -> test -> JaCoCo -> PIT), corpus ${{ matrix.corpus }}
+        run: >
+          ./mvnw -B -Pvalidation -f ai-testgen/testbed/${{ matrix.corpus }}/pom.xml
+          test org.pitest:pitest-maven:mutationCoverage
+
+      - name: Upload PIT report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: pit-validation-${{ matrix.corpus }}
+          path: ai-testgen/testbed/${{ matrix.corpus }}/target/pit-reports/
+          if-no-files-found: ignore

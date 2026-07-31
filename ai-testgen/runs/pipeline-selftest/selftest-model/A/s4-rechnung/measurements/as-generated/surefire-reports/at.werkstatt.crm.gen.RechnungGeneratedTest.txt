@@ -1,0 +1,13 @@
+-------------------------------------------------------------------------------
+Test set: at.werkstatt.crm.gen.RechnungGeneratedTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.168 s <<< FAILURE! -- in at.werkstatt.crm.gen.RechnungGeneratedTest
+at.werkstatt.crm.gen.RechnungGeneratedTest.fails_on_purpose -- Time elapsed: 0.013 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+Expecting value to be true but was false
+	at at.werkstatt.crm.gen.RechnungGeneratedTest.fails_on_purpose(RechnungGeneratedTest.java:18)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+
