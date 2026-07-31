@@ -31,8 +31,8 @@ testbeds building, harness tested, dry-run through the full measurement pipeline
 ./mvnw -q -f ai-testgen/harness/pom.xml compile exec:java \
   -Dexec.args="render --corpus A --model anthropic/claude-sonnet-5 --out /tmp/prompts"
 
-# the generation step — needs OPENROUTER_API_KEY (see .env.example)
-export OPENROUTER_API_KEY='sk-or-...'
+# the generation step — needs a key: either `cp .env.example .env` and fill it in
+# (git-ignored, read by the harness itself) or export OPENROUTER_API_KEY for one run
 ./mvnw -q -f ai-testgen/harness/pom.xml compile exec:java \
   -Dexec.args="generate --corpus A --model anthropic/claude-sonnet-5"
 

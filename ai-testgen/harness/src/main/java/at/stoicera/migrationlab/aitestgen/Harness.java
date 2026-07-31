@@ -185,23 +185,51 @@ public final class Harness {
 
   // ------------------------------------------------------------------ plumbing
 
-  private static String apiKey() {
+  /**
+   * The API key, from the environment or from the git-ignored {@code .env} at the repository root.
+   * Reading {@code .env} keeps the credential out of shell history — the environment still wins, so
+   * CI and one-off overrides behave as expected.
+   */
+  private static String apiKey() throws IOException {
     String key = System.getenv("OPENROUTER_API_KEY");
+    if (key == null || key.isBlank()) {
+      key = fromDotEnv(Repo.root().resolve(".env"));
+    }
     if (key == null || key.isBlank()) {
       throw new IllegalStateException(
           """
           OPENROUTER_API_KEY is not set.
 
           The generation step is the one part of this experiment that cannot run without a
-          credential. Create a key at https://openrouter.ai/keys, then run:
+          credential. Create a key at https://openrouter.ai/keys, then either
+
+            cp .env.example .env     # and put the key in it — .env is git-ignored
+
+          or export it for one run:
 
             export OPENROUTER_API_KEY='sk-or-...'
+
+          then:
+
             ./mvnw -q -f ai-testgen/harness/pom.xml compile exec:java \\
               -Dexec.args="generate --corpus A --model anthropic/claude-sonnet-5"
 
           Nothing else in the repository needs a secret (.env.example documents this).""");
     }
-    return key;
+    return key.strip();
+  }
+
+  private static String fromDotEnv(Path dotEnv) throws IOException {
+    if (!Files.isRegularFile(dotEnv)) {
+      return null;
+    }
+    for (String line : Files.readAllLines(dotEnv, StandardCharsets.UTF_8)) {
+      String trimmed = line.strip();
+      if (trimmed.startsWith("OPENROUTER_API_KEY=")) {
+        return trimmed.substring("OPENROUTER_API_KEY=".length()).replaceAll("^[\"']|[\"']$", "");
+      }
+    }
+    return null;
   }
 
   /**
