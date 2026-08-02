@@ -35,7 +35,8 @@ public final class Stand {
    * divergence). Values: "legacy" (default) | "modern". Everything not explicitly forked on this
    * flag must behave identically on both stands.
    */
-  public static final String STAND = validateStand(System.getProperty("stand", "legacy"));
+  public static final String STAND =
+      validateStand(rejectTargetFlag(System.getProperty("stand", "legacy")));
 
   private static final HttpClient HTTP = HttpClient.newHttpClient();
 
@@ -87,6 +88,28 @@ public final class Stand {
     } catch (Exception e) {
       throw new IllegalStateException(method + " " + pathAndQuery + " failed", e);
     }
+  }
+
+  /**
+   * Fails fast when someone passes -Dtarget, which belongs to the e2e suite and is meaningless
+   * here. Ignoring it silently was worse than it sounds: `-Dtarget=modern` produced a fully GREEN
+   * run against the LEGACY stand, i.e. an equivalence proof that proved nothing. A safety net that
+   * can be pointed at the wrong stand without saying so is not a safety net.
+   */
+  private static String rejectTargetFlag(String stand) {
+    String target = System.getProperty("target");
+    if (target != null) {
+      throw new IllegalArgumentException(
+          "-Dtarget='"
+              + target
+              + "' is an e2e flag and does nothing in the characterization suite. This run would"
+              + " have gone green against whatever -DbaseUrl/-DdbUrl point at (default: legacy,"
+              + " http://localhost:8080) while you believed it tested '"
+              + target
+              + "'. Pass all three flags instead, e.g.: -DbaseUrl=http://localhost:8090"
+              + " -DdbUrl=jdbc:postgresql://localhost:5434/werkstatt -Dstand=modern");
+    }
+    return stand;
   }
 
   private static String validateStand(String value) {

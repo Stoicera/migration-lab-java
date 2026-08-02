@@ -1,6 +1,6 @@
 # Modern stand: build, then the EQUIVALENCE GATE — the same characterization
 # suite that locks the legacy behaviour runs against the modern stand
-# (module unit/integration tests arrive with G6, see docs/DEVIATIONS.md).
+# (module unit/integration tests exist since 2026-07-31: ArchUnit + Testcontainers).
 # Functional equivalence is proven per commit, not claimed (ADR-0004).
 # All steps run UNCONDITIONALLY (ADR-0008): presence gates are retired.
 name: modern-ci

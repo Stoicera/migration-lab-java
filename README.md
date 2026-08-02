@@ -100,12 +100,21 @@ changes how the numbers transfer:
 
 ## Quickstart
 
+Needs only Docker with the Compose plugin — the applications build inside Docker.
+
 ```bash
-docker compose -f legacy/docker-compose.yml up -d
+docker compose -f legacy/docker-compose.yml up -d --wait
 # SPA: http://localhost:8080 · JSP admin: http://localhost:8080/admin
-docker compose -f modern/docker-compose.yml up -d
+docker compose -f modern/docker-compose.yml up -d --wait
 # modern stand: http://localhost:8090
 ```
+
+`--wait` blocks until the healthchecks pass. Without it the containers are merely *running* —
+PostgreSQL is not yet accepting connections, and the next test run fails on timing.
+
+Everything else — prerequisites per module, running the suites, resetting the database,
+troubleshooting — is in [`docs/deployment.md`](docs/deployment.md). The by-hand steps are
+checklisted in [`docs/MANUAL_TASKS.md`](docs/MANUAL_TASKS.md).
 
 ---
 

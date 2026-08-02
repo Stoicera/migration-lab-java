@@ -35,17 +35,29 @@ Three suites (Java 25, JUnit 5, no framework beyond JDK http + Jackson + JDBC):
 ## Run
 
 ```bash
-docker compose -f legacy/docker-compose.yml up -d   # stand must be running
-
 # against the legacy stand (defaults)
+docker compose -f legacy/docker-compose.yml up -d --wait
 ./mvnw verify -f characterization/pom.xml
 
-# against the modern stand
+# against the modern stand — its own stand, and all THREE flags
+docker compose -f modern/docker-compose.yml up -d --wait
 ./mvnw verify -f characterization/pom.xml \
   -DbaseUrl=http://localhost:8090 \
   -DdbUrl=jdbc:postgresql://localhost:5434/werkstatt \
   -Dstand=modern
 ```
+
+`--wait` blocks until the healthchecks pass; without it the suite hits a stand
+that is not yet accepting connections and fails on timing rather than on
+behaviour.
+
+> **This suite has no `-Dtarget`.** That flag belongs to `e2e/` only, where it
+> switches base URL, DB URL and selector map together. Here there are three
+> separate flags and you need all three — `-DbaseUrl` alone tests the modern app
+> against the legacy database, `-Dstand=modern` alone tests modern expectations
+> against port 8080. Passing `-Dtarget` used to be silently ignored, which
+> produced a **green run against the wrong stand**; since 2026-08-02 it fails
+> fast instead.
 
 ### The `stand` property — sanctioned divergence (ADR-0004)
 

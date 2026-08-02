@@ -39,3 +39,6 @@ Thumbs.db
 !ai-testgen/runs/**/*.log
 hs_err_pid*
 .playwright-mcp/
+
+# Claude Code scratch: agent worktrees created during a session (transient)
+.claude/worktrees/

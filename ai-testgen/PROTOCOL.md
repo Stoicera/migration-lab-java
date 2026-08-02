@@ -411,3 +411,48 @@ dropped methods recorded in the fix log and the report. Nothing is written to re
 
 **Nothing in A2 re-runs, re-prompts or re-records any generation call**, and no Phase-A number
 changes. All four decisions concern only steps that had not executed when this was written.
+
+### A3 — 2026-08-02, during Phase B: a disclosure, not a change
+
+**This entry changes no rule, no number and no artifact.** It records something found while
+repairing, which the §8 threat list did not anticipate. It is deliberately **not** added to §8:
+§8 is headed *pre-declared*, and a threat discovered after the measurement does not get to
+borrow the credibility of pre-registration. It is a weaker kind of finding and is labelled as
+one here and in `REPORT.md`.
+
+**What was found.** In exactly one cell — arm M1, corpus A, S4 `Rechnung` — the model's reply
+contains **two** ```` ```java ```` blocks. The first is an empty class body carrying a malformed
+static import (`org.assertj.org.assertj.core.api`). Between the two blocks the model writes, in
+plain text: *"Wait, I need to produce the correct final answer without mistakes. Let me redo it
+properly."* The second block is a complete test class with 26 test methods and the **correct**
+import. `finish_reason` is `stop`: the model finished, and its final answer was the good one.
+
+The extraction rule of §5 takes the **first** fenced block. It therefore recorded the model's
+abandoned false start and discarded its actual answer.
+
+**Consequence for how Phase A must be read.** The `REPORT.md` failure-taxonomy row that
+attributed a "malformed import" to arm M1 on S4/A describes *the extracted artifact* correctly
+and *the model's output* incorrectly. **In that cell the pipeline, not the model, produced the
+failure.** The report is corrected to say so, with the raw response cited.
+
+**What does NOT change, and why.** The extraction rule was pre-registered, applied mechanically,
+and the recorded result is what this protocol produces. **The cell is not re-extracted, not
+re-run, and the 12/24 Phase-A compile rate stands as measured.** Re-reading an artifact more
+favourably *after seeing that it hurt a number* is precisely the failure mode the pre-registration
+exists to prevent — the rule does not become wrong just because it cost us a data point. The
+counterfactual ("13/24 under a last-block rule") is stated in the report as a counterfactual,
+clearly separated from the measured value, because the size of a harness effect is itself a
+result worth publishing.
+
+**Scope, checked rather than assumed.** All 24 responses were scanned for multiple fenced
+blocks before this was written. **One cell is affected; the other 23 contain exactly one block**
+(two contain none — the `finish_reason=length` cells of A1). So this is a bounded defect in one
+cell, not a systematic bias — and that bound is itself the reason it can be reported calmly.
+
+**For replications, the transferable lesson:** *"first fenced code block" is not a neutral
+reading of a model's answer.* A model that self-corrects mid-reply is normal behaviour, and any
+extraction rule silently decides which of its drafts gets benchmarked. A replication should
+pre-register the rule it wants (first block / last block / longest block / all blocks
+concatenated) **and** publish how many cells the choice actually moved. Ours moved one in
+twenty-four — roughly four percentage points of the headline compile rate, from a line of code
+nobody would have thought to argue about.

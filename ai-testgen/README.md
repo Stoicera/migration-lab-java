@@ -27,6 +27,11 @@ any of its four cells.
 
 ## Running it
 
+Prerequisites beyond a JDK 25+: `measure.sh` is a bash script that needs **`python3`** (it parses
+the JaCoCo and PIT XML) and **`column`** from util-linux. It does **not** validate its `phase`
+argument — a typo produces `skip <unit>: no <typo>/ directory` for all six units and a
+header-only CSV that looks exactly like a completed measurement. Check the row count.
+
 ```bash
 # what would run, and what it has cost so far — no key needed
 ./mvnw -q -f ai-testgen/harness/pom.xml compile exec:java -Dexec.args="plan"

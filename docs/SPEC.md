@@ -18,7 +18,7 @@ migration-lab/
 ├── ai-testgen/              # experiment harness: prompts, generated tests, PIT mutation reports, evaluation notebook/report
 ├── playbook/                # German markdown chapters, one per stage; exportable
 ├── docs/                    # PRD, SPEC, MILESTONES, ADRs, glossary, worklog
-└── .github/workflows/       # legacy-ci.yml (must stay green), modern-ci.yml, e2e.yml (matrix: legacy|modern)
+└── .github/workflows/       # legacy-ci.yml (must stay green), modern-ci.yml, e2e.yml (matrix: legacy|modern), ai-testgen.yml
 ```
 
 **Git tags are first-class deliverables:** `stage-0-legacy`, `stage-1-safety-net`, `stage-2-jdk-build`, `stage-3-boot-2.7`, `stage-4-boot-4x`, `stage-5-angular`, `stage-6-cloud-ops`. Every tag: checkout → `docker compose up` → working app. A `stages.md` table maps tag → state → playbook chapter.
@@ -55,7 +55,7 @@ Method (pre-registered in `ai-testgen/PROTOCOL.md` before running — Plösch-st
 
 ## 6. CI/CD
 
-Three workflows today: legacy (build + characterization vs the legacy stand), modern (build + the same characterization suite vs the modern stand — the per-commit equivalence gate; module unit/integration tests incl. Testcontainers arrive with G6), e2e matrix (legacy|modern, nightly + on push/PR). Planned for G7: deployment job (modern) → GHCR → Dokploy. Badges per workflow in README. Engineering-Standards compliance status incl. dated deviations: `docs/DEVIATIONS.md`.
+**Four** workflows today, supplying **seven** required checks on `master`: legacy (build + characterization vs the legacy stand), modern (build incl. Angular build, lint/format/coverage gates and the module tests — ArchUnit + Testcontainers, present since 2026-07-31 — plus the same characterization suite vs the modern stand, the per-commit equivalence gate), e2e matrix (legacy|modern, nightly + on push/PR), and ai-testgen (harness tests + testbed validation on both corpora; **no API key, no generation in CI**). Planned for G7: deployment job (modern) → GHCR → Dokploy. Badges per workflow in README. Engineering-Standards compliance status incl. dated deviations: `docs/DEVIATIONS.md`. Operating instructions: `docs/deployment.md`; the by-hand steps: `docs/MANUAL_TASKS.md`.
 
 ## 7. Playbook (`playbook/`, German)
 
