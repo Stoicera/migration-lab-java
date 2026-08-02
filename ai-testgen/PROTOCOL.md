@@ -352,3 +352,62 @@ had not executed when it was made.
 **Reading rule this forces on the report:** a `finish_reason=length` cell must be reported as
 *"no answer was produced within the pinned output budget"*, never as *"the model produced
 broken code"*. They are different findings and only one of them is about the model.
+
+### A2 — 2026-08-02, before Phase B, for Phase B
+
+Phase A is measured and published; Phase B has not started. §6 fixes *what* is repaired, the
+30-minute cap, and the six categories, but four operational questions were left open in the
+frozen text, and each of them changes what the repair-effort number means. They are decided
+here, **before the first repair**, rather than settled by whatever the executing session
+happened to do.
+
+**A2.1 — Phase B runs as parallel, mutually blind repairers: one agent instance per cell.**
+Each of the cells that needs repair is handed to its own Claude Code agent instance with its
+own working tree, its own wall clock, and **no knowledge of any other cell** — not the
+generated code, not the diagnosis, not the fix. The alternative, one agent walking the cells
+in sequence, was rejected because it destroys the metric: by cell 9 the repairer has seen the
+same missing-import cluster eight times, so its effort figure measures accumulated familiarity
+and the cell *order* silently becomes a variable. This is the same reason the generation step
+ran at k = 1 with a fixed order rather than in a conversation.
+
+What this buys: cells become independent and directly comparable, and the M1-vs-M2 repair
+comparison (RQ3/RQ4) is not confounded by whichever arm happened to be repaired first.
+
+What it costs, stated because it is a real limitation and not a footnote: **a human team does
+not work this way.** A developer repairing six near-identical import failures gets faster, and
+that learning is genuine, transferable economics this design deliberately removes. The
+Phase-B numbers are therefore **per-cell cold-start effort** — an upper bound on the marginal
+cost of one cell in isolation, not an estimate of the total cost of repairing a batch. The
+report must say so at the point of the number. T4 (single rater) is unchanged in kind but now
+reads "single rater *policy*, N independent instances"; T8 (repairer is same-family as M1) is
+untouched and still applies to every cell.
+
+**A2.2 — Repair may only repair. It may not add tests.**
+The repairer fixes what the model produced: imports, syntax, mock setup, wrong expectations,
+unusable structure. It must **not** add a test method the model did not write, must not extend
+an existing test to cover a new branch, and must not touch the class under test (already fixed
+in §2). Without this rule Phase B silently becomes "an AI agent writes tests, warm-started by
+a draft", and the coverage and mutation deltas would measure the repairer instead of the
+generator. Deleting a test method is allowed only under A2.4 and is counted.
+
+**A2.3 — A cell whose recorded output contains no code is `ABANDONED` at 0 minutes.**
+Three cells hit the pinned output budget (A1); in two of them — arm M1 on S1, both corpora —
+the recorded artifact is the literal string `null`, because the whole budget went into
+reasoning tokens. There is nothing to repair. Writing a test class for those cells from
+scratch would be the repairer generating tests, which is the one thing Phase B is not, so
+they are recorded as `ABANDONED` with **0 repair minutes and no fix-log rows**, and they stay
+`NO_CODE` after repair. The honest reading — and the report must carry it — is that
+**`ABANDONED`-at-zero is not a cheap cell, it is an unrepairable one**; averaging it into a
+repair-minutes mean would make the total look better the more completely a model failed.
+Repair effort is therefore always reported alongside the count of cells it was computed on.
+
+**A2.4 — Truncated output is salvaged, not completed.**
+One cell (M2, corpus B, `AuftragController`) stopped mid-method with `finish_reason=length`
+after a visibly degenerating test-method name. It contains real, complete test methods before
+the cut. The rule: **keep every syntactically complete method up to the truncation point,
+delete the incomplete tail, close the class** — category `IMPORT/SYNTAX`, and the number of
+dropped methods recorded in the fix log and the report. Nothing is written to replace them
+(A2.2). Salvage is repair; finishing the model's sentence would not be.
+
+**Nothing in A2 re-runs, re-prompts or re-records any generation call**, and no Phase-A number
+changes. All four decisions concern only steps that had not executed when this was written.
