@@ -24,10 +24,15 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>25</java.version>
-		<!-- ratchet, set just below the value the G6 suite actually reaches
-		     (measured 2026-07-31: 37.3 % line, 14.2 % branch) — see the jacoco
-		     plugin comment below and docs/DEVIATIONS.md -->
-		<jacoco.line.minimum>0.35</jacoco.line.minimum>
+		<!-- Ratchet: always set just below what the suite ACTUALLY reaches, then pulled up.
+		     2026-07-31: 37.3 % line measured → gate 0.35 (module tests only)
+		     2026-08-02: 81.3 % line / 58.3 % branch measured after adopting the repaired
+		                 G6 corpus-B tests (ADR-0011) → gate 0.80, which is the first time
+		                 ENGINEERING_STANDARDS §3's 80 % target is genuinely REACHED rather
+		                 than declared. 1.3 points of headroom absorb jitter.
+		     Never raise this above a measured value: a gate nobody can reach is the reason
+		     -DskipTests exists. See docs/DEVIATIONS.md. -->
+		<jacoco.line.minimum>0.80</jacoco.line.minimum>
 	</properties>
 
 	<dependencyManagement>

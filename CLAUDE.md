@@ -31,9 +31,13 @@ You are working on **migration-lab**: a public, reproducible legacy modernizatio
 - Conventional Commits; tags and `stages.md` updated in the same PR as the stage completion.
 
 ## Commands (keep current as the repo grows)
+Full operations reference: `docs/deployment.md`. Human-only steps: `docs/MANUAL_TASKS.md`.
+
 ```bash
-docker compose -f legacy/docker-compose.yml up -d    # legacy stand (8080, db 127.0.0.1:5433)
-docker compose -f modern/docker-compose.yml up -d    # modern stand (8090, db 127.0.0.1:5434; exists since stage 2)
+# --wait is not optional: without it the containers are running but not yet healthy,
+# and the next suite fails on timing rather than on behaviour.
+docker compose -f legacy/docker-compose.yml up -d --wait   # legacy stand (8080, db 127.0.0.1:5433)
+docker compose -f modern/docker-compose.yml up -d --wait   # modern stand (8090, db 127.0.0.1:5434; since stage 2)
 
 # suites (stands must be up; both suites fail loudly if zero tests are discovered)
 ./mvnw verify -f characterization/pom.xml            # characterization vs legacy
@@ -45,5 +49,6 @@ docker compose -f modern/docker-compose.yml up -d    # modern stand (8090, db 12
 # a bare `./mvnw -f legacy/pom.xml` fails on a modern local JDK (legacy/README.md).
 # modern verify builds the Angular frontend too (frontend-maven-plugin installs its
 # own Node, npm ci) and runs the lint/format gates (Spotless, ng lint, prettier).
-./mvnw verify -f modern/pom.xml                      # modern build (module tests arrive with G6)
+./mvnw verify -f modern/pom.xml                      # modern build — NEEDS A RUNNING DOCKER DAEMON
+                                                     # (Testcontainers); 11 module tests since G6
 ```

@@ -1,0 +1,14 @@
+ABANDONED — 0 repair minutes, no fix-log rows.
+
+The Phase-A artifact of this cell is `as-generated/EXTRACTION-FAILED.txt`, whose entire
+content is the literal string `null`: the call stopped with finish_reason=length after
+spending its whole 16 000-token output budget on reasoning tokens, so the assistant
+message content was JSON null (see amendment A1). There is no generated code here to
+repair.
+
+Per amendment A2.3 the cell is recorded as ABANDONED at zero minutes and stays NO_CODE
+after repair. Writing a test class from scratch would be the repairer GENERATING tests,
+which is precisely what Phase B is not (A2.2).
+
+Read this as an UNREPAIRABLE cell, not a cheap one. It must never be averaged into a
+mean repair time — that would make a model look better the more completely it failed.

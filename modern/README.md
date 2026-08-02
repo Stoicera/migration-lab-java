@@ -7,11 +7,16 @@ artifact). Current state: see [`../stages.md`](../stages.md).
 ## Run it (side by side with the legacy stand)
 
 ```bash
-docker compose -f modern/docker-compose.yml up -d
+docker compose -f modern/docker-compose.yml up -d --wait
 ```
 
 - App: http://localhost:8090 · admin (SPA route since stage 5): http://localhost:8090/admin
-- PostgreSQL: localhost:5434 (werkstatt/werkstatt), same committed seed as legacy
+- PostgreSQL: 127.0.0.1:5434 (werkstatt/werkstatt), same committed seed as legacy
+
+**`./mvnw verify -f modern/pom.xml` requires a running Docker daemon** — the module
+tests include a Testcontainers integration test that starts a real `postgres:9.6`
+from the very same `db/init` scripts the compose stand mounts. Full operations
+reference: [`docs/deployment.md`](../docs/deployment.md).
 
 ## Frontend build (stage 5)
 

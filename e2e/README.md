@@ -192,11 +192,18 @@ by `SelectorMapParityTest`.
 ## Run
 
 ```bash
-docker compose -f legacy/docker-compose.yml up -d
+docker compose -f legacy/docker-compose.yml up -d --wait
 ./mvnw verify -f e2e/pom.xml -Dtarget=legacy
-docker compose -f modern/docker-compose.yml up -d
+docker compose -f modern/docker-compose.yml up -d --wait
 ./mvnw verify -f e2e/pom.xml -Dtarget=modern
 ```
 
-Requires Chrome/Chromium (Selenium Manager resolves the driver; CI uses the
-preinstalled Chrome on ubuntu runners).
+`-Dtarget` is the only switch needed here: it selects base URL, DB URL **and**
+selector map together. Anything but `legacy`/`modern` fails immediately.
+
+Requires a local Chrome/Chromium **binary** — Selenium Manager downloads the
+matching driver by itself and caches it in `~/.cache/selenium`, but it does not
+install the browser. CI uses the preinstalled Chrome on ubuntu runners. If a
+browser update outruns the cached driver (`session not created: This version of
+ChromeDriver only supports Chrome version N`), delete `~/.cache/selenium` and
+re-run.

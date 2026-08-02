@@ -1,0 +1,53 @@
+cell,timestamp,category,description
+M1-A-s4-rechnung,2026-08-02T10:50:54+02:00,IMPORT/SYNTAX,fixed malformed static import org.assertj.org.assertj.core.api.Assertions.assertThat -> org.assertj.core.api.Assertions.assertThat; the only compile error in the extracted artifact
+M2-B-s2-kunden,2026-08-02T11:11:42+02:00,IMPORT/SYNTAX,added missing import org.springframework.http.ResponseEntity; unresolved in 6 places
+M2-B-s2-kunden,2026-08-02T11:11:42+02:00,IMPORT/SYNTAX,added missing import org.mockito.ArgumentCaptor; unresolved in 2 places
+M2-B-s2-kunden,2026-08-02T11:12:13+02:00,IMPORT/SYNTAX,ResponseEntity.getStatusCodeValue() removed in Spring Framework 7 (Boot 4); replaced 6 call sites with getStatusCode().value()
+M2-A-s1-werkstattservice,2026-08-02T11:13:00+02:00,IMPORT/SYNTAX,added missing import at.werkstatt.crm.service.WerkstattService (the class under test was never imported)
+M2-A-s1-werkstattservice,2026-08-02T11:13:10+02:00,IMPORT/SYNTAX,Date ambiguous between the java.sql.* and java.util.* wildcard imports in getAlleFahrzeuge test; qualified as java.sql.Date
+M2-A-s1-werkstattservice,2026-08-02T11:13:30+02:00,MOCKING-SETUP,neuerAuftrag: chained thenReturn mixed Integer and Long on one queryForObject overload; split into an Integer max stub and a Long insert stub and stubbed the trailing getAuftrag query
+M2-A-s1-werkstattservice,2026-08-02T11:13:45+02:00,MOCKING-SETUP,erstelleRechnung amounts: chained thenReturn on query() mixed List/int/long; split into per-SQL queryForObject stubs plus a two-step query stub (auftrag then positionen)
+M2-A-s1-werkstattservice,2026-08-02T11:14:20+02:00,IMPORT/SYNTAX,two thenAnswer stubs assigned to a non-final local RowMapper declared outside the lambda; moved the declaration inside the lambda (getAlleFahrzeuge and getMonatsBericht tests)
+M2-A-s1-werkstattservice,2026-08-02T11:14:25+02:00,IMPORT/SYNTAX,getMonatsBericht test stubs ResultSet getters but lacked throws SQLException on the method signature; added it
+M2-A-s1-werkstattservice,2026-08-02T11:15:30+02:00,WRONG-EXPECTATION,five verifies expected jdbcTemplate.update(sql; id) but the legacy code concatenates the id into the SQL and calls the single-argument update; changed to update(sqlCaptor.capture()) in loescheKunde/loescheFahrzeug/loeschePosition/setzeBezahlt/setzeStatus
+M2-A-s1-werkstattservice,2026-08-02T11:15:35+02:00,WRONG-EXPECTATION,bereinigeStornierte expected times(2) update(sql; anyLong); actual behaviour is 4 single-argument updates (two per id); changed to times(4) update(sqlCaptor.capture())
+M2-A-s1-werkstattservice,2026-08-02T11:15:40+02:00,WRONG-EXPECTATION,getAdminStatistik expected a map of size 8; the method puts exactly 7 entries; changed to hasSize(7)
+M2-A-s1-werkstattservice,2026-08-02T11:15:45+02:00,MOCKING-SETUP,speichereKunde_insertsNewKunde: no stub for the getKunde re-read after the INSERT so the method returned null and the assertion NPEd; stubbed query() to return the kunde
+M2-A-s1-werkstattservice,2026-08-02T11:15:55+02:00,WRONG-EXPECTATION,setzeStatus (two tests) asserted the returned Auftrag carries the new status; the code writes the status via SQL and re-reads through the mock so the returned object is unchanged; assert the UPDATE SQL contains the new status instead
+M2-A-s1-werkstattservice,2026-08-02T11:16:00+02:00,WRONG-EXPECTATION,setzeStatus_setsTimestampsForStatusChanges started from ANGENOMMEN and moved to FERTIG which the state machine forbids; fixture start status corrected to IN_ARBEIT
+M2-A-s1-werkstattservice,2026-08-02T11:16:05+02:00,MOCKING-SETUP,erstelleRechnung_throwsExceptionIfRechnungAlreadyExists stubbed the existing-invoice count on query() instead of queryForObject; the list leaked into getPositionen and caused a ClassCastException; moved the count to queryForObject(Integer.class)
+M2-A-s1-werkstattservice,2026-08-02T11:16:10+02:00,WRONG-EXPECTATION,erstelleRechnung amounts asserted on the returned Rechnung; with a mocked JdbcTemplate the computed netto/ust/brutto are only observable as the INSERT arguments; recorded them via thenAnswer and asserted there (a single varargs ArgumentCaptor did not match the 5-arg call)
+M2-A-s3-admin,2026-08-02T11:13:52+02:00,IMPORT/SYNTAX,missing static import of org.assertj.core.api.Assertions.assertThatCode; the two Phase A compile errors
+M2-A-s3-admin,2026-08-02T11:13:52+02:00,IMPORT/SYNTAX,package was declared at.werkstatt.crm.controller instead of the required at.werkstatt.crm.gen; corrected and added import of AdminController
+M2-A-s3-admin,2026-08-02T11:13:52+02:00,MOCKING-SETUP,ReflectionUtils.setField called on the private werkstattService field without makeAccessible; added ReflectionUtils.makeAccessible before setField
+M2-A-s3-admin,2026-08-02T11:13:52+02:00,MOCKING-SETUP,verify() mixed raw String literals with matchers/captors (InvalidUseOfMatchersException); wrapped the attribute names in eq()
+M2-A-s3-admin,2026-08-02T11:13:52+02:00,WRONG-EXPECTATION,firmaName and version are @Value fields and stay null in a plain unit test; any(String.class) does not match null so those matchers were aligned to isNull()
+M2-B-s4-rechnung,2026-08-02T11:14:43+02:00,IMPORT/SYNTAX,added missing import at.werkstatt.crm.model.Rechnung; class under test was referenced unqualified from package at.werkstatt.crm.gen
+M2-B-s1-werkstattservice,2026-08-02T10:50:01+02:00,IMPORT/SYNTAX,three test method names contained literal spaces; renamed to valid identifiers
+M2-B-s1-werkstattservice,2026-08-02T10:50:01+02:00,IMPORT/SYNTAX,missing import of the class under test at.werkstatt.crm.service.WerkstattService
+M2-B-s1-werkstattservice,2026-08-02T10:51:18+02:00,MOCKING-SETUP,bare any() in JdbcTemplate.query/queryForObject/queryForList was ambiguous across RowMapper ResultSetExtractor RowCallbackHandler overloads; typed to any(RowMapper.class)/any(Class.class)
+M2-B-s1-werkstattservice,2026-08-02T10:53:00+02:00,MOCKING-SETUP,auftrag and auftrag_position queries shared the same eq(1L) matcher so the second stub shadowed the first; discriminated by SQL via contains()
+M2-B-s1-werkstattservice,2026-08-02T10:53:00+02:00,MOCKING-SETUP,getAlleKunden calls the 2-arg query overload; stub and verify targeted the varargs overload
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,MOCKING-SETUP,insert stubs used anyList() for the JdbcTemplate varargs so they never matched; replaced by any(Object[].class)
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,MOCKING-SETUP,re-read after insert (getKunde/getFahrzeug for the new id) was unstubbed; added the stub so the returned entity is non-null
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,MOCKING-SETUP,setzeStatus asserts the re-read status; stubbed successive returns so the second read returns the updated row
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,MOCKING-SETUP,erstelleRechnung success fixture carried only brutto; netto and ust set on the stubbed re-read row
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,WRONG-EXPECTATION,sucheKunden builds %% for empty input and %mueller% with umlaut for Mueller; test expected % and the umlaut-free form
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,WRONG-EXPECTATION,auftrag and rechnung number prefixes are built from the current year; hardcoded A-2025-% / R-2025-% never matched
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,WRONG-EXPECTATION,three hasMessage assertions used substrings; aligned to the full actual exception messages
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,WRONG-EXPECTATION,setzeBezahlt passes only the id (bezahlt = true is inline SQL); verify expected an extra true argument
+M2-B-s1-werkstattservice,2026-08-02T10:57:00+02:00,WRONG-EXPECTATION,duplicate-invoice check uses queryForObject COUNT not queryForList; stub aligned to the real call
+M2-B-s1-werkstattservice,2026-08-02T10:57:12+02:00,MOCKING-SETUP,verify update(anyString(); any()) was ambiguous against the PreparedStatementSetter overload; switched to any(Object[].class)
+M2-B-s1-werkstattservice,2026-08-02T10:58:10+02:00,MOCKING-SETUP,any() matches only a single vararg so the multi-parameter insert stubs still missed; switched every varargs matcher to any(Object[].class)
+M2-B-s3-admin,2026-08-02T11:13:33+02:00,IMPORT/SYNTAX,added missing import at.werkstatt.crm.controller.AdminController; class under test was never imported so all 4 compile errors were cannot-find-symbol AdminController
+M2-B-s2-rechnung,2026-08-02T11:11:33+02:00,IMPORT/SYNTAX,added missing import org.springframework.http.ResponseEntity; only compile error; 8 of 9 test methods referenced the type
+M2-A-s4-rechnung,2026-08-02T10:50:10+02:00,IMPORT/SYNTAX,Added missing import at.werkstatt.crm.model.Rechnung; class under test referenced unqualified in all 10 test methods
+M2-B-s2-auftrag,2026-08-02T11:12:13+02:00,STRUCTURAL,A2.4 truncation salvage: stripped the leading java code-fence line; dropped the 135th test method which was cut off mid-body; closed the class brace
+M2-B-s2-auftrag,2026-08-02T11:13:39+02:00,IMPORT/SYNTAX,added missing static import org.mockito.Mockito.doNothing (used in 2 tests)
+M2-B-s2-auftrag,2026-08-02T11:13:39+02:00,IMPORT/SYNTAX,ResponseEntity<?> body is Object: added casts to Auftrag (15 sites) and AuftragPosition (4 sites) before the getter calls
+M2-B-s2-auftrag,2026-08-02T11:13:39+02:00,IMPORT/SYNTAX,removed call to invented setter Auftrag.setSummeNetto(double); summeNetto is a derived read-only getter
+M2-B-s2-auftrag,2026-08-02T11:15:19+02:00,WRONG-EXPECTATION,40 sites asserted the 500 body equals the string "null" for an exception without message; e.getMessage() is null so the body is null -> isNull()
+M2-B-s2-auftrag,2026-08-02T11:15:19+02:00,WRONG-EXPECTATION,11 sites expected liste() to swallow a service exception and return an empty list; liste has no try/catch so the exception propagates -> catchThrowable + isInstanceOf
+M2-A-s2-auftrag,2026-08-02T11:12:40+02:00,MOCKING-SETUP,positionWithNullPosition line 282 mixed matcher eq(1L) with raw null second arg -> InvalidUseOfMatchersException; switched to raw values neuePosition(1L; null)
+M2-A-s2-auftrag,2026-08-02T11:12:50+02:00,MOCKING-SETUP,positionWithNullIdInPosition line 329 mixed matcher eq(1L) with raw object second arg -> InvalidUseOfMatchersException; switched to raw values neuePosition(1L; positionWithoutId)
+M2-A-s2-auftrag,2026-08-02T11:13:00+02:00,WRONG-EXPECTATION,listeMitStatusFilter asserted the returned Auftrag status equals the filter IN_ARBEIT but the stubbed fixture carries STATUS_ANGENOMMEN and the controller passes the service result through unchanged; aligned the assertion to STATUS_ANGENOMMEN

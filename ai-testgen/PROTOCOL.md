@@ -352,3 +352,152 @@ had not executed when it was made.
 **Reading rule this forces on the report:** a `finish_reason=length` cell must be reported as
 *"no answer was produced within the pinned output budget"*, never as *"the model produced
 broken code"*. They are different findings and only one of them is about the model.
+
+### A2 — 2026-08-02, before Phase B, for Phase B
+
+Phase A is measured and published; Phase B has not started. §6 fixes *what* is repaired, the
+30-minute cap, and the six categories, but four operational questions were left open in the
+frozen text, and each of them changes what the repair-effort number means. They are decided
+here, **before the first repair**, rather than settled by whatever the executing session
+happened to do.
+
+**A2.1 — Phase B runs as parallel, mutually blind repairers: one agent instance per cell.**
+Each of the cells that needs repair is handed to its own Claude Code agent instance with its
+own working tree, its own wall clock, and **no knowledge of any other cell** — not the
+generated code, not the diagnosis, not the fix. The alternative, one agent walking the cells
+in sequence, was rejected because it destroys the metric: by cell 9 the repairer has seen the
+same missing-import cluster eight times, so its effort figure measures accumulated familiarity
+and the cell *order* silently becomes a variable. This is the same reason the generation step
+ran at k = 1 with a fixed order rather than in a conversation.
+
+What this buys: cells become independent and directly comparable, and the M1-vs-M2 repair
+comparison (RQ3/RQ4) is not confounded by whichever arm happened to be repaired first.
+
+What it costs, stated because it is a real limitation and not a footnote: **a human team does
+not work this way.** A developer repairing six near-identical import failures gets faster, and
+that learning is genuine, transferable economics this design deliberately removes. The
+Phase-B numbers are therefore **per-cell cold-start effort** — an upper bound on the marginal
+cost of one cell in isolation, not an estimate of the total cost of repairing a batch. The
+report must say so at the point of the number. T4 (single rater) is unchanged in kind but now
+reads "single rater *policy*, N independent instances"; T8 (repairer is same-family as M1) is
+untouched and still applies to every cell.
+
+**A2.2 — Repair may only repair. It may not add tests.**
+The repairer fixes what the model produced: imports, syntax, mock setup, wrong expectations,
+unusable structure. It must **not** add a test method the model did not write, must not extend
+an existing test to cover a new branch, and must not touch the class under test (already fixed
+in §2). Without this rule Phase B silently becomes "an AI agent writes tests, warm-started by
+a draft", and the coverage and mutation deltas would measure the repairer instead of the
+generator. Deleting a test method is allowed only under A2.4 and is counted.
+
+**A2.3 — A cell whose recorded output contains no code is `ABANDONED` at 0 minutes.**
+Three cells hit the pinned output budget (A1); in two of them — arm M1 on S1, both corpora —
+the recorded artifact is the literal string `null`, because the whole budget went into
+reasoning tokens. There is nothing to repair. Writing a test class for those cells from
+scratch would be the repairer generating tests, which is the one thing Phase B is not, so
+they are recorded as `ABANDONED` with **0 repair minutes and no fix-log rows**, and they stay
+`NO_CODE` after repair. The honest reading — and the report must carry it — is that
+**`ABANDONED`-at-zero is not a cheap cell, it is an unrepairable one**; averaging it into a
+repair-minutes mean would make the total look better the more completely a model failed.
+Repair effort is therefore always reported alongside the count of cells it was computed on.
+
+**A2.4 — Truncated output is salvaged, not completed.**
+One cell (M2, corpus B, `AuftragController`) stopped mid-method with `finish_reason=length`
+after a visibly degenerating test-method name. It contains real, complete test methods before
+the cut. The rule: **keep every syntactically complete method up to the truncation point,
+delete the incomplete tail, close the class** — category `IMPORT/SYNTAX`, and the number of
+dropped methods recorded in the fix log and the report. Nothing is written to replace them
+(A2.2). Salvage is repair; finishing the model's sentence would not be.
+
+**Nothing in A2 re-runs, re-prompts or re-records any generation call**, and no Phase-A number
+changes. All four decisions concern only steps that had not executed when this was written.
+
+### A3 — 2026-08-02, during Phase B: a disclosure, not a change
+
+**This entry changes no rule, no number and no artifact.** It records something found while
+repairing, which the §8 threat list did not anticipate. It is deliberately **not** added to §8:
+§8 is headed *pre-declared*, and a threat discovered after the measurement does not get to
+borrow the credibility of pre-registration. It is a weaker kind of finding and is labelled as
+one here and in `REPORT.md`.
+
+**What was found.** In exactly one cell — arm M1, corpus A, S4 `Rechnung` — the model's reply
+contains **two** ```` ```java ```` blocks. The first is an empty class body carrying a malformed
+static import (`org.assertj.org.assertj.core.api`). Between the two blocks the model writes, in
+plain text: *"Wait, I need to produce the correct final answer without mistakes. Let me redo it
+properly."* The second block is a complete test class with 26 test methods and the **correct**
+import. `finish_reason` is `stop`: the model finished, and its final answer was the good one.
+
+The extraction rule of §5 takes the **first** fenced block. It therefore recorded the model's
+abandoned false start and discarded its actual answer.
+
+**Consequence for how Phase A must be read.** The `REPORT.md` failure-taxonomy row that
+attributed a "malformed import" to arm M1 on S4/A describes *the extracted artifact* correctly
+and *the model's output* incorrectly. **In that cell the pipeline, not the model, produced the
+failure.** The report is corrected to say so, with the raw response cited.
+
+**What does NOT change, and why.** The extraction rule was pre-registered, applied mechanically,
+and the recorded result is what this protocol produces. **The cell is not re-extracted, not
+re-run, and the 12/24 Phase-A compile rate stands as measured.** Re-reading an artifact more
+favourably *after seeing that it hurt a number* is precisely the failure mode the pre-registration
+exists to prevent — the rule does not become wrong just because it cost us a data point. The
+counterfactual ("13/24 under a last-block rule") is stated in the report as a counterfactual,
+clearly separated from the measured value, because the size of a harness effect is itself a
+result worth publishing.
+
+**Scope, checked rather than assumed.** All 24 responses were scanned for multiple fenced
+blocks before this was written. **One cell is affected; the other 23 contain exactly one block**
+(two contain none — the `finish_reason=length` cells of A1). So this is a bounded defect in one
+cell, not a systematic bias — and that bound is itself the reason it can be reported calmly.
+
+**For replications, the transferable lesson:** *"first fenced code block" is not a neutral
+reading of a model's answer.* A model that self-corrects mid-reply is normal behaviour, and any
+extraction rule silently decides which of its drafts gets benchmarked. A replication should
+pre-register the rule it wants (first block / last block / longest block / all blocks
+concatenated) **and** publish how many cells the choice actually moved. Ours moved one in
+twenty-four — roughly four percentage points of the headline compile rate, from a line of code
+nobody would have thought to argue about.
+
+### A4 — 2026-08-02, after Phase B: the repair-effort clock is contaminated, and by our own design
+
+**This entry changes no number.** It records a defect in the repair-effort metric, found after
+Phase B ran, and it is the second non-pre-declared finding of this milestone (see A3 on why such
+findings are labelled as weaker than the §8 threats).
+
+**What happened.** A2.1 put the eleven repairable cells in parallel, each in its own worktree, to
+remove the learning-transfer confound. Up to six agents therefore ran at once on an 8-core
+machine, and **every one of them repeatedly invoked Maven** — compile, test, repeat. The measured
+quantity is wall-clock, so each cell's number absorbed the queueing delay caused by the others.
+
+**The evidence is unambiguous and came from a repairer's own report.** The `M2 / corpus A /
+AuftragController` cell recorded **24.7 wall-clock minutes**, while the Maven build it was waiting
+on reported **5.6 seconds** of work; roughly 23 of those minutes were a stall before the first
+invocation returned. Its three fixes spanned about one minute of actual editing.
+
+**Why the fix-log timestamps cannot repair the number.** §6 step 5 requires a *live* log. Several
+repairers instead wrote all their rows in one burst at the end, so the span between first and last
+timestamp is 0.0 minutes in six of eleven cells and cannot be used to reconstruct active time.
+That is a protocol-compliance failure on the repairers' part, and it is recorded here rather than
+quietly worked around.
+
+**What this means for reading the numbers, stated at every one of them in `REPORT.md`:**
+
+- The per-cell minutes are an **upper bound**, inflated by an unknown, non-uniform amount. They
+  are **not** a measure of how long the repair took.
+- The **contention-immune** figures are the ones to actually use: the **number of fixes** per cell
+  and their **category distribution**. Those are unaffected by scheduling and are what transfers
+  to another project.
+- The ordering the numbers imply — the God class and the 135-method truncated class cost far more
+  than a missing import — is corroborated by the fix counts, so the *ranking* survives even though
+  the *magnitudes* do not.
+
+**The honest self-assessment.** A2.1 traded a known confound for an unexamined one. Removing
+learning transfer was right; not pinning the measurement environment to one build at a time was
+not, and it was foreseeable — the protocol already insists elsewhere (§5) that a measurement
+environment which inherits its compiler from the local Maven is not reproducible. The same
+argument applies to a measurement environment that shares eight cores with five siblings, and it
+was not made.
+
+**What a replication must do:** run the repair cells **serially**, or in parallel with a hard cap
+of one concurrent build, on an otherwise idle machine — and record per-cell CPU time alongside
+wall-clock so the two can be compared. Keep A2.1's blindness between cells; it is the parallel
+*execution*, not the mutual blindness, that caused this.
