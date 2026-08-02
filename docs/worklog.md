@@ -799,3 +799,110 @@ re-generated, re-prompted or excluded.
 (compile/pass/coverage/mutation after repair + repair effort per category) and
 decide on adopting the repaired corpus-B tests into `modern/src/test` (ADR-0010),
 which is what raises the coverage ratchet toward the §3 target of 80 %.
+
+---
+
+## 2026-08-02 — G6 part 3: Phase B measured, G6 closed; plus the missing deployment docs — session 13
+
+Two independent tracks in one session: finishing G6, and the documentation work the
+owner asked for after losing time on manual steps.
+
+### Track A — G6 Phase B
+
+**Method decisions written down BEFORE the repair, as amendment A2** (the protocol
+only allows amendments for steps not yet executed, and this was the last moment):
+mutually blind parallel repairers one per cell; **repair may not add a test the model
+did not write**; a cell whose recorded output is the literal `null` is `ABANDONED` at
+zero minutes and must not be averaged in; truncated output is salvaged, never completed.
+
+**Executed:** 11 repairable cells, one isolated agent each, own worktree, own clock,
+live fix log, 30-minute cap. 13 cells needed nothing. **A2.2 compliance was verified
+mechanically, not asserted** — `@Test` counts are identical in all 24 cells before and
+after, the sole exception being the A2.4 salvage that dropped one cut-off method.
+
+**Result — and it is the unflattering one:**
+
+| | Phase A | Phase B |
+|---|---|---|
+| green cells | 12/24 | **21/24** |
+| test methods | 154 (3 red) | **421 (0 red)** |
+| line / branch coverage | 100 % / 100 % | **90.5 % / 78.8 %** |
+| mutation score | 99.2 % | **73.2 %** |
+
+The quality metrics got **worse**, because Phase A's perfect figures were computed only
+over the cells that happened to compile — exclusively the small controllers. The God
+class was not in the denominator. **Phase A was survivorship bias**, and only the
+protocol's insistence on measuring every failed cell to the end made that visible.
+Repaired, the God class reaches ~83 % line coverage at a **44–56 % mutation score**:
+roughly half the injected faults survive the class the whole experiment is about.
+
+Three further findings: one model wrote **134 test methods** where the other wrote 13,
+with byte-identical measured value (21/21 lines, 13/13 mutants); across 15
+wrong-expectation repairs there were **zero** real defects found in the production code;
+and the open-weight model emitted `getStatusCodeValue()`, present in corpus A's Spring 4.3
+and **removed** in corpus B's Spring 7 — migrating to a very new stack makes LLM support
+temporarily worse.
+
+**Two defects found in our own work, both disclosed rather than quietly fixed:**
+
+- **A3 — one cell in 24 was decided by our extraction rule, not by the model.** Arm M1 /
+  corpus A / `Rechnung`: the model wrote a draft, rejected it in plain text (*"Wait, I need
+  to produce the correct final answer without mistakes"*), then wrote a correct 26-test
+  class. Our pre-registered "first fenced block" rule kept the draft. **The cell was not
+  re-extracted and the 12/24 rate stands** — a rule does not become wrong because it cost a
+  point. All 24 responses were scanned; exactly one is affected. The REPORT's failure
+  taxonomy is corrected: that row described the artifact correctly and the model wrongly.
+- **A4 — the repair-effort clock is contaminated by our own design.** A2.1's parallelism
+  had up to six agents sharing an 8-core machine, all invoking Maven; one cell recorded
+  24.7 wall-clock minutes for a build that worked 5.6 seconds. The fix-log timestamps
+  cannot rescue it either — several repairers batched their writes instead of logging live
+  as §6 requires. Minutes are published as a measured **upper bound**; the transferable
+  figures are the 52 fixes and their categories (19 IMPORT/SYNTAX, 17 MOCKING-SETUP,
+  15 WRONG-EXPECTATION, 1 STRUCTURAL, **0 BUG-FOUND**). A2.1 traded a known confound for
+  an unexamined one — that is written down as ours, in the protocol.
+
+**Adoption (ADR-0011):** one class per unit, highest mutation score, ties to **fewer test
+methods** — the rule that rejects the 134-method class. It selected a mixed set (2 frontier,
+4 open-weight), which is the sign it is not a preference in disguise. 88 methods adopted,
+**99 module tests green**, coverage **37.3 % → 81.3 % line**, ratchet 0.35 → **0.80**. §3's
+80 % target is reached rather than declared for the first time. Stated next to it: branch
+coverage still lags 23 points and the adopted God-class suite has a 44.1 % mutation score.
+
+### Track B — the deployment documentation
+
+`ENGINEERING_STANDARDS.md` §7 has always required `docs/deployment.md`. **It did not exist,
+and the gap was not in `DEVIATIONS.md` either** — found by a doc audit, not by the ledger,
+which is the more serious half. Written now, every command executed before being written
+down, plus `docs/MANUAL_TASKS.md` as the by-hand checklist. Production deployment gets **no
+invented steps**: §10 states what does not exist and enumerates the open items.
+
+Beginner-fatal defects fixed: **`--wait` was missing from every human quickstart** while all
+three CI workflows always used it (the single highest-frequency way to lose an hour here);
+**characterization silently ignored `-Dtarget`**, so `-Dtarget=modern` went green against the
+*legacy* stand — an equivalence proof that proved nothing, now a fail-fast; modern `verify`
+needs a Docker daemon and nothing said so. Also corrected: the `legacy/` build failure is
+**not** the Java 8 source level — measured on JDK 26, `compile` and `surefire` succeed and it
+dies in `maven-war-plugin:2.6` reflecting into `java.util` internals JDK 16 sealed.
+
+**Dead end, logged rather than deleted:** the first repair fan-out was launched without
+worktree isolation — 11 agents would have collided in one testbed. Aborted after ~1 minute,
+before any repair ran; the started clocks were discarded and the run restarted clean. No
+measurement was contaminated.
+
+**Verification:** modern `verify` green with 99 tests and the 0.80 ratchet · harness 24/24 ·
+characterization green vs legacy and vs modern, and the new `-Dtarget` guard verified to fire ·
+e2e green vs both stands · all 24 cells re-measured through the unmodified `measure.sh`.
+
+**Hours:** 2.5 *(measured wall time 10:42 first tool call → 13:0x commit; agent wall-clock
+under supervision, see the header. Includes both tracks and the two workflow fan-outs.)*
+
+**Decisions:** amendments A2 (pre-Phase-B method), A3 and A4 (post-hoc disclosures);
+ADR-0011 (adoption rule + ratchet to 0.80); `docs/deployment.md` and `docs/MANUAL_TASKS.md`
+created; two DEVIATIONS rows added, one closed.
+
+**Next: G7 — stage 6 (cloud/ops + launch).** OTel, Actuator health instead of the TCP probes,
+deployment of both stands (Hetzner + Dokploy), playbook closing chapter + PDF export in CI,
+README final, release v1.0.0, tag `stage-6-cloud-ops`. Two hard preconditions already
+registered: neither stand has authentication (including the destructive
+`POST /admin/bereinigen`), and PostgreSQL 9.6 is end-of-life. `docs/deployment.md` §10 is the
+work list.

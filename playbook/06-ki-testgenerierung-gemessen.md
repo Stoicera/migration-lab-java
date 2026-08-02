@@ -2,12 +2,15 @@
 
 *Meilenstein: G6 · Protokoll eingefroren: `ai-testgen-protocol-v1` (2026-07-31)*
 
-> **Status dieses Kapitels:** Der Methodenteil unten ist **vor** der ersten
-> Modell-Anfrage geschrieben — das ist der ganze Punkt. Die Ergebnisse aus Phase A
-> (wie generiert) stehen seit 2026-07-31 weiter unten; der Nachbesserungsaufwand
-> (Phase B) folgt. Vollständige Zahlen: `ai-testgen/REPORT.md`. Sollte das Ergebnis
-> unbequem ausfallen, steht es trotzdem hier: Ein Protokoll, das man nach dem
-> Ergebnis ändert, ist Werbung.
+> **Status dieses Kapitels: abgeschlossen (2026-08-02).** Der Methodenteil unten ist
+> **vor** der ersten Modell-Anfrage geschrieben — das ist der ganze Punkt. Phase A
+> (wie generiert) wurde am 2026-07-31 gemessen, Phase B (Nachbesserung) am 2026-08-02.
+> Vollständige Zahlen: `ai-testgen/REPORT.md`.
+>
+> Das Ergebnis ist unbequem ausgefallen, und es steht trotzdem hier: Die Qualitätszahlen
+> sind nach der Reparatur **schlechter** als davor, und in einer von 24 Zellen hat nicht
+> das Modell versagt, sondern unsere eigene Auswertung. Beides unten, an der Zahl, nicht
+> im Kleingedruckten. Ein Protokoll, das man nach dem Ergebnis ändert, ist Werbung.
 
 ## Ausgangslage: die teuerste Frage im Migrationsgespräch
 
@@ -114,7 +117,15 @@ moderne Modul überhaupt eine Testschicht bekommt:
 |---|---|
 | ArchUnit-Regeln | Fünf Regeln, migrationszweckgebunden: keine Feldinjektion mehr (sichert den Konstruktor-Sweep aus Etappe 4 dauerhaft), injizierte Felder final, Service kennt keine Controller, SQL bleibt im Service, Modelle bleiben Spring-frei. |
 | Testcontainers-Integrationstest | Startet PostgreSQL 9.6 aus **denselben** Init-Skripten wie der Compose-Stand und fährt die echten SQL-Pfade — ohne laufenden Stand, ohne zweite Schema-Kopie. |
-| Coverage-Gate | Als **Ratsche** scharf gestellt: gepinnt auf das, was die erste Suite tatsächlich erreicht (37,3 % Line, gemessen 2026-07-31), damit Coverage nicht fallen kann. Die 80 % des Standards kommen mit den übernommenen Tests aus dem Experiment — eine Zahl, die nie gemessen wurde, ist Dekoration. |
+| Coverage-Gate | Als **Ratsche** scharf gestellt: gepinnt auf das, was die Suite tatsächlich erreicht, dann hochgezogen. 2026-07-31: 37,3 % gemessen → Gate 35 %. 2026-08-02: sechs reparierte Testklassen aus dem Experiment übernommen (88 Methoden, ADR-0011) → **81,3 % gemessen → Gate 80 %**. Damit sind die 80 % des Standards zum ersten Mal *erreicht* statt behauptet. |
+
+**Nachtrag zur Übernahme, weil die Auswahlregel die eigentliche Lehre ist:** Übernommen wurde
+**eine Klasse pro Prüfobjekt**, nach höchstem Mutation-Score, bei Gleichstand die **mit weniger
+Testmethoden**. Genau diese dritte Regel hat die 134-Methoden-Klasse aussortiert, die exakt
+dasselbe misst wie ihre 13-Methoden-Konkurrentin. Und sie hat gemischt gewählt — zwei Klassen
+vom teuren, vier vom günstigen Modell —, was der beste Hinweis darauf ist, dass hier keine
+Vorliebe am Werk war. Was die neue 81 %-Zahl **nicht** heißt: Die Gottklasse ist damit nicht
+abgesichert; ihre übernommene Suite hat 44 % Mutation-Score. Das steht im ADR neben der Zahl.
 
 Merksatz für Ihr Projekt: **Ein Gate, das Sie nicht erreichen können, schalten
 Sie nicht „später" scharf — Sie schalten es als Ratsche scharf und ziehen sie
@@ -148,11 +159,73 @@ Zwei weitere Punkte für die Kalkulation:
 - **Billig ist nicht „fast so gut“.** Das offene Modell war 18-mal günstiger und
   kompilierte in 3 von 12 statt 9 von 12 Fällen.
 
-**Was diese Zahlen noch NICHT beantworten:** Was kostet der Weg von „generiert“ zu
-„brauchbar“? Die Hälfte der Zellen ist reparaturbedürftig — die Fehler sind ausnahmslos
-billige Sorten (fehlende Imports, ein verstümmelter Import, abgeschnittene Ausgabe),
-aber „billig aussehend“ ist keine Messung. Erst Phase B liefert die Zahl, und ohne sie
-ist jede Wirtschaftlichkeitsaussage unvollständig. Deshalb steht hier keine.
+## Ergebnisse Phase B (nach Nachbesserung), 2026-08-02
+
+Elf Zellen mussten repariert werden. Regel dabei: **reparieren ja, dazuschreiben nein** — kein
+Testfall, den das Modell nicht selbst geschrieben hat. Nachgeprüft, nicht geglaubt.
+
+| Kennzahl | Phase A (wie generiert) | Phase B (repariert) |
+|---|---|---|
+| Grüne Zellen | 12 von 24 | **21 von 24** |
+| Testmethoden | 154 (3 rot) | **421 (0 rot)** |
+| Line-Coverage | 100 % | **90,5 %** |
+| Branch-Coverage | 100 % | **78,8 %** |
+| Mutation-Score | 99,2 % | **73,2 %** |
+
+**Die Zahlen werden nach der Reparatur schlechter — und das ist das wertvollste Ergebnis
+dieses Meilensteins.**
+
+Nicht weil die Reparatur geschadet hätte. Sondern weil die makellosen Phase-A-Werte nur über
+die Zellen gerechnet waren, die *zufällig kompiliert hatten* — und das waren ausnahmslos die
+kleinen Controller. Die Gottklasse war im Nenner gar nicht enthalten. Erst die Reparatur holt
+sie hinein.
+
+> **Merksatz für jedes KI-Werbeversprechen, das Sie künftig lesen:**
+> Fragen Sie nicht „Wie gut waren die generierten Tests?“, sondern
+> **„Über wie viele der Versuche ist diese Zahl gerechnet?“**
+> Eine Erfolgsquote, die nur über die geglückten Läufe gemessen wird, ist keine Messung.
+> Das nennt sich Überlebenden-Effekt, und wir sind selbst hineingelaufen — sichtbar nur,
+> weil das Protokoll uns zwang, auch die kaputten Zellen zu Ende zu messen.
+
+**Was ein Entscheider daraus mitnimmt:**
+
+1. **Die Gottklasse bleibt die Mauer — auch repariert.** Sie ist die einzige Klasse, die der
+   Prüfung nicht standhält: rund **83 % der Zeilen abgedeckt, aber nur ~50 % der eingebauten
+   Fehler gefunden**. Ein Coverage-Gate bei 80 % hätte hier „bestanden“ gemeldet. *Genau
+   deshalb messen wir mit Mutation-Score.*
+2. **Zehnmal so viele Tests, exakt null Mehrwert.** Für denselben Controller schrieb ein
+   Modell 13 Testmethoden, das andere 134 — bei identischem Messergebnis (21/21 Zeilen,
+   13/13 Mutanten). Die 121 zusätzlichen Methoden finden nichts und müssen für immer gepflegt
+   werden. **Kaufen Sie keine Testmengen.**
+3. **Kein einziger echter Programmfehler.** 15 Reparaturen betrafen falsche Erwartungen der
+   Tests, **keine davon** einen Defekt im Produktivcode. Generierte Tests **zementieren** das
+   vorhandene Verhalten, sie prüfen es nicht. Ohne Charakterisierungsnetz darunter wissen Sie
+   nicht, ob sie etwas Richtiges festhalten.
+4. **Billig kauft Tokens, nicht Ergebnisse.** Das offene Modell war 18-mal günstiger und kam
+   nach der Reparatur auf 12 von 12 grünen Zellen — verursachte aber **10 der 11
+   Reparaturen**. Die Rechnung verschiebt sich vom Einkauf in die Arbeitszeit.
+5. **Frisch migriert heißt kurzfristig schlechter unterstützt.** Das offene Modell benutzte
+   `getStatusCodeValue()` — in Spring 4.3 vorhanden, in Spring 7 **entfernt**. Wer auf einen
+   sehr neuen Stack migriert, bekommt vorübergehend schlechtere KI-Hilfe, weil das Modellwissen
+   dem Framework hinterherhinkt. Planbar, aber real.
+
+**Zur Aufwandszahl sagen wir bewusst weniger, als wir könnten.** Die gemessenen 154 Minuten
+über elf Zellen sind als Zeitangabe **unbrauchbar**: Wir haben die Zellen parallel repariert,
+und sie haben sich gegenseitig die Maschine weggenommen — eine Zelle meldet 24,7 Minuten
+Wanduhr für einen Rechenlauf von 5,6 Sekunden. Wir berichten sie als Obergrenze und benennen
+den Fehler als unseren (Protokoll-Nachtrag A4). Belastbar ist stattdessen die **Art und Zahl
+der Eingriffe**: 52 insgesamt — 19 Import/Syntax, 17 Mock-Aufbau, 15 falsche Erwartung.
+*Der Aufwand hängt nicht an der Zeilenzahl, sondern daran, wie schwer die Abhängigkeiten zu
+mocken sind.*
+
+**Und ein Fund, der uns selbst betrifft.** In einer der 24 Zellen hat nicht das Modell versagt,
+sondern **unsere Auswertung**: Das Modell schrieb einen Entwurf, verwarf ihn im Klartext
+(„Wait, I need to produce the correct final answer…“) und lieferte danach eine korrekte
+Testklasse. Unsere vorab festgelegte Regel „nimm den ersten Codeblock“ hat den verworfenen
+Entwurf gewertet. Wir haben die Zahl **nicht** nachträglich korrigiert — eine Regel wird nicht
+dadurch falsch, dass sie einen Punkt kostet —, aber wir sagen es an der Zahl. *Für Ihre eigenen
+KI-Auswertungen: Wie Sie die Antwort aus dem Modelltext herausschneiden, ist eine
+Messentscheidung. Bei uns hing ein Zwölftel des Ergebnisses daran.*
 
 **Eine Ehrlichkeitsnotiz zum Ausgabebudget:** Die 16 000-Token-Grenze pro Antwort haben
 *wir* im Protokoll festgelegt, nicht das Modell. Dass ein Reasoning-Modell sie mit
@@ -163,7 +236,7 @@ werden bezahlt, ob sie zu einer Antwort führen oder nicht.** Über die Hälfte 
 Ausgabe-Tokens des teuren Modells entfiel auf die zwei Aufrufe, die nie eine Antwort
 lieferten.
 
-## Entscheidungsregeln (Stand: Phase A gemessen, Phase B offen)
+## Entscheidungsregeln (Stand: beide Phasen gemessen)
 
 1. **Kein KI-Test ohne Netz darunter.** Generierte Tests zementieren das
    Verhalten, das sie vorfinden — inklusive Fehler. Ohne Charakterisierungs-
@@ -179,14 +252,24 @@ lieferten.
    berichten das wie gemessen, nicht wie erwartet.
 4. **Rechnen Sie mit Reparatur.** Die interessante Zahl ist nicht „schreibt die
    KI Tests?", sondern „wie viel kostet der Weg von generiert zu brauchbar, und
-   in welchen Kategorien?".
+   in welchen Kategorien?". Gemessen: 52 Eingriffe über elf Zellen, Schwerpunkt
+   Import/Syntax und Mock-Aufbau — der Aufwand hängt an der **Mockbarkeit der
+   Abhängigkeiten**, nicht an der Zeilenzahl.
+5. **Fragen Sie nach dem Nenner.** Jede KI-Erfolgsquote, die nur über die geglückten
+   Läufe gerechnet ist, ist wertlos. Unsere eigenen Phase-A-Zahlen waren genau das,
+   und erst die vollständige Messung hat es gezeigt.
+6. **Kaufen Sie keine Testmengen.** 134 Testmethoden fanden hier exakt so viele Fehler
+   wie 13 — und kosten dauerhaft das Zehnfache an Pflege.
 
 ## Aufwand
 
 | Position | Wert | Art |
 |---|---|---|
 | Vorbereitung G6 (Protokoll-Finalisierung, zwei Testbed-Module, Harness, Dry-Run, ArchUnit + Testcontainers, Doku) | siehe `docs/worklog.md`, Session 11 | **Messwert** (Agenten-Wall-Time unter Aufsicht) |
-| Durchführung + Report | folgt | — |
+| Generierung + Phase-A-Messung | siehe `docs/worklog.md`, Session 12 | **Messwert** |
+| Phase-B-Reparatur, Messung, Report, Übernahme | siehe `docs/worklog.md`, Session 13 | **Messwert** |
+| API-Kosten des gesamten Versuchs | **€ 0,65** | **Messwert** (24 Aufrufe, Preistabelle vorab gepinnt) |
+| Reparaturaufwand je Zelle | **nicht belastbar** — siehe oben und Protokoll-Nachtrag A4 | verworfen |
 
 *Die Etikettierung folgt der Regel aus `playbook/README.md`: Messwerte sind
 Agenten-Wall-Time unter Aufsicht, Feldwerte sind gekennzeichnete

@@ -456,3 +456,48 @@ pre-register the rule it wants (first block / last block / longest block / all b
 concatenated) **and** publish how many cells the choice actually moved. Ours moved one in
 twenty-four — roughly four percentage points of the headline compile rate, from a line of code
 nobody would have thought to argue about.
+
+### A4 — 2026-08-02, after Phase B: the repair-effort clock is contaminated, and by our own design
+
+**This entry changes no number.** It records a defect in the repair-effort metric, found after
+Phase B ran, and it is the second non-pre-declared finding of this milestone (see A3 on why such
+findings are labelled as weaker than the §8 threats).
+
+**What happened.** A2.1 put the eleven repairable cells in parallel, each in its own worktree, to
+remove the learning-transfer confound. Up to six agents therefore ran at once on an 8-core
+machine, and **every one of them repeatedly invoked Maven** — compile, test, repeat. The measured
+quantity is wall-clock, so each cell's number absorbed the queueing delay caused by the others.
+
+**The evidence is unambiguous and came from a repairer's own report.** The `M2 / corpus A /
+AuftragController` cell recorded **24.7 wall-clock minutes**, while the Maven build it was waiting
+on reported **5.6 seconds** of work; roughly 23 of those minutes were a stall before the first
+invocation returned. Its three fixes spanned about one minute of actual editing.
+
+**Why the fix-log timestamps cannot repair the number.** §6 step 5 requires a *live* log. Several
+repairers instead wrote all their rows in one burst at the end, so the span between first and last
+timestamp is 0.0 minutes in six of eleven cells and cannot be used to reconstruct active time.
+That is a protocol-compliance failure on the repairers' part, and it is recorded here rather than
+quietly worked around.
+
+**What this means for reading the numbers, stated at every one of them in `REPORT.md`:**
+
+- The per-cell minutes are an **upper bound**, inflated by an unknown, non-uniform amount. They
+  are **not** a measure of how long the repair took.
+- The **contention-immune** figures are the ones to actually use: the **number of fixes** per cell
+  and their **category distribution**. Those are unaffected by scheduling and are what transfers
+  to another project.
+- The ordering the numbers imply — the God class and the 135-method truncated class cost far more
+  than a missing import — is corroborated by the fix counts, so the *ranking* survives even though
+  the *magnitudes* do not.
+
+**The honest self-assessment.** A2.1 traded a known confound for an unexamined one. Removing
+learning transfer was right; not pinning the measurement environment to one build at a time was
+not, and it was foreseeable — the protocol already insists elsewhere (§5) that a measurement
+environment which inherits its compiler from the local Maven is not reproducible. The same
+argument applies to a measurement environment that shares eight cores with five siblings, and it
+was not made.
+
+**What a replication must do:** run the repair cells **serially**, or in parallel with a hard cap
+of one concurrent build, on an otherwise idle machine — and record per-cell CPU time alongside
+wall-clock so the two can be compared. Keep A2.1's blindness between cells; it is the parallel
+*execution*, not the mutual blindness, that caused this.

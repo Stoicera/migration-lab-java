@@ -6,13 +6,20 @@ their migrated counterparts, run in **G6**. The empirical protocol is **pre-regi
 `ai-testgen-protocol-v1`, 2026-07-31) *before* any generation ran, and results are never
 curated afterwards. Failed generations stay in the repo.
 
-**Status: generation executed (2026-07-31, 24 calls, €0.65), Phase A measured and reported
-in [`REPORT.md`](REPORT.md). Phase B — the time-boxed repair — is next.**
+**Status: COMPLETE.** Generation executed 2026-07-31 (24 calls, €0.65), Phase A measured the same
+day, Phase B (time-boxed repair) measured 2026-08-02. Full results: [`REPORT.md`](REPORT.md).
 
-Phase-A headline: 12 of 24 generated test classes compiled; where they compiled, they reached
-100 % line and branch coverage on the target class and a 99.2 % PIT mutation score — but the
-613-line God service, the one class that actually needs the help, produced nothing usable in
-any of its four cells.
+**The headline, and it is not the flattering one.** As generated, 12 of 24 test classes compiled
+and those 12 looked perfect: 100 % line and branch coverage, 99.2 % mutation score. After repair
+brought 21 of 24 cells green, the same metrics fell to **90.5 % line, 78.8 % branch, 73.2 %
+mutation** — because Phase A's perfect numbers had been computed only over the cells that happened
+to compile, which were exclusively the small controllers. **Phase A was survivorship bias.** The
+613-line God service, once repaired, is the only class in the experiment that resists: ~83 % of
+its lines covered while **~50 % of injected faults survive**. A coverage gate would have passed it.
+
+Two further results worth the click: one model wrote **134 test methods** where the other wrote
+**13**, with byte-identical measured value; and across 15 wrong-expectation repairs there were
+**zero** real defects found in the code under test — these tests pin behaviour, they do not audit it.
 
 ## Layout
 

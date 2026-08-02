@@ -16,10 +16,16 @@ safety net first, honest numbers, reusable German migration playbook.
 > (the deliberate divergences — security fix, absorbed admin page, fixed
 > "undefined" alert — are registered and pinned per stand in
 > [ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md)).
-> Next: measured AI test generation (G6) — protocol **frozen before anything ran**
-> (tag `ai-testgen-protocol-v1`); 24 generation calls executed 2026-07-31 for €0.65,
-> Phase A measured in [`ai-testgen/REPORT.md`](ai-testgen/REPORT.md). Phase B (repair
-> effort) follows.
+> **G6 complete (2026-08-02): measured AI test generation**, protocol **frozen before anything
+> ran** (tag `ai-testgen-protocol-v1`), 24 calls for €0.65, both phases measured in
+> [`ai-testgen/REPORT.md`](ai-testgen/REPORT.md). The result is the unflattering one: as
+> generated, 12 of 24 classes compiled and *looked* perfect (100 % coverage, 99.2 % mutation
+> score); after repair brought 21 of 24 green, the same metrics fell to **90.5 % line / 73.2 %
+> mutation** — the perfect figures had been computed only over the cells that happened to
+> compile, i.e. the easy ones. **Survivorship bias, measured and published rather than
+> quietly kept.** Six repaired test classes were adopted into `modern/` (88 methods,
+> [ADR-0011](docs/adr/0011-adopting-generated-tests.md)), lifting its coverage 37 % → **81 %**.
+> Next: G7 — operations, deployment and launch.
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
