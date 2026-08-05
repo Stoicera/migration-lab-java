@@ -10,18 +10,18 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 
 /**
- * Integration test against a real PostgreSQL, started by Testcontainers from the same image and the
- * same init scripts the compose stand uses (ENGINEERING_STANDARDS §6, ledgered as deferred(G6) in
- * docs/DEVIATIONS.md until 2026-07-31).
+ * Integration test against a real PostgreSQL, started by Testcontainers from the same image the
+ * compose stand runs and built by the same Flyway migrations (ENGINEERING_STANDARDS §6, ledgered as
+ * deferred(G6) in docs/DEVIATIONS.md until 2026-07-31).
  *
  * <p>Deliberately NOT a second characterization suite: the golden masters own the HTTP contract and
  * the DB state transitions against the running stand. What only this level can do is run the
@@ -29,9 +29,15 @@ import org.testcontainers.utility.MountableFile;
  * nothing but Docker and a JDK can catch a broken query before anything is built, and CI catches it
  * before the equivalence gate even starts.
  *
- * <p>PostgreSQL 9.6 on purpose: the stands still run it (DEVIATIONS P2, upgrade owned by G7), and a
- * different engine version here would test something the application never meets — collation and
- * ordering differences are exactly what the golden masters are sensitive to.
+ * <p>Since stage 6 the schema comes from Flyway rather than from copied init scripts (ADR-0013):
+ * Boot migrates the fresh container on context start, so this test also proves the migrations
+ * themselves run — the compose stand and this test cannot diverge because there is only one source.
+ *
+ * <p>PostgreSQL 18 and the pinned locale are not cosmetic (ADR-0012). The image must be the one the
+ * stand runs and the collation must be the one the legacy stand runs, because collation decides
+ * ORDER BY — and ORDER BY is what the golden masters are sensitive to. The alpine variant of this
+ * image reports {@code en_US.utf8} and sorts in C order; that is why the tag has no {@code
+ * -alpine}.
  */
 @SpringBootTest
 @Testcontainers
@@ -41,13 +47,12 @@ class WerkstattServiceIntegrationTest {
   @Container
   @SuppressWarnings("resource") // stopped by the Testcontainers JUnit extension
   static final PostgreSQLContainer<?> POSTGRES =
-      new PostgreSQLContainer<>("postgres:9.6")
+      new PostgreSQLContainer<>("postgres:18")
           .withDatabaseName("werkstatt")
           .withUsername("werkstatt")
           .withPassword("werkstatt")
-          // the very files the compose stand mounts — no second copy of the schema to drift
-          .withCopyFileToContainer(
-              MountableFile.forHostPath("db/init"), "/docker-entrypoint-initdb.d/");
+          .withEnv("LANG", "en_US.utf8")
+          .withEnv("POSTGRES_INITDB_ARGS", "--locale=en_US.utf8");
 
   @DynamicPropertySource
   static void datasource(DynamicPropertyRegistry registry) {
@@ -58,12 +63,46 @@ class WerkstattServiceIntegrationTest {
 
   @Autowired private WerkstattService service;
 
+  // only for the collation guard below — the production SQL stays in the service
+  @Autowired private JdbcTemplate jdbcTemplate;
+
   @Test
   void die_seed_kunden_kommen_sortiert_aus_der_echten_datenbank() {
     List<Kunde> kunden = service.getAlleKunden();
 
     assertThat(kunden).hasSize(10);
     assertThat(kunden).extracting(Kunde::getNachname).isSorted();
+  }
+
+  /**
+   * The guard the PostgreSQL 9.6 → 18 upgrade needed and did not have (ADR-0012).
+   *
+   * <p>A database can report a collation it does not use. {@code postgres:18-alpine} answers {@code
+   * datcollate = en_US.utf8} and then sorts in C order, because musl accepts the locale name and
+   * ignores it — so a review step that reads {@code pg_database.datcollate} passes while every
+   * sorted list in the application quietly changes order. Reading the setting is therefore
+   * worthless as a check; only sorting is evidence, which is what this test does.
+   *
+   * <p>The probe strings are chosen so the two orders cannot coincide: under glibc {@code en_US}
+   * punctuation and case are secondary (so {@code de Vries} sorts by D and the space in {@code
+   * Huber Transporte} is ignored), while under C it is raw byte order (so every capital precedes
+   * every lower-case letter and {@code Ö} lands last).
+   */
+  @Test
+  void die_datenbank_sortiert_wie_der_legacy_stand_und_sagt_es_nicht_nur() {
+    List<String> wieDieDatenbankSortiert =
+        jdbcTemplate.queryForList(
+            """
+            SELECT x FROM (VALUES ('Huber Transporte GmbH'), ('Hubermann'), ('de Vries'),
+                                  ('Öhler'), ('Ohler'), ('Zach'), ('van Dijk')) t(x)
+            ORDER BY x
+            """,
+            String.class);
+
+    assertThat(wieDieDatenbankSortiert)
+        .as("glibc en_US.utf8 ordering, measured on the legacy 9.6 stand on 2026-08-05")
+        .containsExactly(
+            "de Vries", "Hubermann", "Huber Transporte GmbH", "Ohler", "Öhler", "van Dijk", "Zach");
   }
 
   @Test

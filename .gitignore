@@ -42,3 +42,4 @@ hs_err_pid*
 
 # Claude Code scratch: agent worktrees created during a session (transient)
 .claude/worktrees/
+playbook/dist/

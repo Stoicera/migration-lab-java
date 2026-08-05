@@ -11,7 +11,33 @@ Git tags are first-class deliverables: every tag is a checkout-and-run state
 | `stage-3-boot-2.7` | Spring Boot 1.5.22 → 2.7.18 + Java 17 in one documented jump; three real breaks (servlet-initializer move, gson pin vs autoconfig, java.sql.Date wire drift — caught by golden master, invisible in UI) | [Kap. 3 — Der weite Sprung](playbook/03-der-weite-sprung-boot-27.md) | **done** (2026-07-30) |
 | `stage-4-boot-4x` | Boot 2.7 → 3.5 → 4.1 + Java 25; OpenRewrite used AND evaluated ([ADR-0002](docs/adr/0002-openrewrite-as-assistant-not-autopilot.md)); constructor-injection sweep; SQL-injection (B4) closed — the deliberate hostile-input divergence is registered as SD-1 in [ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md) and pinned by characterization on both stands | [Kap. 4 — Boot 3/4, Java 25 & OpenRewrite](playbook/04-boot-3-4-java-25-und-openrewrite.md) | **done** (2026-07-30) |
 | `stage-5-angular` | AngularJS → **Angular 22.1.0** ([ADR-0003](docs/adr/0003-angular-22-instead-of-angular-20.md); was 20) via Strangler Fig on a URL seam ([ADR-0009](docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md), no ngUpgrade): route-by-route port with the same E2E scenarios green on the modern stand at every commit (legacy legs re-run at every commit that touched shared suite code, plus the full both-stand matrix at the gate — the risk-based cadence is documented in worklog session 9/10) — incl. one flow crossing the framework seam mid-scenario; JSP admin page absorbed (SD-2), "undefined" alert fixed (SD-3), WAR→JAR; lint/format gates armed (Spotless + angular-eslint) | [Kap. 5 — AngularJS → Angular 22](playbook/05-angularjs-nach-angular-22.md) | **done** (2026-07-31) |
-| `stage-6-cloud-ops` | Docker multi-stage, OTel, health checks, deploy of both stands (Hetzner + Dokploy) | Kap. 6 — Betrieb & Cloud + Schlusskapitel | pending (G7) |
+| `stage-6-cloud-ops` | Docker multi-stage, OTel, health checks, deploy of both stands (Hetzner + Dokploy) | [Kap. 7 — Betrieb & Härtung](playbook/07-betrieb-und-haertung.md) · Schlusskapitel (Kap. 8) offen | **in progress** (G7) — the ops half is built and measured (2026-08-05); the deployment half is not started, so the tag does **not** exist yet |
+
+**Why stage 6's chapter is number 7.** This table promised "Kap. 6" for the ops stage
+until 2026-08-05, and that promise was already broken when it was written: chapter 6 is
+the AI test-generation chapter, because G6 was a milestone *without* being a stage. The
+1:1 mapping between stages and chapters that SPEC assumes ends there. The ops chapter is
+therefore **Kapitel 7** and the closing chapter will be **Kapitel 8** — recorded here
+rather than renumbered quietly, because a documentation set that silently rewrites its
+own history is worth less than one with a visible seam.
+
+**What "in progress" means for stage 6, precisely.** The three groups below are deliberately
+kept apart, because "written", "measured" and "ran in CI" are three different claims.
+
+*Built and measured locally on 2026-08-05:* PostgreSQL 18 with pinned collation, Flyway,
+Actuator health whose readiness actually tracks the database, OpenTelemetry traces and ECS
+logs, a Traefik edge carrying authentication, security headers and rate limiting, Error Prone
+static analysis on the modern module, a k6 load scenario across both stands, and the playbook
+PDF (built by `playbook/build-pdf.sh`).
+
+*Added to CI but not yet executed by a runner:* the edge-verification step and the Trivy image
+scan inside `modern-build`, and the `playbook` workflow. They are configuration until the first
+pipeline run proves otherwise — this branch has not been pushed.
+
+***Not* built at all:* the deployment. No Hetzner VPS, no Dokploy, no TLS, no backup cron. A
+stage tag is a promise that `git checkout <tag>` gives you that state; there is no state to
+check out until something is deployed, so there is no tag. See `docs/deployment.md` §10 for the
+open list and `docs/MANUAL_TASKS.md` §I for what must be decided before it can be written down.
 
 The AI test-generation experiment (G6) is not a migration stage; its artefacts live
 in [`ai-testgen/`](ai-testgen/) and are referenced from the playbook

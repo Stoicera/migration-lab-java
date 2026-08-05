@@ -1,3 +1,9 @@
+-- Flyway V1 — Basis-Schema des modernen Stands (G7 / Etappe 6).
+-- INHALTLICH IDENTISCH zu legacy/db/init/01-schema.sql: beide Staende muessen
+-- dasselbe Schema haben, sonst vergleicht die Characterization-Suite zwei
+-- verschiedene Datenbanken. Der Gleichstand wird von SchemaDriftTest geprueft,
+-- nicht nur behauptet. Aenderungen kommen als NEUE V-Datei, nie in diese hier.
+
 -- =========================================================
 -- WerkstattCRM Schema
 -- Stand: gewachsen seit 2016. Wird haendisch am Server

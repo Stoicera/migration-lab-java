@@ -33,8 +33,15 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      # TCP-Check reicht: Boot/Tomcat oeffnet 8080 erst nach fertigem Context.
-      # bash statt curl/wget - mehr ist im Temurin-JRE-Image nicht drin.
+      # TCP-Check, und der bleibt hier absichtlich so: Boot 1.5 kennt die
+      # Actuator-Health-Groups nicht, und der Legacy-Stand ist das Ausstellungs-
+      # stueck - er wird nicht nachgeruestet (harte Regel: legacy bleibt legacy).
+      # Was der Check dadurch NICHT merkt, steht in playbook/07: faellt die
+      # Datenbank aus, bleibt der Container gruen. Der moderne Stand fragt seit
+      # Etappe 6 die Anwendung statt den Port.
+      # Korrektur 2026-08-05: die frühere Behauptung "mehr ist im Temurin-JRE-
+      # Image nicht drin" war falsch - eclipse-temurin:8-jre HAT curl und wget
+      # (nachgemessen). Zutreffend ist sie nur fuer das moderne 25-jre-Image.
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
       interval: 5s
       timeout: 3s

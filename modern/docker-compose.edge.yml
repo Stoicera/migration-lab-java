@@ -1,0 +1,109 @@
+# Reverse proxy in front of the modern stand — the piece that makes a public demo
+# defensible (ADR-0014). Overlay, not a profile, and that is deliberate: it needs
+# MODERN_ADMIN_AUTH, and a required variable in the base file would break the
+# quickstart for everyone who only wants `up -d --wait`.
+#
+#   printf 'admin:%s\n' "$(openssl passwd -apr1 'DEIN-PASSWORT')" > /dev/stdout   # -> MODERN_ADMIN_AUTH
+#   MODERN_ADMIN_AUTH='admin:$apr1$...' \
+#     docker compose -f modern/docker-compose.yml -f modern/docker-compose.edge.yml up -d --wait
+#
+# Edge on http://localhost:8091. The app port 8090 stays open in this local setup
+# so the safety net keeps talking to the application directly — see ADR-0014 for
+# why the auth sits here and not in the application, and docs/deployment.md §12
+# for what changes on a real host (where 8090 is NOT published).
+services:
+  edge:
+    image: traefik:v3.6.1
+    command:
+      - --providers.docker=true
+      # nothing is routed unless it says so itself — a new container must not
+      # become publicly reachable by existing
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --accesslog=true
+      - --accesslog.format=json
+      - --log.level=INFO
+      # no dashboard, no api: neither is needed to serve traffic
+      - --api=false
+    ports:
+      - "8091:80"
+    volumes:
+      # read-only, and still the largest single risk in this file: the Docker
+      # socket is root on the host. Named in SECURITY.md rather than hidden.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      # NOT a liveness check — a routing check, and the difference cost a red run.
+      # Traefik's Docker provider discovers containers asynchronously after start, so
+      # for a second or two the process is up and every request 404s. Without this,
+      # `up -d --wait` returns on "container running" and the next command races the
+      # provider; measured 2026-08-05, verify-edge.sh failed 17 assertions against a
+      # configuration that was entirely correct. A check that only proved the process
+      # was alive would have gone green through exactly that window.
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+      start_period: 5s
+
+  app:
+    labels:
+      traefik.enable: "true"
+
+      # --- 1) protected surface: everything that administers or introspects ---
+      # /admin        SPA route and the destructive POST /admin/bereinigen
+      # /api/admin    the statistics endpoint behind that page
+      # /actuator     health/info — useful to us, free reconnaissance for anyone else
+      traefik.http.routers.werkstatt-admin.rule: "PathPrefix(`/admin`) || PathPrefix(`/api/admin`) || PathPrefix(`/actuator`)"
+      # higher priority than the catch-all below; Traefik would otherwise pick the
+      # longest rule, and "longest" is not something to rely on for an auth boundary
+      traefik.http.routers.werkstatt-admin.priority: "100"
+      traefik.http.routers.werkstatt-admin.entrypoints: "web"
+      traefik.http.routers.werkstatt-admin.service: "werkstatt"
+      traefik.http.routers.werkstatt-admin.middlewares: "werkstatt-auth,werkstatt-headers,werkstatt-ratelimit"
+
+      # --- 2) public surface: the application itself ---
+      traefik.http.routers.werkstatt.rule: "PathPrefix(`/`)"
+      traefik.http.routers.werkstatt.priority: "1"
+      traefik.http.routers.werkstatt.entrypoints: "web"
+      traefik.http.routers.werkstatt.service: "werkstatt"
+      traefik.http.routers.werkstatt.middlewares: "werkstatt-headers,werkstatt-ratelimit"
+
+      traefik.http.services.werkstatt.loadbalancer.server.port: "8080"
+
+      # --- middlewares ---
+      # Basic auth. Not an identity system — a lock on the one door that deletes
+      # data. Full OAuth2/OIDC per ENGINEERING_STANDARDS §4 is owner-scoped work
+      # and stays open in DEVIATIONS.md.
+      traefik.http.middlewares.werkstatt-auth.basicauth.users: "${MODERN_ADMIN_AUTH:?MODERN_ADMIN_AUTH is not set — see the header of this file}"
+      traefik.http.middlewares.werkstatt-auth.basicauth.realm: "WerkstattCRM Administration"
+
+      # Security headers. Every value below was verified against the running stand
+      # with the E2E suite, not copied from a checklist — docs/deployment.md §12.
+      traefik.http.middlewares.werkstatt-headers.headers.contentTypeNosniff: "true"
+      traefik.http.middlewares.werkstatt-headers.headers.frameDeny: "true"
+      traefik.http.middlewares.werkstatt-headers.headers.referrerPolicy: "no-referrer"
+      # style-src carries 'unsafe-inline' and NOTHING ELSE does. Angular injects its
+      # component styles as <style> elements at runtime, so 'self' alone blocks them —
+      # measured on 2026-08-05, and worth reading twice: 32 of the suite's 34
+      # scenarios stayed GREEN while the browser was blocking those styles, because Selenium asserts
+      # behaviour and text, not appearance. script-src stays strict; that is the
+      # directive that actually stops injected code from executing.
+      # The clean fix is Angular's CSP_NONCE, which needs index.html rendered per
+      # request instead of served as a static resource — owner-scoped, DEVIATIONS.
+      traefik.http.middlewares.werkstatt-headers.headers.contentSecurityPolicy: "${MODERN_CSP:-default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'}"
+      # HSTS is OFF by default and that is not laziness: switched on over plain
+      # HTTP it teaches the browser to refuse http://localhost for a year.
+      # The TLS-terminating host sets MODERN_HSTS_SECONDS (e.g. 31536000).
+      traefik.http.middlewares.werkstatt-headers.headers.stsSeconds: "${MODERN_HSTS_SECONDS:-0}"
+      # stop advertising what to attack
+      traefik.http.middlewares.werkstatt-headers.headers.customResponseHeaders.Server: ""
+      traefik.http.middlewares.werkstatt-headers.headers.customResponseHeaders.X-Powered-By: ""
+
+      # Rate limiting: per client IP, token bucket. Sized so a human never meets it
+      # and a scripted sweep of the unauthenticated write endpoints does.
+      traefik.http.middlewares.werkstatt-ratelimit.ratelimit.average: "${MODERN_RATELIMIT_AVERAGE:-30}"
+      traefik.http.middlewares.werkstatt-ratelimit.ratelimit.burst: "${MODERN_RATELIMIT_BURST:-60}"
+      traefik.http.middlewares.werkstatt-ratelimit.ratelimit.period: "1s"

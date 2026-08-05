@@ -1,3 +1,8 @@
+-- Flyway V2 — Vorfuehrdaten (Location classpath:db/demo).
+-- INHALTLICH IDENTISCH zu legacy/db/init/02-daten.sql, geprueft von SchemaDriftTest.
+-- In Produktion faellt diese Location weg:
+--   SPRING_FLYWAY_LOCATIONS=classpath:db/migration
+
 -- =========================================================
 -- WerkstattCRM Testdaten (Demo-Stand)
 -- Fiktive Kunden und Fahrzeuge, Raum Perg/Linz.

@@ -906,3 +906,232 @@ README final, release v1.0.0, tag `stage-6-cloud-ops`. Two hard preconditions al
 registered: neither stand has authentication (including the destructive
 `POST /admin/bereinigen`), and PostgreSQL 9.6 is end-of-life. `docs/deployment.md` §10 is the
 work list.
+
+---
+
+## 2026-08-05 — G7 part 1: stage 6's ops half, built and measured; the deployment half untouched — session 14
+
+The owner had no time for manual infrastructure work, so this session took the part of
+G7 that needs no server and left the part that does entirely alone. That split is not a
+compromise, it is the honest boundary: everything below runs on a laptop, and nothing
+below pretends a host exists.
+
+**Baseline first, so any red would be ours:** characterization 47/47 and E2E 34/34 green
+against both stands before the first edit.
+
+### What was built
+
+**PostgreSQL 9.6 → 18 on the modern stand only** (ADR-0012; DEVIATIONS P2 closed for
+modern). Legacy keeps 9.6 for ever — an end-of-life database is part of what the exhibit
+demonstrates. The upgrade produced the two findings worth the session:
+
+- **`postgres:18-alpine` reports a collation it does not use.** It answers
+  `datcollate = en_US.utf8` and then sorts in C order, because musl accepts the locale
+  name and ignores it. Measured against the same probe: legacy 9.6 and Debian
+  `postgres:18` agree exactly; alpine reorders the list. **A review step that reads the
+  setting and compares it passes.** Only sorting is evidence — so the integration test
+  now sorts instead of asking.
+- **`PGDATA` and the declared `VOLUME` both moved** (`/var/lib/postgresql/data` →
+  `/var/lib/postgresql/18/docker`, volume at `/var/lib/postgresql`). Keep the old mount
+  and the container starts clean, creates an empty cluster in an anonymous volume and
+  persists **nothing** — and because Flyway re-migrates on every start, it still looks
+  healthy. Silent data loss behind a green health check.
+
+The equivalence gate survived: **47/47 on both stands across a nine-major database gap**,
+and `/api/bericht/topkunden` — the one endpoint whose raw DB types reach JSON through
+`queryForList` — byte-identical, decimal literals included. That was the pre-registered
+acceptance step, and it is evidence about 47 pinned contracts on a ten-customer seed, not
+a proof about the application.
+
+**Flyway** (ADR-0013, wart B18 closed for modern). `modern/db/init/` is gone; one schema
+source. `baseline-on-migrate` stays **false** on purpose — with `true`, a populated volume
+skips V1 and applies the seed twice. **`flyway-core` alone does nothing in Boot 4:** the
+module split means the *starter* is what wires it, and without it the app starts, migrates
+nothing, and dies later on `relation "kunde" does not exist`. Measured as a real failure
+(6 of 7 integration tests errored) before the starter was added — a silent
+misconfiguration, which is the expensive kind. CI's schema-drift guard was rewritten to
+compare the SQL the server executes and to fail loudly when a file is missing, and was
+verified with a negative control.
+
+**Observability** (ADR-0015). Actuator health, ECS logs, OTLP traces, an observability
+compose profile. **Two defects of our own, found by measuring rather than by reading:**
+Boot's default readiness group does **not** include the database — with the DB stopped it
+answered `200 UP` while `/actuator/health` answered 503 — and the healthcheck's
+`retries: 24`, inherited from the TCP probe where it covered slow startup, meant a 503
+application counted as healthy for two minutes. Both fixed and re-measured: unhealthy
+**25 s** after the database dies, healthy again **6 s** after it returns. Liveness
+deliberately excludes the database, so an outage does not restart a healthy application.
+Also corrected: `trace.id`/`span.id` are renamed to the ECS field names, because a format
+called ECS should be ECS.
+
+**Security at the edge** (ADR-0014). Basic auth, security headers and rate limiting in a
+Traefik overlay rather than in the application — the option the ledger had already named
+("reverse-proxy auth counts"), the one Dokploy actually runs, and the one that does not
+turn 4 safety-net tests (or, with CSRF, 17 write calls plus every E2E write scenario) into
+ADR-0004 divergence decisions. Verified by `modern/edge/verify-edge.sh`, not asserted.
+The counter-argument that a compose overlay is theatre is written into the ADR together
+with the answer, including the obligation that a real host must not publish the app port.
+
+### The finding worth more than the features
+
+The first CSP was fully strict. **32 of the suite's 34 scenarios ran green through the
+edge while the browser was blocking Angular's runtime styles.** The two `AdminTest`
+scenarios cannot run through Basic auth at all and kept running against the application
+port; nothing was disabled. The point is the other 32: **the Selenium safety net cannot
+see a CSP violation.** It asserts behaviour and text, never appearance. Found by opening a
+real browser and reading the console — not by any test we own.
+
+Resolution: `style-src 'self' 'unsafe-inline'`, nothing else relaxed, `script-src 'self'`
+still strict, 0 console errors afterwards. What is *measured* is the console output; **we
+did not photograph the broken page and make no claim about how bad it looked.** The
+limitation is now a DEVIATIONS row, `verify-edge.sh` asserts the policy verbatim, and the
+visual check is on the human checklist, because that is where it honestly belongs.
+
+### Also
+
+Static analysis (Error Prone, ERROR tier only) cost ten `-J--add-exports` flags to run on
+a current JDK at all — the recurring tax of living on the newest JDK. First run: **0
+ERROR-severity findings, 17 warnings**, one of which is a real inherited concurrency
+hazard — a `static final SimpleDateFormat` shared by all threads, under a 2016 comment
+saying it has always worked. **Not fixed here**: the ops stage's job is the deployment
+surface, not the God class that is G6's study object. Ledgered as wart **B20** for an
+owner decision. We did not reproduce a corrupted response under load and do not claim to.
+
+One k6 read-path scenario on both stands. **The modernisation is not measurably faster**
+(modern p95 1.60 ms vs legacy 1.56 ms). Ten years of framework and JDK bought
+supportability, security and a labour market, not speed on this workload.
+
+A **safety-net gap that predates G7 was closed**: the E2E suite silently ignored
+`-Dstand`, the mirror image of the bug session 13 fixed on the characterization side. A
+guard on one side of a symmetric mistake is half a guard.
+
+Playbook PDF now builds through a container so CI and laptop run the same command
+(ubuntu-latest has pandoc but no TeX engine). The two glyphs Latin Modern lacks are mapped
+in a header file, and the build fails if a new one appears.
+
+### Dead ends and things we got wrong, kept rather than deleted
+
+- The compose comment claiming the new probe would notice a dead database was written
+  **before** it was true; measuring proved it false and the config was fixed to match the
+  comment, not the comment to match the config.
+- `newunicodechar.sty` is not in the pandoc image — the PDF build died on it; replaced by
+  a catcode mapping rather than by pulling a TeX distribution into CI.
+- A first `stages.md` draft claimed static analysis and image scanning were "measured in
+  CI". They are configuration until a runner executes them; the hostile review caught it
+  and the sentence now separates *measured locally*, *added to CI but never run*, and
+  *not built*.
+- The legacy compose comment "curl/wget are not in the Temurin image" was simply wrong for
+  `eclipse-temurin:8-jre`. Corrected in place, with the correction dated.
+- **`verify-edge.sh` produced a false red — and the false red was ours, not Traefik's.**
+  Run straight after `up -d --wait` on a cold edge it reported **17 failed assertions**
+  against a configuration that was completely correct. Cause: Traefik's Docker provider
+  discovers containers asynchronously, so for a second or two the process answers and
+  every path 404s, while `--wait` had already returned because the container was
+  *running*. The whole session had been verifying an edge that happened to be warm. Two
+  fixes, because one was not enough: the edge now has a compose healthcheck that checks
+  **routing** rather than liveness (a liveness check would have gone green through exactly
+  that window), and the script waits for the edge to route before asserting, so it is also
+  correct when run by hand. Verified by recreating the edge and verifying immediately,
+  three times: 20/20 assertions, exit 0, each time. Worth stating plainly: this is the
+  same failure shape the repo's `--wait` rule exists for, and we walked into it anyway —
+  one level further down, where "the container is up" and "the system works" came apart
+  again. **A false red costs exactly as much trust as a false green.**
+
+### What CI caught that local verification did not
+
+The first push went **red on two checks**, and both were real — worth recording because the
+whole session had been green locally right up to that point.
+
+- **`harness` failed:** the G6 prompt renderer reads the schema from
+  `modern/db/init/01-schema.sql`, which Flyway deleted. It refuses to render a prompt from a
+  missing schema instead of quietly emitting one without DDL, which is the only reason this
+  was a red check rather than a silently different experiment. Fixed by resolving corpus B's
+  DDL to the Flyway file — and then **proved harmless the only way that counts: all 24
+  recorded prompts in `runs/2026-07-31/` re-render byte-identically.** Only `CREATE TABLE`
+  blocks reach the prompt, and the drift guard holds the two stands' DDL equal.
+- **`testbed-validation (modern)` failed:** `PomDriftGuardTest` forbids the G6 testbed from
+  compiling against a different classpath than the module under test, and stage 6 had just
+  given that module four new dependencies. The guard worked exactly as designed.
+- **`modern-build` then failed on the second push — in the teardown, not the work.** The new
+  edge-verification step passed on the runner (20/20 assertions, routing after 1 s), and the
+  `Stop modern stand` step died because Compose interpolates the edge overlay's labels even
+  for `down`, while the credential only existed inside the previous step's shell. A local
+  run could not have caught it: the variable is exported in the developer's shell for the
+  whole session. **This is the entire justification for the "added to CI but not yet
+  executed" category in `stages.md`** — it was written before this failure, and the failure
+  is what it was written about.
+
+Both are the same lesson from opposite ends: **corpus B is not a copy of the modern module,
+it *is* the modern module**, so an ops stage moves the measurement environment of a finished
+experiment. Recorded as **amendment A5**, which changes no recorded result but states the
+cost plainly — a corpus-B replication after today compiles against a wider classpath than the
+2026-07-31 run did, so mixing runs from before and after compares environments, not models.
+The honest general point is in the amendment: an experiment whose subject is a living module
+inherits that module's future, and the alternative (freezing a copy) would have made corpus B
+stop being what its name claims.
+
+**Verification:** characterization 47/47 vs legacy and 47/47 vs modern · E2E 34/34 vs
+legacy and 34/34 vs modern · modern `verify` green, **100 module tests**, coverage 81.3 %
+line / 58.3 % branch, 0.80 ratchet met · schema-drift guard green plus negative control ·
+`verify-edge.sh` 20/20 assertions on three consecutive cold starts · playbook PDF builds (7 chapters) · both stands rebuilt from an empty
+volume, Flyway applying 2 migrations · G6 infrastructure green again after the CI findings
+(harness 24/24, testbed-validation 8/8 legacy and 7/7 modern) and all 24 frozen prompts
+re-rendered byte-identically. **A third CI-only failure, and this one was a flaky assertion of ours.** The rate-limit
+check fired 80 requests through a shell loop — one `curl` process each. On a loaded runner
+those 80 process spawns took longer than the token-bucket window, so the burst never
+exceeded 30/s and the check failed against a limiter that was working perfectly. A
+timing-dependent assertion in a suite whose stated policy is zero flaky tolerance is a
+defect, not bad luck. Replaced by a single `curl --parallel` firing 200 concurrent
+requests, which is a burst regardless of how slow the machine is: five consecutive runs
+produced 103–173 × 429. The assertion stays `> 0` rather than a count, because the count
+is a property of the machine and not of the configuration.
+
+**On the runner, all eight checks green** on the third push: the edge-verification step
+20/20 with routing after 1 s (the rate limiter produced **6** × 429 there against 5 here —
+which is exactly why `SECURITY.md` asserts *> 0* and quotes 5 as one observation rather
+than as a property).
+
+**And the image scan paid for itself on its first execution.** One HIGH: **CVE-2026-54291**
+in `org.postgresql:postgresql` 42.7.11 — a man-in-the-middle protection bypass through a
+SCRAM-SHA-256-PLUS downgrade, which is the authentication mechanism PostgreSQL 18 uses and
+which this very stage had just switched the modern stand to. Pinned to 42.7.12, the minimum
+fixed version rather than the newest, because this is a security fix and not a version bump.
+Nothing else in the repository would have caught it: Dependabot watches manifests, and the
+driver's version was not in one — it came from Boot's dependency management.
+
+After the pin, the scan is **clean: 0 findings** across the Ubuntu base layer, the
+application jar and the Go binary in the image. Every one of the eight required checks is
+green.
+
+Fixing it uncovered a quieter hole. Neither `modern/pom.xml` nor the G6 testbed declared a
+version for the driver, and a property override travels through Boot's `<parent>` but **not**
+through the testbed's imported BOM — so the first fix moved the application to 42.7.12 while
+the testbed stayed on 42.7.11, and `PomDriftGuardTest` stayed **green**, because it compares
+*declared* coordinates and neither declared one. Both now pin the version literally. The
+guard was never wrong; it was answering a narrower question than it appeared to, which is
+the same shape as the CSP finding above.
+
+**Hours:** 1.4 *(measured wall time 15:34 first tool call → 16:55, including the CI-red repair; agent wall-clock under
+supervision, see the header)*
+
+**Decisions:** ADR-0012 (PostgreSQL 18 + pinned collation), ADR-0013 (Flyway),
+ADR-0014 (authentication at the edge), ADR-0015 (observability); **PROTOCOL amendment A5**
+(the experiment's subject module moved; no recorded result altered); `SECURITY.md` created;
+playbook Kapitel 7; wart B20 recorded; ops chapter numbered 7 with the stage↔chapter break
+stated openly rather than renumbered; **no stage tag and no v1.0.0 release**.
+
+**Late catch, before the merge:** `.env.example` documented none of the seven environment
+variables stage 6 introduced. A hard rule ("`.env.example` complete") broken inside the very
+session that added the variables, and found by grepping the compose files against the
+template rather than by the ledger. Fixed and grouped by purpose; the two entries whose
+*defaults* carry weight are spelled out — HSTS ships at 0 deliberately, and production must
+drop the demo-seed Flyway location or it inserts ten fictional customers into an empty
+database.
+
+**Next: G7 part 2 — the deployment, which is owner-blocked.** `docs/MANUAL_TASKS.md` §I
+lists what only the owner can decide or procure (host, domains, whether the legacy stand
+goes public at all given its preserved SQL injection, and the three repository secrets
+that do not exist yet). Nothing further can be honestly written until those exist. When
+they do: image push to GHCR, Dokploy per stand, TLS plus switching HSTS on, `pg_dump` cron
+**with a restore rehearsal**, then the tag `stage-6-cloud-ops`, playbook Kapitel 8 and
+v1.0.0.

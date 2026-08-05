@@ -43,6 +43,7 @@ beyond what this file documents.
 | B17 | Config duplication with drift: `application-prod.properties` disagrees on version, misses the UID, contains a plaintext DB password (fictional demo value) | `src/main/resources` | Copy-paste environments; "please also update the other file" comments |
 | B18 | Schema = hand-run SQL files, no migration tool, no history | `db/init/` | "The schema lives on the server"; Flyway disposition in `docs/DEVIATIONS.md` |
 | B19 | Mixed German/English identifiers, German REST paths (`/api/kunden`), German status strings as `static final String` (no enum) | everywhere | Absolutely faithful to Austrian in-house software |
+| B20 | One **`static final SimpleDateFormat`** shared by every request thread, under the comment *"eine Instanz fuer alle Threads, hat bis jetzt eh immer funktioniert"* — the class is documented as not synchronised in its own Javadoc | `WerkstattService:37`, used by `/api/admin/statistik` | The bug that only appears under concurrency, so it never appears in testing. **Added 2026-08-05, and not by reading the code:** it is the first finding of the static analysis armed in stage 6, four stages after the wart catalogue was written by hand. That is the entry's real lesson — a careful manual review missed it and a tool found it in seconds. Disposition in `docs/DEVIATIONS.md`; deliberately not fixed in the ops stage |
 
 ## Frontend
 

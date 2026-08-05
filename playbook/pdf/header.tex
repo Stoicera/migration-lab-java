@@ -1,0 +1,17 @@
+% Latin Modern — the default font of the pandoc/latex image under xelatex — has no
+% ≈ (U+2248) and no ✔ (U+2714). Measured: those are the only two glyphs the whole
+% playbook uses that the font lacks. Mapping them here rather than rewriting the
+% chapters, because the Markdown is the source and the PDF is a rendering of it;
+% changing the text to please the renderer would be the wrong way round.
+%
+% Done with catcodes and not with newunicodechar on purpose: that package is NOT in
+% the pandoc/latex image (measured — the build died on a missing newunicodechar.sty),
+% and pulling a TeX distribution into CI to gain one macro is a bad trade.
+\usepackage{amssymb}
+\catcode`≈=\active
+\def≈{\ensuremath{\approx}}
+\catcode`✔=\active
+\def✔{\ensuremath{\checkmark}}
+
+% Long file paths in the prose must not run into the margin.
+\sloppy

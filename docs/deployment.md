@@ -14,8 +14,9 @@ deviations ledger either. That hole is now closed in both directions: the docume
 | Running the AI test-generation experiment | **documented here, works today** |
 | Production deployment (Hetzner VPS + Dokploy, TLS, backups) | **does not exist yet — [§10](#10-production-deployment--not-yet)** |
 
-Every command below was executed on 2026-08-02 against this repository before being written
-down. Where a command's output is quoted, that is the real output, not an illustration.
+Every command below was executed against this repository before being written down — §1–§10 on
+2026-08-02, the stage-6 material (§4.5, §4.6, §11–§13) on 2026-08-05. Where a command's output is
+quoted, that is the real output, not an illustration.
 
 **Companion document:** [`MANUAL_TASKS.md`](MANUAL_TASKS.md) is the checklist of steps a human
 must do by hand. This file explains *how* and *why*; that one is what you tick off.
@@ -250,7 +251,16 @@ docker compose -f legacy/docker-compose.yml down -v    # stop, DESTROY the datab
 
 ### 4.1 The seeding contract — the rule that costs people an afternoon
 
-Both stands mount `db/init/` read-only at `/docker-entrypoint-initdb.d`. The official PostgreSQL
+> **Changed on 2026-08-05 for the modern stand only.** Since stage 6 the modern stand has no
+> `db/init/` mount at all: its schema and demo data are **Flyway migrations inside the
+> application** (`modern/src/main/resources/db/migration` and `.../db/demo`, [ADR-0013](adr/0013-flyway-statt-handgestarteter-sql.md)),
+> applied by Boot at startup. So on the modern stand, editing the SQL and restarting **does**
+> take effect — for a *new* migration file. Editing `V1__baseline_schema.sql` after it has run
+> does not, and worse, Flyway will refuse to start on a checksum mismatch. Changes go into a
+> new `V…` file. Everything below still describes the **legacy** stand exactly.
+
+Both stands mounted `db/init/` read-only at `/docker-entrypoint-initdb.d`; the legacy stand
+still does. The official PostgreSQL
 image runs those scripts **only when the data directory is empty** — i.e. only on the very first
 start against a fresh volume. If a volume already holds a database, initialization is skipped
 entirely, *by design*, to avoid overwriting data.
@@ -324,14 +334,52 @@ Inside psql: `\dt` lists tables, `\d kunde` describes one, `\l` lists databases,
 A modern `psql` (18.x) against the 9.6 server works and prints a version-mismatch notice on
 connect; that notice is expected, not a problem.
 
-### 4.5 PostgreSQL 9.6 is end-of-life
+### 4.5 The two stands run different PostgreSQL majors — on purpose
 
-9.6 reached its final release **2021-11-11**. It receives no security patches of any kind. It is
-used here deliberately — an unchanged database keeps one variable fixed while the stack around it
-moves — and is registered as deviation **P2** in [`DEVIATIONS.md`](DEVIATIONS.md), with the
-upgrade scheduled for G7. The `postgres:9.6` image is still pullable but is no longer a supported
-tag; if you need reproducibility years from now, pin it by digest.
+Since 2026-08-05 the **modern** stand runs PostgreSQL **18** and the **legacy** stand stays on
+**9.6** ([ADR-0012](adr/0012-postgresql-18-und-fixierte-collation.md)). That is not drift: 9.6
+reached its final release 2021-11-11 and receives no security patches, so it belongs to the
+exhibit and nowhere near a public endpoint. Keeping it on the legacy side is what makes the
+equivalence gate worth running — it now proves behaviour across a ten-year database gap rather
+than across two identical containers. The `postgres:9.6` image is still pullable but is no
+longer a supported tag; pin it by digest if you need reproducibility years from now.
 <https://www.postgresql.org/support/versioning/>
+
+### 4.6 Upgrading the database image: the two traps, both measured
+
+Neither of these announces itself. Both were found on 2026-08-05 while doing this upgrade.
+
+**The image can report a collation it does not use.** Collation decides `ORDER BY` on text,
+which decides the order of every list the application returns, which the golden masters pin.
+Measured with the same probe against three images:
+
+| image | `pg_database.datcollate` says | how it actually sorts |
+|---|---|---|
+| `postgres:9.6` (legacy) | `en_US.utf8` | `de Vries, Hubermann, Huber Transporte GmbH, Ohler, Öhler, van Dijk, Zach` |
+| `postgres:18` | `en_US.utf8` | **the same** |
+| `postgres:18-alpine` | `en_US.utf8` | `Huber Transporte GmbH, Hubermann, Ohler, Zach, de Vries, van Dijk, Öhler` |
+
+The alpine variant accepts the locale name and ignores it (musl has no locale support), so it
+answers `en_US.utf8` while sorting in C order. **A review step that reads the setting and
+compares it passes.** Only sorting is evidence, which is why the modern stand pins
+`LANG=en_US.utf8` plus `POSTGRES_INITDB_ARGS=--locale=en_US.utf8`, uses the Debian image, and
+why `WerkstattServiceIntegrationTest` asserts an actual ordering.
+
+**`PGDATA` and the declared `VOLUME` moved.** `postgres:9.6` uses `PGDATA=/var/lib/postgresql/data`;
+`postgres:18` uses `/var/lib/postgresql/18/docker` and declares its volume at
+`/var/lib/postgresql`. Bump the tag while keeping a `…:/var/lib/postgresql/data` mount and the
+container starts cleanly, creates an **empty cluster in an anonymous volume**, and persists
+nothing — and because Flyway re-migrates every start, the stand still looks healthy. Silent
+data loss behind a green health check. The compose volume was therefore renamed to
+`modern-werkstatt-db-pg18`, which also makes the first start clean instead of the cryptic
+`database files are incompatible with server`.
+
+The old 9.6 volume is still on disk and is not removed automatically:
+
+```bash
+docker volume ls | grep werkstatt          # modern-werkstatt-db is the retired 9.6 one
+docker volume rm modern_modern-werkstatt-db   # only when you are sure you want the disk back
+```
 
 ---
 
@@ -540,12 +588,19 @@ What is true today, so the gap is measurable rather than vague:
 
 | Required by §7 | Status |
 |---|---|
-| Local full environment via Compose | **done** — [§2](#2-first-run), minus the Keycloak/Mailpit/observability profile the standard also names |
-| Hetzner VPS + Dokploy deployment steps | **not started** (G7) |
-| Backups (`pg_dump` cron) | **not started** (G7) |
-| TLS (Traefik / Let's Encrypt via Dokploy) | **not started** (G7) |
-| 12-factor config via environment | **partly** — both stands take `SPRING_DATASOURCE_*` from the environment; `.env.example` reserves `DOKPLOY_URL`, `DOKPLOY_TOKEN`, `GHCR_TOKEN` |
-| Automatic migrations (Flyway) | **not started** — registered as B18 in `DEVIATIONS.md`, owned by G7 |
+| Local full environment via Compose | **done** — [§2](#2-first-run); the observability profile arrived 2026-08-05 ([§11](#11-observability-locally)), Keycloak and Mailpit are still absent and are ledgered, not forgotten |
+| Hetzner VPS + Dokploy deployment steps | **not started** |
+| Backups (`pg_dump` cron) | **not started** |
+| TLS (Traefik / Let's Encrypt via Dokploy) | **not started** — the Traefik configuration that will carry it exists and is tested locally ([§12](#12-the-reverse-proxy-edge)); terminating TLS needs a host and a domain |
+| 12-factor config via environment | **partly** — both stands take `SPRING_DATASOURCE_*` from the environment, and stage 6 added log format, tracing, Flyway locations and every edge setting as environment variables; `.env.example` reserves `DOKPLOY_URL`, `DOKPLOY_TOKEN`, `GHCR_TOKEN` |
+| Automatic migrations (Flyway) | **done** 2026-08-05 — [ADR-0013](adr/0013-flyway-statt-handgestarteter-sql.md), wart B18 closed |
+
+What stage 6 *did* deliver is operations readiness, and it is all runnable on a laptop today:
+health checks the platform can actually use ([§11](#11-observability-locally)), the reverse
+proxy with authentication, security headers and rate limiting that a public demo needs
+([§12](#12-the-reverse-proxy-edge)), and a load baseline ([§13](#13-the-load-scenario)). What is
+missing is the host — and a host is exactly the thing that cannot be written down before it
+exists.
 
 Two things must be settled **before** anything is exposed publicly, and both are already in the
 ledger rather than being discovered later:
@@ -557,6 +612,169 @@ ledger rather than being discovered later:
    collation changes can move the golden masters.
 
 This section gets replaced by real, executed steps when G7 lands — not before.
+
+---
+
+---
+
+## 11. Observability, locally
+
+Nothing here is on by default. A stand you start the normal way exports no traces and needs no
+extra container; you opt in.
+
+### 11.1 Health, and why the probe changed
+
+The modern stand exposes exactly two Actuator endpoints, `health` and `info`. Everything else —
+`env`, `beans`, `mappings`, `metrics`, `loggers`, `heapdump` — answers **404**, verified rather
+than assumed. An open `/actuator` is a data leak and a free map of the application.
+
+```bash
+curl -s localhost:8090/actuator/health              # {"groups":["liveness","readiness"],"status":"UP"}
+curl -s localhost:8090/actuator/health/readiness    # {"status":"UP"}
+curl -s localhost:8090/actuator/health/liveness     # {"status":"UP"}
+```
+
+Two things about this were wrong when first written down, and the fixes are the useful part:
+
+**Spring Boot's default readiness group does not include your database.** Measured: with
+`modern-db-1` stopped, `/actuator/health/readiness` answered `200 {"status":"UP"}` while
+`/actuator/health` answered `503`. A readiness probe that reports ready while the application
+cannot answer a single business request is worse than none — it manufactures confidence. Hence
+`management.endpoint.health.group.readiness.include=readinessState,db`.
+
+**Liveness deliberately does *not* include the database.** If it did, a database outage would
+restart a perfectly healthy application in a loop and turn a fault into an outage. That is the
+classic mistake when translating health into probes.
+
+You can watch both:
+
+```bash
+docker stop modern-db-1
+curl -s -o /dev/null -w '%{http_code}\n' localhost:8090/actuator/health/readiness   # 503
+curl -s -o /dev/null -w '%{http_code}\n' localhost:8090/actuator/health/liveness    # 200
+docker inspect --format '{{.State.Health.Status}}' modern-app-1                     # unhealthy after ~25s
+docker start modern-db-1                                                            # healthy again ~6s later
+```
+
+The 25 seconds are `interval: 5s` × `retries: 3` plus scheduling. Until stage 6 the check had
+`retries: 24`, because the same number also had to absorb a slow start — measured, that meant a
+503 application counted as healthy for two minutes. Startup is now covered by `start_period: 90s`,
+during which a failure does not count against `retries`, so the generous startup budget costs
+nothing in reaction time.
+
+The check itself is `bash` with `/dev/tcp`, not `curl`: the `eclipse-temurin:25-jre` runtime image
+ships neither `curl` nor `wget`, and `CMD-SHELL` would run `dash`, which has no `/dev/tcp`.
+(The *legacy* image, `eclipse-temurin:8-jre`, does have both — the comment in
+`legacy/docker-compose.yml` that claimed otherwise was wrong and has been corrected.)
+
+### 11.2 Structured logs
+
+In the container, logs are ECS JSON; a bare `java -jar` keeps the human-readable format. The
+format is environment configuration, not a property of the artefact.
+
+```bash
+docker compose -f modern/docker-compose.yml logs app | tail -1
+```
+
+Application log lines carry `trace.id` and `span.id`. Micrometer writes them into the MDC as
+`traceId`/`spanId`, which are *not* the ECS field names — `logging.structured.json.rename.*` maps
+them, because a format called ECS should be ECS. Framework lines emitted outside a request carry
+no trace, which is correct rather than missing.
+
+### 11.3 Traces
+
+```bash
+WERKSTATT_TRACING_ENABLED=true \
+  docker compose -f modern/docker-compose.yml --profile observability up -d --wait
+```
+
+That starts `grafana/otel-lgtm` (Grafana, Prometheus, Tempo, Loki in one container). Grafana:
+<http://localhost:3000>, bound to loopback. Generate traffic, then search Tempo in Grafana — you
+will find traces named `http get /api/kunden` under the service `werkstatt-crm-modern`, and the
+`trace.id` from any log line pastes straight into the search.
+
+Both switches belong together. Tracing is off by default because with no collector configured the
+OTLP exporter retries against `localhost:4318` and logs a connection failure on every batch —
+noise that teaches people to ignore logs.
+
+---
+
+## 12. The reverse-proxy edge
+
+The modern stand has **no authentication of its own**. `POST /admin/bereinigen` permanently
+deletes cancelled orders and, on the bare stand, anyone who can reach the port can call it. Stage 6
+put a Traefik reverse proxy in front instead of changing the application
+([ADR-0014](adr/0014-authentifizierung-am-edge.md)) — the same component Dokploy runs, so this is a
+rehearsal rather than a stand-in.
+
+```bash
+MODERN_ADMIN_AUTH="admin:$(openssl passwd -apr1 'ein-passwort')" \
+  docker compose -f modern/docker-compose.yml -f modern/docker-compose.edge.yml up -d --wait
+```
+
+Edge on <http://localhost:8091>. It is an **overlay file, not a profile**, because it requires
+`MODERN_ADMIN_AUTH` and a required variable in the base file would break the plain quickstart for
+everyone.
+
+Verify it — and prefer this over trusting the configuration:
+
+```bash
+EDGE_USER=admin EDGE_PASSWORD=ein-passwort modern/edge/verify-edge.sh
+```
+
+It asserts that `/admin`, `/api/admin` and `/actuator` are 401 without credentials and 200 with
+them, that a wrong password stays out, that the public application is untouched, that the security
+headers are present, and that the rate limiter actually fires (measured: 200 concurrent requests
+through the edge → 103–173 × 429 over five runs; the same burst straight at the application → 0).
+
+**Locally, port 8090 stays published** so the safety net keeps its direct path to the application.
+**On a real host it must not be** — otherwise the lock has a door beside it. That is the single
+most important line in this section.
+
+Two settings ship deliberately switched off, because switching them on locally does damage:
+
+- **HSTS** (`MODERN_HSTS_SECONDS`, default `0`). Sent over plain HTTP it teaches the browser to
+  refuse `http://localhost` for a year. The TLS-terminating host sets it.
+- **A CSP without `'unsafe-inline'` for styles.** The policy is strict everywhere else;
+  `style-src` needs it because Angular injects component styles at runtime. Which brings up the
+  finding worth carrying away from this section: with the strict version **32 of the suite's 34
+  scenarios ran green through the edge while the browser was blocking those styles** (the two
+  `AdminTest` scenarios cannot run through Basic auth at all — Selenium cannot answer the
+  browser's native credential dialog — and keep running against the application port, where they
+  remain part of the 34/34 gate). Selenium asserts behaviour and text,
+  never appearance. A green suite is evidence about what it asserts and about nothing else — the
+  visual check stayed manual, and that is written into `MANUAL_TASKS.md` rather than implied.
+
+---
+
+## 13. The load scenario
+
+One scenario, as `ENGINEERING_STANDARDS.md` §3 asks for. It walks the read path a user walks.
+
+```bash
+docker run --rm -i --network host grafana/k6:latest run - < load/k6/lesepfad.js
+BASE_URL=http://localhost:8080 \
+  docker run --rm -i --network host -e BASE_URL grafana/k6:latest run - < load/k6/lesepfad.js
+```
+
+Measured 2026-08-05, 5 virtual users over 45 s, both stands on the same machine:
+
+| | modern (Boot 4.1 / Java 25 / PG 18) | legacy (Boot 1.5 / Java 8 / PG 9.6) |
+|---|---|---|
+| p(95) request duration | 1.60 ms | 1.56 ms |
+| average | 0.87 ms | 0.77 ms |
+| max | 4.13 ms | 5.68 ms |
+| requests / failures | 1146 / 0 | 1146 / 0 |
+
+**The modernisation is not measurably faster.** Ten years of framework and JDK versions bought
+supportability, security and a labour market — not speed on this workload. If someone is selling a
+migration on performance, they should measure first.
+
+Read the numbers with their caveat attached: load generator, application and database share one
+laptop, and the dataset is a ten-customer demo seed. This is a baseline for comparison, not a
+statement about capacity. The thresholds in the script are deliberately loose for the same reason —
+they exist to catch an order-of-magnitude regression, and a threshold tuned to today's machine
+would go red on the next one and then get switched off.
 
 ---
 

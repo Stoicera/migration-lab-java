@@ -1,0 +1,41 @@
+# Builds the playbook as a PDF and keeps it as a build artefact (MILESTONES G7).
+#
+# This workflow is deliberately NOT in the required-check list on master. It produces
+# a deliverable, it does not guard behaviour: a failed PDF build must not be able to
+# block a fix to the application. docs/MANUAL_TASKS.md §E says so explicitly so that
+# "not required" reads as a decision rather than as an oversight.
+#
+# It runs the SAME script a developer runs (playbook/build-pdf.sh), which runs the
+# same container. GitHub's ubuntu-latest ships pandoc but no TeX engine, so a plain
+# `pandoc -o x.pdf` step would work on a laptop and fail here.
+name: playbook
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'playbook/**'
+      - '.github/workflows/playbook.yml'
+  pull_request:
+    paths:
+      - 'playbook/**'
+      - '.github/workflows/playbook.yml'
+  workflow_dispatch:
+
+jobs:
+  playbook-pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Build the playbook PDF
+        run: ./playbook/build-pdf.sh
+
+      - name: Upload the PDF
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: migration-playbook-pdf
+          path: playbook/dist/migration-playbook.pdf
+          if-no-files-found: error
+          retention-days: 90
