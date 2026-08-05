@@ -102,18 +102,25 @@ check_header "Content-Security-Policy" "frame-ancestors 'none'"
 check_header "Content-Security-Policy" "object-src 'none'"
 
 echo "6. The rate limiter fires (and the bare application does not have one)"
+# ONE curl process firing REQUESTS_IN_BURST requests concurrently, not a shell loop
+# spawning one process per request. The loop version was flaky and CI proved it: the
+# limiter is average 30/s with burst 60, and 80 sequential process spawns can take
+# well over two seconds on a loaded runner — so the burst never exceeded the rate and
+# the check failed on a limiter that was working correctly. A timing-dependent
+# assertion in a suite with zero flaky tolerance is a defect, not bad luck.
+# Concurrency makes the burst a burst regardless of how slow the machine is.
+BURST="${EDGE_BURST_REQUESTS:-200}"
 count_429() {
-	local url="$1" n=0 i
-	for i in $(seq 1 80); do
-		[ "$(status "$url")" = "429" ] && n=$((n + 1))
-	done
-	echo "$n"
+	local url="$1" urls=() i
+	for i in $(seq 1 "$BURST"); do urls+=("$url"); done
+	curl -s -o /dev/null --parallel --parallel-immediate --parallel-max 50 \
+		-w '%{http_code}\n' "${urls[@]}" 2>/dev/null | grep -c '^429$' || true
 }
 edge_429=$(count_429 "$EDGE/api/kunden")
 if [ "$edge_429" -gt 0 ]; then
-	pass "80 rapid requests through the edge -> $edge_429 x 429"
+	pass "$BURST concurrent requests through the edge -> $edge_429 x 429"
 else
-	fail "80 rapid requests through the edge produced no 429 — the limiter is not doing anything"
+	fail "$BURST concurrent requests through the edge produced no 429 — the limiter is not doing anything"
 fi
 app_429=$(count_429 "$APP/api/kunden")
 if [ "$app_429" -eq 0 ]; then

@@ -192,7 +192,7 @@ down with its caveats in [`docs/worklog.md`](docs/worklog.md); the decisions hav
 - **Security at the edge** (optional Traefik overlay): Basic auth in front of `/admin`,
   `/api/admin` and `/actuator`, security headers, per-IP rate limit. Verified by
   `modern/edge/verify-edge.sh`: unauthenticated → 401 on all four protected paths,
-  authenticated → 200, public surface unaffected, and 80 rapid requests → **5 × 429**
+  authenticated → 200, public surface unaffected, and 200 concurrent requests → **103–173 × 429** over five runs
   through the edge versus **0 × 429** straight at the application.
 - **A load baseline, one scenario** (`load/k6/lesepfad.js`, 5 VUs, 45 s, 1146 requests
   per stand, 0 failures). The result is the unflattering one:

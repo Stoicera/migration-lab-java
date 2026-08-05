@@ -61,7 +61,7 @@ break `up -d --wait` for everyone who only wants the stand.
 | wrong password | **401** |
 | public surface `/`, `/api/kunden`, `/rechnungen` | **200** |
 | headers on public responses | `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, full CSP |
-| rate limit (average 30/s, burst 60), 80 rapid requests through the edge | **5 × 429** |
+| rate limit (average 30/s, burst 60), 200 **concurrent** requests through the edge | **103–173 × 429** over five runs; the script asserts `> 0`, never a count |
 | the same burst straight at the application | **0 × 429** |
 
 HSTS is **off by default** (`stsSeconds: 0`) and that is deliberate, not an omission:

@@ -724,8 +724,8 @@ EDGE_USER=admin EDGE_PASSWORD=ein-passwort modern/edge/verify-edge.sh
 
 It asserts that `/admin`, `/api/admin` and `/actuator` are 401 without credentials and 200 with
 them, that a wrong password stays out, that the public application is untouched, that the security
-headers are present, and that the rate limiter actually fires (measured: 80 rapid requests through
-the edge → 5 × 429; the same burst straight at the application → 0).
+headers are present, and that the rate limiter actually fires (measured: 200 concurrent requests
+through the edge → 103–173 × 429 over five runs; the same burst straight at the application → 0).
 
 **Locally, port 8090 stays published** so the safety net keeps its direct path to the application.
 **On a real host it must not be** — otherwise the lock has a door beside it. That is the single

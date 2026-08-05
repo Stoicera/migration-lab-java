@@ -1076,7 +1076,17 @@ line / 58.3 % branch, 0.80 ratchet met · schema-drift guard green plus negative
 `verify-edge.sh` 20/20 assertions on three consecutive cold starts · playbook PDF builds (7 chapters) · both stands rebuilt from an empty
 volume, Flyway applying 2 migrations · G6 infrastructure green again after the CI findings
 (harness 24/24, testbed-validation 8/8 legacy and 7/7 modern) and all 24 frozen prompts
-re-rendered byte-identically. **On the runner, all eight checks green** on the third push: the edge-verification step
+re-rendered byte-identically. **A third CI-only failure, and this one was a flaky assertion of ours.** The rate-limit
+check fired 80 requests through a shell loop — one `curl` process each. On a loaded runner
+those 80 process spawns took longer than the token-bucket window, so the burst never
+exceeded 30/s and the check failed against a limiter that was working perfectly. A
+timing-dependent assertion in a suite whose stated policy is zero flaky tolerance is a
+defect, not bad luck. Replaced by a single `curl --parallel` firing 200 concurrent
+requests, which is a burst regardless of how slow the machine is: five consecutive runs
+produced 103–173 × 429. The assertion stays `> 0` rather than a count, because the count
+is a property of the machine and not of the configuration.
+
+**On the runner, all eight checks green** on the third push: the edge-verification step
 20/20 with routing after 1 s (the rate limiter produced **6** × 429 there against 5 here —
 which is exactly why `SECURITY.md` asserts *> 0* and quotes 5 as one observation rather
 than as a property).

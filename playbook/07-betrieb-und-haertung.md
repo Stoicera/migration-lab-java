@@ -243,7 +243,7 @@ lokal auf :8090 — das Sicherheitsnetz behält seinen direkten Weg.
 - Header auf öffentlichen Antworten: `X-Frame-Options: DENY`,
   `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, vollständige CSP
 - Rate-Limit (Mittel 30/s, Burst 60): 80 schnelle Anfragen über den Rand →
-  **5 × 429**; derselbe Burst direkt auf die Anwendung → **0 × 429**. Auch ein
+  **103–173 × 429** über fünf Läufe; derselbe Burst direkt auf die Anwendung → **0 × 429**. Auch ein
   Rate-Limit prüft man, indem man es auslöst.
 - **HSTS ist standardmäßig aus** (`stsSeconds: 0`), und das ist Absicht: Über reines
   HTTP eingeschaltet, bringt es dem Browser für ein Jahr bei, `http://localhost` zu

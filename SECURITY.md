@@ -254,7 +254,7 @@ against the running stands on **2026-08-05**, exit 0:
 | `GET /admin` with a wrong password | **401** |
 | `GET /`, `GET /api/kunden`, `GET /rechnungen` — the public surface | **200** (the edge must not become an outage) |
 | Security headers on public responses | `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, full CSP |
-| Rate limit (average 30/s, burst 60), 80 rapid requests through the edge | **> 0 × 429** is what the script asserts; one run on 2026-08-05 produced **5**. The exact count is timing-dependent on the machine and is not a property of the configuration |
+| Rate limit (average 30/s, burst 60), 200 **concurrent** requests through the edge | **> 0 × 429** is what the script asserts; five consecutive runs on 2026-08-05 produced 103–173. The exact count is machine-dependent and is not a property of the configuration — which is why the assertion is `> 0` and not a number |
 | The same burst straight at the application on `:8090` | **0 × 429** — the limit lives in the edge, as designed |
 
 Two configuration choices in that set are deliberate and would be wrong to "fix":
