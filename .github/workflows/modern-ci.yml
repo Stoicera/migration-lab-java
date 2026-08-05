@@ -80,6 +80,12 @@ jobs:
 
       - name: Stop modern stand
         if: always()
+        env:
+          # Compose interpolates the edge overlay's labels even for `down`, and the real
+          # credential only existed inside the previous step's shell — which turned a
+          # successful run into a red job on the first CI execution of this workflow.
+          # Any value satisfies the interpolation; nothing authenticates during teardown.
+          MODERN_ADMIN_AUTH: teardown-only-never-used
         run: docker compose -f modern/docker-compose.yml -f modern/docker-compose.edge.yml down -v
 
       # ---- stage 6: vulnerability scanning (DEVIATIONS "Security-Scan in CI") ----

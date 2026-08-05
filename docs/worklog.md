@@ -1052,6 +1052,14 @@ whole session had been green locally right up to that point.
 - **`testbed-validation (modern)` failed:** `PomDriftGuardTest` forbids the G6 testbed from
   compiling against a different classpath than the module under test, and stage 6 had just
   given that module four new dependencies. The guard worked exactly as designed.
+- **`modern-build` then failed on the second push — in the teardown, not the work.** The new
+  edge-verification step passed on the runner (20/20 assertions, routing after 1 s), and the
+  `Stop modern stand` step died because Compose interpolates the edge overlay's labels even
+  for `down`, while the credential only existed inside the previous step's shell. A local
+  run could not have caught it: the variable is exported in the developer's shell for the
+  whole session. **This is the entire justification for the "added to CI but not yet
+  executed" category in `stages.md`** — it was written before this failure, and the failure
+  is what it was written about.
 
 Both are the same lesson from opposite ends: **corpus B is not a copy of the modern module,
 it *is* the modern module**, so an ops stage moves the measurement environment of a finished
@@ -1068,9 +1076,11 @@ line / 58.3 % branch, 0.80 ratchet met · schema-drift guard green plus negative
 `verify-edge.sh` 20/20 assertions on three consecutive cold starts · playbook PDF builds (7 chapters) · both stands rebuilt from an empty
 volume, Flyway applying 2 migrations · G6 infrastructure green again after the CI findings
 (harness 24/24, testbed-validation 8/8 legacy and 7/7 modern) and all 24 frozen prompts
-re-rendered byte-identically. **Still not verified: the new CI steps themselves** — the
-edge verification and the Trivy scan inside `modern-build` had not reported when this entry
-was written; the `playbook` workflow passed on the first push.
+re-rendered byte-identically. **On the runner:** `playbook-pdf`, `harness`, both `testbed-validation` legs, `legacy-build`
+and both `e2e` legs green; the edge-verification step green with 20/20 (the rate limiter
+produced **6** × 429 there against 5 here — which is why `SECURITY.md` asserts *> 0* and
+quotes 5 as one observation rather than as a property). **The Trivy image scan has still
+never executed**, because the teardown failure aborted `modern-build` before reaching it.
 
 **Hours:** 1.4 *(measured wall time 15:34 first tool call → 16:55, including the CI-red repair; agent wall-clock under
 supervision, see the header)*
