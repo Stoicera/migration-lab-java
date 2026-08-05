@@ -115,14 +115,39 @@ A stage is only done when all four exist — and they travel in **one** PR:
 - [ ] Renaming a job renames its check: the old required name never reports again and **every PR
       blocks forever**. Update the protection rule in the same PR series.
 
-Currently required on `master` — seven checks:
+Currently required on `master` — **still seven checks**, unchanged by stage 6:
 `legacy-build` · `modern-build` · `e2e (legacy)` · `e2e (modern)` · `harness` ·
 `testbed-validation (legacy)` · `testbed-validation (modern)`
+
+**Stage 6 added gates without adding checks, deliberately.** The edge verification and the Trivy
+image scan are *steps inside* `modern-build`, and the schema-drift guard is a step inside
+`legacy-build`. A new job would mean a new required-check name, a manual protection change, and a
+window in which `master` is unmergeable — so the new gates were put where they cost nothing to
+adopt. **Nothing on this list needs to change.**
+
+One workflow *was* added — `playbook` (job `playbook-pdf`), which builds the playbook PDF as an
+artefact. It is **intentionally not required**: it produces a deliverable, it does not guard
+behaviour, and a failing PDF build must not be able to block a fix to the application. If you ever
+want it required, it must run once first, then be added in **Settings → Branches** as
+`playbook-pdf`.
+
+### One-time, still open
+
+- [ ] **Enable private vulnerability reporting.** Settings → Advanced Security → *Private
+      vulnerability reporting*. It is **off** today (checked 2026-08-05:
+      `gh api repos/Stoicera/migration-lab-java/private-vulnerability-reporting` returns
+      `{"enabled":false}`), so the *Security → Report a vulnerability* button does not exist and
+      [`SECURITY.md`](../SECURITY.md) §2 currently has to say so instead of pointing at it.
+      Verify with the same command afterwards, then delete the "not enabled" paragraph in
+      `SECURITY.md` §2 and its German counterpart.
 
 ### Ongoing
 
 - [ ] Review Dependabot PRs. `legacy/` is deliberately excluded from Dependabot — its EOL
       dependencies are the exhibit, not a vulnerability to patch.
+- [ ] Read the **Trivy image-scan output** in the `modern-build` job. It runs with
+      `exit-code: 0`, so it never fails the build — which means nobody sees it unless somebody
+      looks. That is the trade the ledger records; looking is the other half of it.
 
 ---
 
@@ -158,8 +183,73 @@ the evidence that behaviour used to be different.
 
 ---
 
-## H. What is *not* here yet
+## H. Operating the stage-6 add-ons
 
-Deployment to a server is not on this list because **there is nothing to deploy to yet** — see
-[`deployment.md` §10](deployment.md#10-production-deployment--not-yet). When G7 lands, this
-document gains a section for it. It will not gain one before.
+Both are opt-in and neither is needed for the normal quickstart.
+
+### The reverse-proxy edge (authentication, headers, rate limit)
+
+- [ ] Generate a credential — it is never committed, and compose refuses to start without it:
+      ```bash
+      MODERN_ADMIN_AUTH="admin:$(openssl passwd -apr1 'dein-passwort')"
+      export MODERN_ADMIN_AUTH
+      ```
+- [ ] Start with the overlay (**both** `-f` flags, order matters):
+      ```bash
+      docker compose -f modern/docker-compose.yml -f modern/docker-compose.edge.yml up -d --wait
+      ```
+- [ ] Verify rather than trust: `EDGE_USER=admin EDGE_PASSWORD=dein-passwort modern/edge/verify-edge.sh`
+- [ ] **The one visual check no suite can do for you.** Open <http://localhost:8091/kunden> in a
+      real browser, open the developer console, and confirm there are **no Content-Security-Policy
+      violations** and the page looks styled. This is on the human list because it has to be: on
+      2026-08-05 32 of the suite's 34 scenarios ran green while the browser was blocking Angular's styles —
+      Selenium asserts behaviour and text, never appearance. Do this whenever the CSP or the
+      frontend build changes.
+
+### The observability profile
+
+- [ ] `WERKSTATT_TRACING_ENABLED=true docker compose -f modern/docker-compose.yml --profile observability up -d --wait`
+- [ ] Grafana on <http://localhost:3000>; generate traffic, then search Tempo for service
+      `werkstatt-crm-modern`. Both switches belong together — tracing without a collector just
+      logs export failures.
+
+### One-off after the PostgreSQL upgrade
+
+- [ ] The retired 9.6 volume is not deleted automatically and holds disk for nothing:
+      ```bash
+      docker volume ls | grep werkstatt
+      docker volume rm modern_modern-werkstatt-db      # the OLD one; the live one ends in -pg18
+      ```
+
+---
+
+## I. Before a production deployment can be written down at all
+
+**This is not a deployment checklist — there is still nothing to deploy to**
+([`deployment.md` §10](deployment.md#10-production-deployment--not-yet)). It is the list of things
+only you can decide or procure, and until they exist any deployment instructions would be invented.
+That distinction is the whole reason this document is trustworthy.
+
+**Procure / decide:**
+
+- [ ] Which host: a Hetzner VPS with Dokploy (`deploy` skill: skdevserver1) or a new one
+- [ ] Which domain(s) — one per stand, since the demo effect is the two side by side
+- [ ] Whether the **legacy** stand goes public at all. It has SQL injection preserved on purpose
+      (SD-1), no authentication, and an end-of-life database. The honest options are: not public;
+      public behind the same Basic auth; or public with a visible warning banner. This one is a
+      real decision, not a formality.
+- [ ] Repository secrets — **none exist today** (`gh secret list` is empty), so any workflow
+      referencing them fails at runtime, not at lint time: `DOKPLOY_URL`, `DOKPLOY_TOKEN`,
+      `GHCR_TOKEN` (reserved in `.env.example`)
+
+**Then, and only then, the following become writable — each must be executed before it is documented:**
+
+- [ ] Image build and push to GHCR from CI
+- [ ] Dokploy application per stand, environment variables from `.env.example`
+- [ ] TLS via Traefik/Let's Encrypt, and switching `MODERN_HSTS_SECONDS` on once TLS holds
+- [ ] `MODERN_ADMIN_AUTH` set as a Dokploy secret — and the application port **not** published,
+      or the edge is decoration ([`deployment.md` §12](deployment.md#12-the-reverse-proxy-edge))
+- [ ] `pg_dump` backup cron plus one **restore rehearsal** — a backup nobody has restored is a
+      hope, not a backup
+- [ ] Only after all of the above: the annotated tag `stage-6-cloud-ops`, the `stages.md` row, the
+      playbook closing chapter (Kap. 8), and release v1.0.0

@@ -23,8 +23,11 @@ jobs:
       # directly — no copies there to guard).
       - name: Seed/schema drift guard
         run: |
-          diff -q legacy/db/init/01-schema.sql modern/db/init/01-schema.sql
-          diff -q legacy/db/init/02-daten.sql modern/db/init/02-daten.sql
+          # Stage 6 moved the modern side to Flyway (ADR-0013), so the files now differ
+          # in their headers and only there. The script compares the SQL the server
+          # actually executes; it fails loudly if either file is missing, so deleting
+          # one cannot turn the guard green.
+          ./scripts/check-schema-drift.sh
 
       - name: Set up JDK 8 (Temurin)
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5

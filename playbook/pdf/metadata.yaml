@@ -1,0 +1,15 @@
+---
+title: "Legacy-Migration in der Praxis"
+subtitle: "Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 22 — mit Sicherheitsnetz, gemessen und nachvollziehbar"
+author: "Stoicera Software Group"
+lang: de-AT
+documentclass: report
+papersize: a4
+fontsize: 11pt
+toc-title: "Inhalt"
+abstract: |
+  Dieses Playbook begleitet das öffentliche Repository migration-lab. Jede Zahl darin
+  wurde gemessen, jeder Irrweg ist dokumentiert geblieben. Es ist bewusst kein
+  Erfolgsbericht, sondern ein Arbeitsprotokoll: Die Stellen, an denen etwas schiefging,
+  sind für Leserinnen und Leser wertvoller als die, an denen alles glattlief.
+---

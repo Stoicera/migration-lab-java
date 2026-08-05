@@ -63,6 +63,42 @@ jobs:
           path: characterization/target/characterization-received/
           if-no-files-found: ignore
 
+      # ---- stage 6: the edge is an auth boundary, so it gets a test, not a claim ----
+      # Deliberately a STEP of this job and not a job of its own: a new job means a new
+      # required-check name, which means a manual branch-protection change
+      # (docs/MANUAL_TASKS.md §E) and a window in which master is unmergeable.
+      - name: Verify the reverse-proxy edge (auth, headers, rate limit)
+        run: |
+          export MODERN_ADMIN_AUTH="admin:$(openssl passwd -apr1 "$CI_EDGE_PASSWORD")"
+          docker compose -f modern/docker-compose.yml -f modern/docker-compose.edge.yml up -d --wait
+          EDGE_USER=admin EDGE_PASSWORD="$CI_EDGE_PASSWORD" modern/edge/verify-edge.sh
+        env:
+          # a throwaway credential for this run only — it guards nothing that outlives
+          # the job, and the alternative (a repository secret) would make the check
+          # unrunnable on forks
+          CI_EDGE_PASSWORD: ci-only-${{ github.run_id }}
+
       - name: Stop modern stand
         if: always()
-        run: docker compose -f modern/docker-compose.yml down -v
+        run: docker compose -f modern/docker-compose.yml -f modern/docker-compose.edge.yml down -v
+
+      # ---- stage 6: vulnerability scanning (DEVIATIONS "Security-Scan in CI") ----
+      # Dependabot already watches the manifests; Trivy adds what it cannot see — the
+      # RUNTIME IMAGE, i.e. the JRE base layer and its OS packages. A CVE in the base
+      # image is invisible to every dependency scanner and ships to production anyway.
+      - name: Build the modern image for scanning
+        run: docker build -t migration-lab/modern:ci modern/
+
+      - name: Scan the modern image (OS packages + Java dependencies)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: migration-lab/modern:ci
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          # Reporting, not blocking, and the reason is written down rather than implied:
+          # a fresh CRITICAL in a base image arrives without any change of ours, and a
+          # gate that turns master red overnight for something no commit caused is a
+          # gate people learn to bypass. It is read at review time; DEVIATIONS.md
+          # records this as reporting-only.
+          exit-code: '0'

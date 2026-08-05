@@ -64,6 +64,38 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
+		<!-- G7 (stage 6): schema management moves out of the hand-run SQL files
+		     (LEGACY_NOTES wart B18) into versioned migrations that run at start.
+		     TWO artifacts, and both are load-bearing — measured, not assumed:
+		       - flyway-core ALONE does nothing here. Boot 4 split its
+		         auto-configurations into per-technology modules, so the starter is
+		         what actually wires Flyway into the context. With only flyway-core
+		         the app starts happily, migrates nothing, and dies later on
+		         "relation kunde does not exist" — a silent failure, not a loud one.
+		       - flyway-database-postgresql is separate since Flyway 10; without it
+		         Flyway starts and fails on "Unsupported Database". -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+
+		<!-- G7 (stage 6): operability. Actuator turns the container healthcheck from
+		     "the port is open" into "the app says it is ready"; the opentelemetry
+		     starter adds Micrometer tracing + the OTLP exporter (traces are exported
+		     only when an endpoint is configured — see application.properties). -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-opentelemetry</artifactId>
+		</dependency>
+
 		<!-- JSP/JSTL/gson: retired in stage 5 with the absorbed admin page
 		     (SD-2, ADR-0004) — the app is JSP-free; WAR->JAR follows at the
 		     stage-5 cutover when the last webapp/ content goes -->
@@ -106,6 +138,45 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!-- Static analysis (DEVIATIONS "Statische Analyse — §6", deferred(G7)).
+			     Only Error Prone's ERROR-severity patterns fail the build: those are
+			     real defects (a comparison that cannot be true, a format string that
+			     will throw), not opinions. The WARNING tier is deliberately not a gate
+			     — this repository keeps a God class ON PURPOSE as G6's study object,
+			     and a style gate that fights the exhibit would be turned off within a
+			     week, which is how gates die. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<!-- forked, because Error Prone reaches into javac internals and the
+					     add-exports flags below must reach the JVM that RUNS javac, not
+					     the compilation itself -->
+					<fork>true</fork>
+					<compilerArgs>
+						<arg>-XDcompilePolicy=simple</arg>
+						<arg>--should-stop=ifError=FLOW</arg>
+						<arg>-Xplugin:ErrorProne</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+					</compilerArgs>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>com.google.errorprone</groupId>
+							<artifactId>error_prone_core</artifactId>
+							<version>2.50.0</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 			<!-- Stage 5: the Angular UI is part of this artifact. The plugin
 			     installs its own Node (no local toolchain requirement, same

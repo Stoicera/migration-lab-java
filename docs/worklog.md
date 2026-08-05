@@ -906,3 +906,157 @@ README final, release v1.0.0, tag `stage-6-cloud-ops`. Two hard preconditions al
 registered: neither stand has authentication (including the destructive
 `POST /admin/bereinigen`), and PostgreSQL 9.6 is end-of-life. `docs/deployment.md` §10 is the
 work list.
+
+---
+
+## 2026-08-05 — G7 part 1: stage 6's ops half, built and measured; the deployment half untouched — session 14
+
+The owner had no time for manual infrastructure work, so this session took the part of
+G7 that needs no server and left the part that does entirely alone. That split is not a
+compromise, it is the honest boundary: everything below runs on a laptop, and nothing
+below pretends a host exists.
+
+**Baseline first, so any red would be ours:** characterization 47/47 and E2E 34/34 green
+against both stands before the first edit.
+
+### What was built
+
+**PostgreSQL 9.6 → 18 on the modern stand only** (ADR-0012; DEVIATIONS P2 closed for
+modern). Legacy keeps 9.6 for ever — an end-of-life database is part of what the exhibit
+demonstrates. The upgrade produced the two findings worth the session:
+
+- **`postgres:18-alpine` reports a collation it does not use.** It answers
+  `datcollate = en_US.utf8` and then sorts in C order, because musl accepts the locale
+  name and ignores it. Measured against the same probe: legacy 9.6 and Debian
+  `postgres:18` agree exactly; alpine reorders the list. **A review step that reads the
+  setting and compares it passes.** Only sorting is evidence — so the integration test
+  now sorts instead of asking.
+- **`PGDATA` and the declared `VOLUME` both moved** (`/var/lib/postgresql/data` →
+  `/var/lib/postgresql/18/docker`, volume at `/var/lib/postgresql`). Keep the old mount
+  and the container starts clean, creates an empty cluster in an anonymous volume and
+  persists **nothing** — and because Flyway re-migrates on every start, it still looks
+  healthy. Silent data loss behind a green health check.
+
+The equivalence gate survived: **47/47 on both stands across a nine-major database gap**,
+and `/api/bericht/topkunden` — the one endpoint whose raw DB types reach JSON through
+`queryForList` — byte-identical, decimal literals included. That was the pre-registered
+acceptance step, and it is evidence about 47 pinned contracts on a ten-customer seed, not
+a proof about the application.
+
+**Flyway** (ADR-0013, wart B18 closed for modern). `modern/db/init/` is gone; one schema
+source. `baseline-on-migrate` stays **false** on purpose — with `true`, a populated volume
+skips V1 and applies the seed twice. **`flyway-core` alone does nothing in Boot 4:** the
+module split means the *starter* is what wires it, and without it the app starts, migrates
+nothing, and dies later on `relation "kunde" does not exist`. Measured as a real failure
+(6 of 7 integration tests errored) before the starter was added — a silent
+misconfiguration, which is the expensive kind. CI's schema-drift guard was rewritten to
+compare the SQL the server executes and to fail loudly when a file is missing, and was
+verified with a negative control.
+
+**Observability** (ADR-0015). Actuator health, ECS logs, OTLP traces, an observability
+compose profile. **Two defects of our own, found by measuring rather than by reading:**
+Boot's default readiness group does **not** include the database — with the DB stopped it
+answered `200 UP` while `/actuator/health` answered 503 — and the healthcheck's
+`retries: 24`, inherited from the TCP probe where it covered slow startup, meant a 503
+application counted as healthy for two minutes. Both fixed and re-measured: unhealthy
+**25 s** after the database dies, healthy again **6 s** after it returns. Liveness
+deliberately excludes the database, so an outage does not restart a healthy application.
+Also corrected: `trace.id`/`span.id` are renamed to the ECS field names, because a format
+called ECS should be ECS.
+
+**Security at the edge** (ADR-0014). Basic auth, security headers and rate limiting in a
+Traefik overlay rather than in the application — the option the ledger had already named
+("reverse-proxy auth counts"), the one Dokploy actually runs, and the one that does not
+turn 4 safety-net tests (or, with CSRF, 17 write calls plus every E2E write scenario) into
+ADR-0004 divergence decisions. Verified by `modern/edge/verify-edge.sh`, not asserted.
+The counter-argument that a compose overlay is theatre is written into the ADR together
+with the answer, including the obligation that a real host must not publish the app port.
+
+### The finding worth more than the features
+
+The first CSP was fully strict. **32 of the suite's 34 scenarios ran green through the
+edge while the browser was blocking Angular's runtime styles.** The two `AdminTest`
+scenarios cannot run through Basic auth at all and kept running against the application
+port; nothing was disabled. The point is the other 32: **the Selenium safety net cannot
+see a CSP violation.** It asserts behaviour and text, never appearance. Found by opening a
+real browser and reading the console — not by any test we own.
+
+Resolution: `style-src 'self' 'unsafe-inline'`, nothing else relaxed, `script-src 'self'`
+still strict, 0 console errors afterwards. What is *measured* is the console output; **we
+did not photograph the broken page and make no claim about how bad it looked.** The
+limitation is now a DEVIATIONS row, `verify-edge.sh` asserts the policy verbatim, and the
+visual check is on the human checklist, because that is where it honestly belongs.
+
+### Also
+
+Static analysis (Error Prone, ERROR tier only) cost ten `-J--add-exports` flags to run on
+a current JDK at all — the recurring tax of living on the newest JDK. First run: **0
+ERROR-severity findings, 17 warnings**, one of which is a real inherited concurrency
+hazard — a `static final SimpleDateFormat` shared by all threads, under a 2016 comment
+saying it has always worked. **Not fixed here**: the ops stage's job is the deployment
+surface, not the God class that is G6's study object. Ledgered as wart **B20** for an
+owner decision. We did not reproduce a corrupted response under load and do not claim to.
+
+One k6 read-path scenario on both stands. **The modernisation is not measurably faster**
+(modern p95 1.60 ms vs legacy 1.56 ms). Ten years of framework and JDK bought
+supportability, security and a labour market, not speed on this workload.
+
+A **safety-net gap that predates G7 was closed**: the E2E suite silently ignored
+`-Dstand`, the mirror image of the bug session 13 fixed on the characterization side. A
+guard on one side of a symmetric mistake is half a guard.
+
+Playbook PDF now builds through a container so CI and laptop run the same command
+(ubuntu-latest has pandoc but no TeX engine). The two glyphs Latin Modern lacks are mapped
+in a header file, and the build fails if a new one appears.
+
+### Dead ends and things we got wrong, kept rather than deleted
+
+- The compose comment claiming the new probe would notice a dead database was written
+  **before** it was true; measuring proved it false and the config was fixed to match the
+  comment, not the comment to match the config.
+- `newunicodechar.sty` is not in the pandoc image — the PDF build died on it; replaced by
+  a catcode mapping rather than by pulling a TeX distribution into CI.
+- A first `stages.md` draft claimed static analysis and image scanning were "measured in
+  CI". They are configuration until a runner executes them; the hostile review caught it
+  and the sentence now separates *measured locally*, *added to CI but never run*, and
+  *not built*.
+- The legacy compose comment "curl/wget are not in the Temurin image" was simply wrong for
+  `eclipse-temurin:8-jre`. Corrected in place, with the correction dated.
+- **`verify-edge.sh` produced a false red — and the false red was ours, not Traefik's.**
+  Run straight after `up -d --wait` on a cold edge it reported **17 failed assertions**
+  against a configuration that was completely correct. Cause: Traefik's Docker provider
+  discovers containers asynchronously, so for a second or two the process answers and
+  every path 404s, while `--wait` had already returned because the container was
+  *running*. The whole session had been verifying an edge that happened to be warm. Two
+  fixes, because one was not enough: the edge now has a compose healthcheck that checks
+  **routing** rather than liveness (a liveness check would have gone green through exactly
+  that window), and the script waits for the edge to route before asserting, so it is also
+  correct when run by hand. Verified by recreating the edge and verifying immediately,
+  three times: 20/20 assertions, exit 0, each time. Worth stating plainly: this is the
+  same failure shape the repo's `--wait` rule exists for, and we walked into it anyway —
+  one level further down, where "the container is up" and "the system works" came apart
+  again. **A false red costs exactly as much trust as a false green.**
+
+**Verification:** characterization 47/47 vs legacy and 47/47 vs modern · E2E 34/34 vs
+legacy and 34/34 vs modern · modern `verify` green, **100 module tests**, coverage 81.3 %
+line / 58.3 % branch, 0.80 ratchet met · schema-drift guard green plus negative control ·
+`verify-edge.sh` 20/20 assertions on three consecutive cold starts · playbook PDF builds (7 chapters) · both stands rebuilt from an empty
+volume, Flyway applying 2 migrations. **Not verified: any CI workflow change**, because
+this branch has not been pushed — those steps are configuration until a runner proves
+otherwise.
+
+**Hours:** 1.2 *(measured wall time 15:34 first tool call → 16:45 commit; agent wall-clock under
+supervision, see the header)*
+
+**Decisions:** ADR-0012 (PostgreSQL 18 + pinned collation), ADR-0013 (Flyway),
+ADR-0014 (authentication at the edge), ADR-0015 (observability); `SECURITY.md` created;
+playbook Kapitel 7; wart B20 recorded; ops chapter numbered 7 with the stage↔chapter break
+stated openly rather than renumbered; **no stage tag and no v1.0.0 release**.
+
+**Next: G7 part 2 — the deployment, which is owner-blocked.** `docs/MANUAL_TASKS.md` §I
+lists what only the owner can decide or procure (host, domains, whether the legacy stand
+goes public at all given its preserved SQL injection, and the three repository secrets
+that do not exist yet). Nothing further can be honestly written until those exist. When
+they do: image push to GHCR, Dokploy per stand, TLS plus switching HSTS on, `pg_dump` cron
+**with a restore rehearsal**, then the tag `stage-6-cloud-ops`, playbook Kapitel 8 and
+v1.0.0.

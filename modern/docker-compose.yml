@@ -1,17 +1,41 @@
 # Modern-Stand: grows stage by stage (see stages.md)
-# Start: docker compose -f modern/docker-compose.yml up -d
+# Start: docker compose -f modern/docker-compose.yml up -d --wait
 # App: http://localhost:8090  ·  Admin (SPA-Route seit Stage 5): http://localhost:8090/admin
+#
+# Stage 6 (G7) changed three things here; each has a reason and an ADR:
+#   - PostgreSQL 9.6 -> 18            (ADR-0012 — 9.6 is end of life)
+#   - schema now via Flyway, not the  (ADR-0013 — wart B18)
+#     postgres init-script mount
+#   - health check asks Actuator      (ADR-0014 — a TCP probe cannot see a dead DB)
+#     instead of poking the TCP port
+#
+# Optional add-ons, both off by default:
+#   observability profile  ->  docs/deployment.md §11
+#   reverse proxy / auth   ->  docker-compose.edge.yml, docs/deployment.md §12
 services:
   db:
-    image: postgres:9.6
+    # PostgreSQL 18 (was 9.6 until stage 6 — DEVIATIONS P2).
+    # NOT -alpine, and that is a measured decision, not a taste: the alpine image
+    # reports datcollate=en_US.utf8 but sorts in C order (musl ignores the locale
+    # name it accepted), which silently re-sorts every list in the application.
+    # See ADR-0012 for the measurement — the golden masters caught it.
+    image: postgres:18
     environment:
       POSTGRES_DB: werkstatt
       POSTGRES_USER: werkstatt
       # lokale Dev-Zugangsdaten, kein Secret
       POSTGRES_PASSWORD: werkstatt
+      # Sortierreihenfolge explizit festnageln statt sie zu erben. Der Legacy-Stand
+      # laeuft auf en_US.utf8; jede Abweichung verschiebt die Golden Master.
+      LANG: en_US.utf8
+      POSTGRES_INITDB_ARGS: "--locale=en_US.utf8"
     volumes:
-      - ./db/init:/docker-entrypoint-initdb.d:ro
-      - modern-werkstatt-db:/var/lib/postgresql/data
+      # ACHTUNG: /var/lib/postgresql, NICHT mehr /var/lib/postgresql/data.
+      # Das Image 18 hat PGDATA auf /var/lib/postgresql/18/docker verschoben.
+      # Mit dem alten Mount startet der Container fehlerfrei, legt ein leeres
+      # Cluster in einem anonymen Volume an und persistiert NICHTS — und weil
+      # Flyway beim Start neu migriert, sieht auch das noch gesund aus.
+      - modern-werkstatt-db-pg18:/var/lib/postgresql
     ports:
       # loopback only - the test DB does not belong on the network (review finding 22)
       - "127.0.0.1:5434:5432"
@@ -29,17 +53,59 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/werkstatt
       SPRING_DATASOURCE_USERNAME: werkstatt
       SPRING_DATASOURCE_PASSWORD: werkstatt
+      # Strukturierte Logs im Container (ECS). Beim blanken `java -jar` bleibt es
+      # bei der lesbaren Konsolenausgabe - 12-Factor: das Format gehoert zur
+      # Umgebung, nicht ins Artefakt.
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      # Tracing nur zusammen mit dem observability-Profil einschalten, sonst
+      # laeuft der OTLP-Exporter ins Leere und loggt im Batch-Takt Fehler:
+      #   WERKSTATT_TRACING_ENABLED=true docker compose -f modern/docker-compose.yml \
+      #     --profile observability up -d --wait
+      WERKSTATT_TRACING_ENABLED: ${WERKSTATT_TRACING_ENABLED:-false}
+      WERKSTATT_OTLP_ENDPOINT: http://otel:4318/v1/traces
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      # TCP check suffices: Boot/Tomcat opens 8080 only after the context is up.
-      # bash instead of curl/wget - the Temurin JRE image ships neither.
-      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      # Seit Stage 6 fragt der Check die Anwendung, nicht den Port: die
+      # Readiness-Group von Actuator faellt auf OUT_OF_SERVICE, wenn die
+      # Datenbank weg ist - der alte TCP-Probe blieb dabei gruen.
+      # bash statt curl/wget: das Temurin-JRE-Image hat beides nicht, /dev/tcp
+      # ist ein bash-Builtin (mit CMD-SHELL waere es dash und /dev/tcp fehlt).
+      test:
+        [
+          "CMD",
+          "bash",
+          "-c",
+          "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /actuator/health/readiness HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\":\"UP\"' <&3",
+        ]
       interval: 5s
       timeout: 3s
-      retries: 24
-      start_period: 10s
+      # retries deckt den DAUERBETRIEB ab, start_period den Start. Bis Stage 5
+      # standen hier 24 Retries, weil sie den langsamen Boot mitabdecken mussten -
+      # gemessen am 2026-08-05 hiess das: die Anwendung war 503, der Container galt
+      # noch zwei Minuten als "healthy". Waehrend start_period zaehlt ein
+      # Fehlschlag nicht gegen retries, also kostet der grosszuegige Startpuffer
+      # nichts an Reaktionszeit.
+      retries: 3
+      start_period: 90s
+
+  # Observability-Backend fuer die lokale Vorfuehrung: Grafana + Prometheus +
+  # Tempo + Loki in einem Container. Nur mit --profile observability.
+  # Grafana: http://localhost:3000 (anonymer Zugang, rein lokal)
+  otel:
+    profiles: ["observability"]
+    image: grafana/otel-lgtm:0.11.15
+    ports:
+      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:4318:4318"
+    environment:
+      # sonst schreibt der Container beim ersten Start in ein root-Volume
+      ENABLE_LOGS_ALL: "true"
 
 volumes:
-  modern-werkstatt-db:
+  # Neuer Name statt neuer Inhalt: das 9.6-Volume ist fuer 18 unlesbar, und ein
+  # umbenanntes Volume gibt einen sauberen Erststart statt eines kryptischen
+  # "database files are incompatible with server". Das alte Volume bleibt liegen
+  # und wird von Hand entsorgt - docs/deployment.md §4.6.
+  modern-werkstatt-db-pg18:

@@ -101,10 +101,19 @@ stability assumptions below.
 
 - **Array order** in the goldens is meaningful only because every list
   endpoint has a SQL `ORDER BY`; the goldens inherit exactly that order.
-- **Collation:** the ordering of German names comes from PostgreSQL 9.6's
-  collation. Both stands deliberately run PG 9.6 until G7; a PostgreSQL
-  upgrade is a **golden-impact event** (docs/DEVIATIONS.md P2) and follows the
-  ADR-0007 procedure like any contract change.
+- **Collation:** the ordering of German names comes from the database's
+  collation, and a PostgreSQL upgrade is therefore a **golden-impact event**
+  (docs/DEVIATIONS.md P2) that follows the ADR-0007 procedure like any contract
+  change. Since 2026-08-05 the two stands **no longer run the same PostgreSQL
+  major** — legacy stays on 9.6 as the exhibit, modern runs 18 (ADR-0012) — and
+  the goldens survived that unchanged. Read that result precisely, because the
+  earlier wording here overstated it: the orderings were **measured** equal on
+  this seed, with the modern stand's locale pinned to the legacy stand's
+  `en_US.utf8`. It is not a property of the data. The same upgrade against
+  `postgres:18-alpine` reorders the customer list while still reporting
+  `datcollate = en_US.utf8`, so the collation must be pinned and then verified
+  by sorting — `WerkstattServiceIntegrationTest` does exactly that, because a
+  check that reads the setting would have passed.
 - **Timestamps** in the goldens are raw epoch millis — the wire format the
   AngularJS frontend consumes, kept on the modern stand by the wire-compat pin
   (ADR-0005). They encode the seed's fixed dates as interpreted in the stands'
