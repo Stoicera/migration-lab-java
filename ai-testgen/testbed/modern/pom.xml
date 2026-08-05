@@ -73,6 +73,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>42.7.12</version>
 		</dependency>
 		<!-- Added 2026-08-05 because stage 6 added them to modern/pom.xml, and the code
 		     under test is whatever that module is today. PomDriftGuardTest caught the

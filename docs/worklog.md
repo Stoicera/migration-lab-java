@@ -1076,11 +1076,26 @@ line / 58.3 % branch, 0.80 ratchet met · schema-drift guard green plus negative
 `verify-edge.sh` 20/20 assertions on three consecutive cold starts · playbook PDF builds (7 chapters) · both stands rebuilt from an empty
 volume, Flyway applying 2 migrations · G6 infrastructure green again after the CI findings
 (harness 24/24, testbed-validation 8/8 legacy and 7/7 modern) and all 24 frozen prompts
-re-rendered byte-identically. **On the runner:** `playbook-pdf`, `harness`, both `testbed-validation` legs, `legacy-build`
-and both `e2e` legs green; the edge-verification step green with 20/20 (the rate limiter
-produced **6** × 429 there against 5 here — which is why `SECURITY.md` asserts *> 0* and
-quotes 5 as one observation rather than as a property). **The Trivy image scan has still
-never executed**, because the teardown failure aborted `modern-build` before reaching it.
+re-rendered byte-identically. **On the runner, all eight checks green** on the third push: the edge-verification step
+20/20 with routing after 1 s (the rate limiter produced **6** × 429 there against 5 here —
+which is exactly why `SECURITY.md` asserts *> 0* and quotes 5 as one observation rather
+than as a property).
+
+**And the image scan paid for itself on its first execution.** One HIGH: **CVE-2026-54291**
+in `org.postgresql:postgresql` 42.7.11 — a man-in-the-middle protection bypass through a
+SCRAM-SHA-256-PLUS downgrade, which is the authentication mechanism PostgreSQL 18 uses and
+which this very stage had just switched the modern stand to. Pinned to 42.7.12, the minimum
+fixed version rather than the newest, because this is a security fix and not a version bump.
+Nothing else in the repository would have caught it: Dependabot watches manifests, and the
+driver's version was not in one — it came from Boot's dependency management.
+
+Fixing it uncovered a quieter hole. Neither `modern/pom.xml` nor the G6 testbed declared a
+version for the driver, and a property override travels through Boot's `<parent>` but **not**
+through the testbed's imported BOM — so the first fix moved the application to 42.7.12 while
+the testbed stayed on 42.7.11, and `PomDriftGuardTest` stayed **green**, because it compares
+*declared* coordinates and neither declared one. Both now pin the version literally. The
+guard was never wrong; it was answering a narrower question than it appeared to, which is
+the same shape as the CSP finding above.
 
 **Hours:** 1.4 *(measured wall time 15:34 first tool call → 16:55, including the CI-red repair; agent wall-clock under
 supervision, see the header)*

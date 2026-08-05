@@ -59,9 +59,22 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
+		<!-- Version pinned explicitly, overriding Boot 4.1's managed 42.7.11, because the
+		     image scan armed in this very stage flagged it on its first run: CVE-2026-54291
+		     (HIGH) — man-in-the-middle protection bypass via a SCRAM-SHA-256-PLUS downgrade,
+		     fixed in 42.7.12. Not theoretical: PostgreSQL 18 authenticates with SCRAM, so
+		     this is the mechanism the modern stand actually uses. Held at the minimum fixed
+		     version rather than the newest (42.7.13) so this is a security fix and nothing
+		     else — Dependabot owns routine drift.
+		     Declared as a literal here AND in ai-testgen/testbed/modern/pom.xml rather than
+		     as a property: PomDriftGuardTest compares DECLARED coordinates, and a property
+		     override does not travel through the testbed's imported BOM the way it travels
+		     through Boot's <parent>. With no version declared, the guard stayed green while
+		     the two classpaths silently disagreed — measured 2026-08-05. -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>42.7.12</version>
 		</dependency>
 
 		<!-- G7 (stage 6): schema management moves out of the hand-run SQL files
