@@ -9,6 +9,24 @@ do things in.
 
 ---
 
+## What is actually open right now — state of 2026-08-05, after session 14
+
+Stage 6's ops half is merged and green; its deployment half has not started, and everything
+below is the reason. Ordered by effort, so the cheap ones are not blocked behind the expensive
+one.
+
+| | Task | Where | Effort |
+|---|---|---|---|
+| 1 | **Enable private vulnerability reporting** — it is off, so `SECURITY.md` §2 currently has to document its own absence instead of pointing at it | [§E](#e-repository-administration-on-github) | 2 minutes, in the GitHub UI |
+| 2 | **Try the two stage-6 add-ons once** (edge, observability) so the commands are familiar before a real host depends on them — including the one visual check no test can do | [§H](#h-operating-the-stage-6-add-ons) | ~15 minutes, local |
+| 3 | **Decide and procure what a deployment needs** — host, domains, whether the legacy stand goes public at all, three repository secrets | [§I](#i-before-a-production-deployment-can-be-written-down-at-all) | the real work |
+
+Nothing in this repository is blocked on 1 and 2. **Everything about stage 6's completion is
+blocked on 3**, and deliberately so: the tag `stage-6-cloud-ops`, the playbook's closing chapter
+and release v1.0.0 all wait on a deployment that exists.
+
+---
+
 ## A. Once per machine
 
 Do this once. [Details and per-OS install commands: `deployment.md` §1](deployment.md#1-prerequisites)
@@ -240,7 +258,21 @@ That distinction is the whole reason this document is trustworthy.
       real decision, not a formality.
 - [ ] Repository secrets — **none exist today** (`gh secret list` is empty), so any workflow
       referencing them fails at runtime, not at lint time: `DOKPLOY_URL`, `DOKPLOY_TOKEN`,
-      `GHCR_TOKEN` (reserved in `.env.example`)
+      `GHCR_TOKEN` (reserved in `.env.example`). Plain CLI, no infrastructure needed:
+      ```bash
+      gh secret list                                  # confirm the empty starting point
+      gh secret set DOKPLOY_URL   --body 'https://…'
+      gh secret set DOKPLOY_TOKEN                     # prompts, so it stays out of shell history
+      gh secret set GHCR_TOKEN                        # only if GITHUB_TOKEN's packages:write is not enough
+      ```
+      `GHCR_TOKEN` may well be unnecessary: Actions' built-in `GITHUB_TOKEN` can push to GHCR
+      with `permissions: packages: write`. Check that before creating a PAT — one credential
+      not created is one credential that cannot leak.
+- [ ] The admin credential the edge needs, generated the same way locally and on the host:
+      ```bash
+      MODERN_ADMIN_AUTH="admin:$(openssl passwd -apr1 'your-password')"
+      ```
+      On a host it goes in as a Dokploy secret, never into a file in the repository.
 
 **Then, and only then, the following become writable — each must be executed before it is documented:**
 

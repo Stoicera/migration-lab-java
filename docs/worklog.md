@@ -1120,6 +1120,14 @@ ADR-0014 (authentication at the edge), ADR-0015 (observability); **PROTOCOL amen
 playbook Kapitel 7; wart B20 recorded; ops chapter numbered 7 with the stage↔chapter break
 stated openly rather than renumbered; **no stage tag and no v1.0.0 release**.
 
+**Late catch, before the merge:** `.env.example` documented none of the seven environment
+variables stage 6 introduced. A hard rule ("`.env.example` complete") broken inside the very
+session that added the variables, and found by grepping the compose files against the
+template rather than by the ledger. Fixed and grouped by purpose; the two entries whose
+*defaults* carry weight are spelled out — HSTS ships at 0 deliberately, and production must
+drop the demo-seed Flyway location or it inserts ten fictional customers into an empty
+database.
+
 **Next: G7 part 2 — the deployment, which is owner-blocked.** `docs/MANUAL_TASKS.md` §I
 lists what only the owner can decide or procure (host, domains, whether the legacy stand
 goes public at all given its preserved SQL injection, and the three repository secrets
