@@ -501,3 +501,42 @@ was not made.
 of one concurrent build, on an otherwise idle machine — and record per-cell CPU time alongside
 wall-clock so the two can be compared. Keep A2.1's blindness between cells; it is the parallel
 *execution*, not the mutual blindness, that caused this.
+
+---
+
+### A5 — 2026-08-05, after both phases: the code under test moved underneath the experiment
+
+**What changed:** stage 6 (G7) added four dependencies to `modern/pom.xml` — the Flyway
+starter, `flyway-database-postgresql`, the Actuator starter and the OpenTelemetry starter —
+and moved the modern stand's schema from `modern/db/init/01-schema.sql` into a Flyway
+migration. Corpus B **is** that module, so two pieces of the frozen measurement environment
+had to follow:
+
+1. `ai-testgen/testbed/modern/pom.xml` gained the same four dependencies. This is not a
+   choice: `PomDriftGuardTest` exists precisely to forbid the testbed from compiling against
+   a different classpath than the application, and it failed in CI on the first push of the
+   stage-6 branch. The guard worked.
+2. `Unit.Corpus.schemaFile()` now resolves corpus B's DDL to
+   `modern/src/main/resources/db/migration/V1__baseline_schema.sql`. The harness refuses to
+   render a prompt when the schema file is missing rather than quietly emitting one without
+   DDL, which is how this surfaced at all.
+
+**What did *not* change, and this was verified rather than argued:** all **24 recorded
+prompts** in `runs/2026-07-31/` re-render **byte-identically** after the change. Only
+`CREATE TABLE` blocks are extracted into the prompt, the Flyway file's added header is a
+comment outside them, and the two stands' DDL is held identical by
+`scripts/check-schema-drift.sh`. No recorded prompt, response, artifact or measurement was
+altered, re-run or re-extracted.
+
+**What a replication must know, because this is the honest cost:** a corpus-B replication run
+after 2026-08-05 compiles the generated tests against a **wider classpath** than the
+2026-07-31 run did — Flyway, Actuator and OpenTelemetry are now on it. Nothing in the six
+units under test uses them, so no generated test can plausibly depend on them, but "cannot
+plausibly" is not "measured", and the difference is real. **A/B comparisons that mix a
+pre-2026-08-05 corpus-B run with a later one are comparing two environments, not two models.**
+
+**The general point, which is worth more than the amendment:** an experiment whose subject is
+a living module inherits that module's future. The alternative — freezing a copy of the code
+under test — would have made corpus B stop being what its name claims and turned the whole
+A/B contrast into a comparison of two museum pieces. Keeping the subject alive and recording
+what moves is the lesser evil, but it is not free, and this is the invoice.

@@ -1037,19 +1037,47 @@ in a header file, and the build fails if a new one appears.
   one level further down, where "the container is up" and "the system works" came apart
   again. **A false red costs exactly as much trust as a false green.**
 
+### What CI caught that local verification did not
+
+The first push went **red on two checks**, and both were real — worth recording because the
+whole session had been green locally right up to that point.
+
+- **`harness` failed:** the G6 prompt renderer reads the schema from
+  `modern/db/init/01-schema.sql`, which Flyway deleted. It refuses to render a prompt from a
+  missing schema instead of quietly emitting one without DDL, which is the only reason this
+  was a red check rather than a silently different experiment. Fixed by resolving corpus B's
+  DDL to the Flyway file — and then **proved harmless the only way that counts: all 24
+  recorded prompts in `runs/2026-07-31/` re-render byte-identically.** Only `CREATE TABLE`
+  blocks reach the prompt, and the drift guard holds the two stands' DDL equal.
+- **`testbed-validation (modern)` failed:** `PomDriftGuardTest` forbids the G6 testbed from
+  compiling against a different classpath than the module under test, and stage 6 had just
+  given that module four new dependencies. The guard worked exactly as designed.
+
+Both are the same lesson from opposite ends: **corpus B is not a copy of the modern module,
+it *is* the modern module**, so an ops stage moves the measurement environment of a finished
+experiment. Recorded as **amendment A5**, which changes no recorded result but states the
+cost plainly — a corpus-B replication after today compiles against a wider classpath than the
+2026-07-31 run did, so mixing runs from before and after compares environments, not models.
+The honest general point is in the amendment: an experiment whose subject is a living module
+inherits that module's future, and the alternative (freezing a copy) would have made corpus B
+stop being what its name claims.
+
 **Verification:** characterization 47/47 vs legacy and 47/47 vs modern · E2E 34/34 vs
 legacy and 34/34 vs modern · modern `verify` green, **100 module tests**, coverage 81.3 %
 line / 58.3 % branch, 0.80 ratchet met · schema-drift guard green plus negative control ·
 `verify-edge.sh` 20/20 assertions on three consecutive cold starts · playbook PDF builds (7 chapters) · both stands rebuilt from an empty
-volume, Flyway applying 2 migrations. **Not verified: any CI workflow change**, because
-this branch has not been pushed — those steps are configuration until a runner proves
-otherwise.
+volume, Flyway applying 2 migrations · G6 infrastructure green again after the CI findings
+(harness 24/24, testbed-validation 8/8 legacy and 7/7 modern) and all 24 frozen prompts
+re-rendered byte-identically. **Still not verified: the new CI steps themselves** — the
+edge verification and the Trivy scan inside `modern-build` had not reported when this entry
+was written; the `playbook` workflow passed on the first push.
 
-**Hours:** 1.2 *(measured wall time 15:34 first tool call → 16:45 commit; agent wall-clock under
+**Hours:** 1.4 *(measured wall time 15:34 first tool call → 16:55, including the CI-red repair; agent wall-clock under
 supervision, see the header)*
 
 **Decisions:** ADR-0012 (PostgreSQL 18 + pinned collation), ADR-0013 (Flyway),
-ADR-0014 (authentication at the edge), ADR-0015 (observability); `SECURITY.md` created;
+ADR-0014 (authentication at the edge), ADR-0015 (observability); **PROTOCOL amendment A5**
+(the experiment's subject module moved; no recorded result altered); `SECURITY.md` created;
 playbook Kapitel 7; wart B20 recorded; ops chapter numbered 7 with the stage↔chapter break
 stated openly rather than renumbered; **no stage tag and no v1.0.0 release**.
 

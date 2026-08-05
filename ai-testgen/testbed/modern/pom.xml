@@ -74,6 +74,28 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
+		<!-- Added 2026-08-05 because stage 6 added them to modern/pom.xml, and the code
+		     under test is whatever that module is today. PomDriftGuardTest caught the
+		     divergence in CI on the first push — which is the guard working, not failing.
+		     Consequence for the experiment is recorded as amendment A5 in PROTOCOL.md:
+		     no recorded result changes, but a future replication of corpus B compiles
+		     against a wider classpath than the 2026-07-31 run did. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-opentelemetry</artifactId>
+		</dependency>
 		<!-- === end verbatim block === -->
 
 		<dependency>

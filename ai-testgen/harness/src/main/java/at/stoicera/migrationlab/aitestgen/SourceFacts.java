@@ -181,8 +181,7 @@ public final class SourceFacts {
     if (tables.isEmpty()) {
       return "";
     }
-    Path schema =
-        repositoryRoot.resolve(Path.of(unit.corpus().module(), "db", "init", "01-schema.sql"));
+    Path schema = repositoryRoot.resolve(unit.corpus().schemaFile());
     if (!Files.isRegularFile(schema)) {
       throw new IOException("schema file missing, cannot render a reproducible prompt: " + schema);
     }

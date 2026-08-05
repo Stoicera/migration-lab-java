@@ -43,6 +43,27 @@ public record Unit(String id, String stratum, Corpus corpus, String fqn, Path so
     }
 
     /**
+     * Where this corpus's schema DDL lives, relative to the repository root.
+     *
+     * <p>It used to be {@code <module>/db/init/01-schema.sql} for both corpora. Stage 6 moved the
+     * modern stand's schema into a Flyway migration (ADR-0013) and deleted {@code modern/db/init/},
+     * which broke prompt rendering outright — the harness refuses to render a prompt from a missing
+     * schema rather than silently emitting one without DDL, and that refusal is what surfaced this.
+     *
+     * <p>The frozen prompts must not change ({@code PROTOCOL.md}, tag {@code
+     * ai-testgen-protocol-v1}). They do not: only {@code CREATE TABLE} blocks are extracted, the
+     * Flyway file's added header is a comment outside them, and the two stands' DDL is held
+     * identical by {@code scripts/check-schema-drift.sh}. Verified rather than argued — every
+     * recorded prompt in {@code runs/2026-07-31/} re-renders byte-identically after this change.
+     */
+    public java.nio.file.Path schemaFile() {
+      return this == A
+          ? java.nio.file.Path.of("legacy", "db", "init", "01-schema.sql")
+          : java.nio.file.Path.of(
+              "modern", "src", "main", "resources", "db", "migration", "V1__baseline_schema.sql");
+    }
+
+    /**
      * The one prompt fragment that differs between corpora: a factual statement about the stack the
      * code belongs to. Everything else in both prompts is byte-identical, so an A/B difference can
      * only come from the code, not from the wording.
