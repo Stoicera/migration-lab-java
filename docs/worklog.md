@@ -1099,6 +1099,10 @@ fixed version rather than the newest, because this is a security fix and not a v
 Nothing else in the repository would have caught it: Dependabot watches manifests, and the
 driver's version was not in one — it came from Boot's dependency management.
 
+After the pin, the scan is **clean: 0 findings** across the Ubuntu base layer, the
+application jar and the Go binary in the image. Every one of the eight required checks is
+green.
+
 Fixing it uncovered a quieter hole. Neither `modern/pom.xml` nor the G6 testbed declared a
 version for the driver, and a property override travels through Boot's `<parent>` but **not**
 through the testbed's imported BOM — so the first fix moved the application to 42.7.12 while
