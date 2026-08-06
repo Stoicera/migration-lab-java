@@ -74,7 +74,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.12</version>
+			<version>42.7.13</version>
 		</dependency>
 
 		<!-- G7 (stage 6): schema management moves out of the hand-run SQL files
