@@ -67,19 +67,15 @@ which is the entire point of a playbook aimed at Austrian SMEs.
 
 ## 2. Reporting a vulnerability
 
-**Contact the repository owner (Sebastian Kern, Stoicera Software Group) through GitHub.**
-
-**GitHub private vulnerability reporting is not enabled on this repository yet** — checked on
-2026-08-05 (`gh api repos/Stoicera/migration-lab-java/private-vulnerability-reporting` →
-`{"enabled":false}`), which means the *Security → Report a vulnerability* button does not appear
-and pointing you at it would send you to a dead end. Enabling it is a repository-settings change
-and is on the owner's checklist in
-[`docs/MANUAL_TASKS.md` §E](docs/MANUAL_TASKS.md#e-repository-administration-on-github). When it
-is on, that becomes the preferred route and this paragraph goes away.
+**Preferred route: [GitHub private vulnerability reporting](https://github.com/Stoicera/migration-lab-java/security/advisories/new)**
+— *Security → Report a vulnerability* on the repository. Enabled and verified on 2026-08-14
+(`gh api repos/Stoicera/migration-lab-java/private-vulnerability-reporting` →
+`{"enabled":true}`). Fallback, if you cannot use it: contact the repository owner
+(Sebastian Kern, Stoicera Software Group) through GitHub.
 
 **This document deliberately publishes no `security@` address**: an address nobody has committed
-to monitoring is worse than no address, because it looks like a process. The same reasoning is
-why the paragraph above says what is missing instead of describing a route that does not work.
+to monitoring is worse than no address, because it looks like a process. The reporting form above
+is the route somebody has actually committed to monitoring.
 
 Useful in a report, in this order: which stand (legacy / modern / edge overlay), the commit, what
 you did, what happened, what you expected. A `curl` line beats a paragraph.
@@ -421,7 +417,7 @@ Die fünf Punkte, auf die es ankommt:
    sauber schwärzen. Was ein echter Betrieb dafür tun müsste, steht in
    [§7](#7-logs-and-personal-data--the-part-that-must-not-be-softened).
 
-**Schwachstellen melden:** über den Repository-Eigentümer auf GitHub. Die private
-Meldefunktion von GitHub ist derzeit **nicht aktiviert** (geprüft am 2026-08-05) — ein Verweis
-darauf würde ins Leere führen. Eine `security@`-Adresse gibt es bewusst nicht —
+**Schwachstellen melden:** bevorzugt über GitHubs private Meldefunktion — *Security → Report a
+vulnerability* im Repository, aktiviert und geprüft am 2026-08-14. Ersatzweise über den
+Repository-Eigentümer auf GitHub. Eine `security@`-Adresse gibt es bewusst nicht —
 [§2](#2-reporting-a-vulnerability).

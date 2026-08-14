@@ -1,0 +1,141 @@
+# Production compose for the MODERN stand on the Stoicera fleet (Dokploy on
+# skdevserver1). The local dev stand stays modern/docker-compose.yml + the edge
+# overlay; this file is the production translation of exactly that pair.
+#
+# The one structural difference to the local edge overlay, and its reason
+# (ADR-0016): there is NO second Traefik here. Locally the edge is its own
+# container because the dev machine has no ingress; the host already runs the
+# same component (traefik v3.6.1, Docker provider, dokploy-network), so the
+# measured middlewares from modern/docker-compose.edge.yml attach to the host's
+# Traefik via the labels below instead of standing up a proxy behind a proxy.
+# Same component, same middleware config, one hop — and the rate limiter sees
+# real client IPs, which a chained proxy would have to be taught explicitly.
+# The Docker-socket mount of the local overlay disappears with the second
+# Traefik — SECURITY.md §4.6 named it as the risk a real deployment must not
+# carry.
+#
+# The app port is NOT published. SECURITY.md §5 records the honest counter-
+# argument against overlay-only auth ("can be called theatre") and answers it
+# with: on a real host the application port would not be published at all.
+# This file is that answer, executed.
+#
+# Required environment (set in Dokploy, never committed):
+#   MODERN_ADMIN_AUTH    htpasswd line(s) for /admin, /api/admin, /actuator
+#   MODERN_DB_PASSWORD   database password for this stand
+# Optional: MODERN_HSTS_SECONDS (0 until TLS is proven, then 31536000 —
+#   docs/MANUAL_TASKS.md §I order), MODERN_CSP, MODERN_RATELIMIT_*.
+#
+# The Flyway demo seed stays ON here, deliberately: this deployment IS the
+# public demo, and an empty CRM demonstrates nothing. .env.example §4's warning
+# ("production must drop the seed") is about running this PATTERN with real
+# customers — recorded in ADR-0016 so nobody mistakes one for the other.
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: werkstatt
+      POSTGRES_USER: werkstatt
+      POSTGRES_PASSWORD: ${MODERN_DB_PASSWORD:?MODERN_DB_PASSWORD is not set}
+      # collation pinned exactly like the dev stand — ADR-0012; the golden
+      # masters sort by it.
+      LANG: en_US.utf8
+      POSTGRES_INITDB_ARGS: "--locale=en_US.utf8"
+    volumes:
+      # /var/lib/postgresql, NOT .../data — image 18 moved PGDATA; the wrong
+      # mount persists nothing and Flyway makes even that look healthy
+      # (modern/docker-compose.yml has the full story).
+      - modern-werkstatt-db-pg18:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U werkstatt -d werkstatt"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  app:
+    image: ghcr.io/stoicera/migration-lab-java-modern:master
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/werkstatt
+      SPRING_DATASOURCE_USERNAME: werkstatt
+      SPRING_DATASOURCE_PASSWORD: ${MODERN_DB_PASSWORD:?MODERN_DB_PASSWORD is not set}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      # No observability stack on this host (single-purpose demo; the LGTM
+      # container is a local-demonstration tool — deployment.md §11). Tracing
+      # off, or the exporter logs a failed batch every interval.
+      WERKSTATT_TRACING_ENABLED: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - default
+      - dokploy-network
+    healthcheck:
+      # readiness group includes the db (ADR-0015) — same probe as the dev stand
+      test:
+        [
+          "CMD",
+          "bash",
+          "-c",
+          "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /actuator/health/readiness HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\":\"UP\"' <&3",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 90s
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "dokploy-network"
+
+      # --- 1) protected surface — identical scope to the local edge overlay ---
+      traefik.http.routers.ml-modern-admin.rule: "Host(`migration-lab.stoicera.com`) && (PathPrefix(`/admin`) || PathPrefix(`/api/admin`) || PathPrefix(`/actuator`))"
+      traefik.http.routers.ml-modern-admin.priority: "100"
+      traefik.http.routers.ml-modern-admin.entrypoints: "websecure"
+      traefik.http.routers.ml-modern-admin.tls.certresolver: "letsencrypt"
+      traefik.http.routers.ml-modern-admin.service: "ml-modern"
+      traefik.http.routers.ml-modern-admin.middlewares: "ml-modern-auth,ml-modern-headers,ml-modern-ratelimit"
+
+      # --- 2) public surface ---
+      traefik.http.routers.ml-modern.rule: "Host(`migration-lab.stoicera.com`)"
+      traefik.http.routers.ml-modern.priority: "1"
+      traefik.http.routers.ml-modern.entrypoints: "websecure"
+      traefik.http.routers.ml-modern.tls.certresolver: "letsencrypt"
+      traefik.http.routers.ml-modern.service: "ml-modern"
+      traefik.http.routers.ml-modern.middlewares: "ml-modern-headers,ml-modern-ratelimit"
+
+      # --- 3) HTTP: redirect only, host's existing middleware ---
+      traefik.http.routers.ml-modern-web.rule: "Host(`migration-lab.stoicera.com`)"
+      traefik.http.routers.ml-modern-web.entrypoints: "web"
+      traefik.http.routers.ml-modern-web.middlewares: "redirect-to-https@file"
+      traefik.http.routers.ml-modern-web.service: "ml-modern"
+
+      traefik.http.services.ml-modern.loadbalancer.server.port: "8080"
+
+      # --- middlewares: verbatim from modern/docker-compose.edge.yml ---
+      # (verified by modern/edge/verify-edge.sh locally on 2026-08-14; the live
+      # translation is asserted by deploy/verify-live.sh)
+      traefik.http.middlewares.ml-modern-auth.basicauth.users: "${MODERN_ADMIN_AUTH:?MODERN_ADMIN_AUTH is not set — see modern/docker-compose.edge.yml header}"
+      traefik.http.middlewares.ml-modern-auth.basicauth.realm: "WerkstattCRM Administration"
+
+      traefik.http.middlewares.ml-modern-headers.headers.contentTypeNosniff: "true"
+      traefik.http.middlewares.ml-modern-headers.headers.frameDeny: "true"
+      traefik.http.middlewares.ml-modern-headers.headers.referrerPolicy: "no-referrer"
+      # style-src carries 'unsafe-inline' and NOTHING ELSE does — the measured
+      # CSP story lives in docs/deployment.md §12 and SECURITY.md §5.1.
+      traefik.http.middlewares.ml-modern-headers.headers.contentSecurityPolicy: "${MODERN_CSP:-default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'}"
+      # 0 until the certificate is verified on this very host, then 31536000 —
+      # the switch is a Dokploy env change plus redeploy, in that order. (The
+      # host's global security-headers@file already sends HSTS on websecure;
+      # this keeps the stand's own value explicit and in the repo's hands.)
+      traefik.http.middlewares.ml-modern-headers.headers.stsSeconds: "${MODERN_HSTS_SECONDS:-0}"
+      traefik.http.middlewares.ml-modern-headers.headers.customResponseHeaders.Server: ""
+      traefik.http.middlewares.ml-modern-headers.headers.customResponseHeaders.X-Powered-By: ""
+
+      traefik.http.middlewares.ml-modern-ratelimit.ratelimit.average: "${MODERN_RATELIMIT_AVERAGE:-30}"
+      traefik.http.middlewares.ml-modern-ratelimit.ratelimit.burst: "${MODERN_RATELIMIT_BURST:-60}"
+      traefik.http.middlewares.ml-modern-ratelimit.ratelimit.period: "1s"
+
+networks:
+  dokploy-network:
+    external: true
+
+volumes:
+  modern-werkstatt-db-pg18:

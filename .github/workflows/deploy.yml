@@ -1,0 +1,80 @@
+# Deployment pipeline — G7 part 2 (SPEC §CI: "deployment job → GHCR → Dokploy").
+#
+# Deliberately NOT a required check, same reasoning as playbook.yml: it produces
+# a deployment, it does not guard behaviour, and a hiccup at the registry or the
+# panel must never block a fix to the application (docs/MANUAL_TASKS.md §E).
+#
+# Secrets: DOKPLOY_URL, DOKPLOY_TOKEN (created 2026-08-14 — MANUAL_TASKS §I).
+# GHCR_TOKEN from .env.example §5 turned out to be unnecessary, exactly as the
+# checklist suspected: the built-in GITHUB_TOKEN with packages:write pushes fine.
+#
+# Repository VARIABLES (not secrets — they are ids, not credentials):
+#   DOKPLOY_LEGACY_COMPOSE_ID / DOKPLOY_MODERN_COMPOSE_ID — set after the
+#   Dokploy services exist. While unset, the trigger step prints a notice and
+#   exits green: a merge to master must not go red because the panel side has
+#   not been built yet. Once set, curl runs with --fail on purpose — a broken
+#   deploy trigger is a red job, never a green one that deployed nothing
+#   (pattern proven on einvoice-at).
+name: deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stand: [legacy, modern]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build image
+        # the stand's own Dockerfile, unchanged — the legacy WAR builds inside
+        # Docker by design (a modern local JDK cannot build it, legacy/README.md)
+        run: |
+          docker build \
+            -t ghcr.io/stoicera/migration-lab-java-${{ matrix.stand }}:master \
+            -t ghcr.io/stoicera/migration-lab-java-${{ matrix.stand }}:sha-${GITHUB_SHA::12} \
+            ${{ matrix.stand }}/
+
+      - name: Push image (branch tag + immutable sha tag)
+        run: |
+          docker push ghcr.io/stoicera/migration-lab-java-${{ matrix.stand }}:master
+          docker push ghcr.io/stoicera/migration-lab-java-${{ matrix.stand }}:sha-${GITHUB_SHA::12}
+
+  trigger-dokploy:
+    needs: publish-image
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - stand: legacy
+            compose_id_var: DOKPLOY_LEGACY_COMPOSE_ID
+          - stand: modern
+            compose_id_var: DOKPLOY_MODERN_COMPOSE_ID
+    steps:
+      - name: Trigger Dokploy redeploy (${{ matrix.stand }})
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_TOKEN: ${{ secrets.DOKPLOY_TOKEN }}
+          COMPOSE_ID: ${{ vars[matrix.compose_id_var] }}
+        run: |
+          if [ -z "$COMPOSE_ID" ]; then
+            echo "::notice::${{ matrix.compose_id_var }} is not set — Dokploy service not created yet, skipping trigger (docs/deployment.md §10)."
+            exit 0
+          fi
+          curl --fail -sS -X POST "$DOKPLOY_URL/api/compose.deploy" \
+            -H "x-api-key: $DOKPLOY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"composeId\": \"$COMPOSE_ID\"}"
+          echo "Deployment triggered for ${{ matrix.stand }} @ ${GITHUB_SHA::12}"
