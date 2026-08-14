@@ -1,0 +1,91 @@
+# Production compose for the LEGACY stand on the Stoicera fleet (Dokploy on
+# skdevserver1). This file is what the Dokploy compose service runs; the local
+# dev stand stays legacy/docker-compose.yml and is unchanged.
+#
+# What is different from the dev stand, and why (ADR-0016):
+#   - image from GHCR instead of build: — CI builds the image once, the app node
+#     never carries build pressure (it hosts other products).
+#   - NO published ports. The only way in is the host's Traefik on 443, and that
+#     path is behind Basic auth — the legacy stand preserves SQL injection on
+#     purpose (SD-1, ADR-0004) and an end-of-life database (P2). It goes public
+#     GATED, or it does not go public at all. docs/MANUAL_TASKS.md §I called
+#     this decision out; ADR-0016 records it.
+#   - the db has no host port either; pg_dump runs via docker exec (deploy/README.md).
+#
+# Required environment (set in Dokploy, never committed):
+#   LEGACY_ADMIN_AUTH   htpasswd line(s), e.g. demo:$apr1$...  — compose refuses
+#                       to start without it, same rule as the modern edge overlay.
+services:
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: werkstatt
+      POSTGRES_USER: werkstatt
+      POSTGRES_PASSWORD: ${LEGACY_DB_PASSWORD:?LEGACY_DB_PASSWORD is not set}
+    volumes:
+      # seed scripts from the repo clone Dokploy checks out; path is relative to
+      # this file. Same 10 fictional customers as every stand — the exhibit.
+      - ../legacy/db/init:/docker-entrypoint-initdb.d:ro
+      - legacy-werkstatt-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U werkstatt -d werkstatt"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  app:
+    image: ghcr.io/stoicera/migration-lab-java-legacy:master
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/werkstatt
+      SPRING_DATASOURCE_USERNAME: werkstatt
+      SPRING_DATASOURCE_PASSWORD: ${LEGACY_DB_PASSWORD:?LEGACY_DB_PASSWORD is not set}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - default
+      - dokploy-network
+    healthcheck:
+      # TCP check, same as the dev stand and deliberately so: Boot 1.5 has no
+      # actuator health groups and legacy stays legacy (playbook/07 states what
+      # this probe cannot see).
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 10s
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "dokploy-network"
+
+      # HTTPS router — the whole stand behind Basic auth, no exceptions: every
+      # write endpoint is unauthenticated inside the app, and the search field
+      # is the preserved SQL injection.
+      traefik.http.routers.ml-legacy.rule: "Host(`migration-lab-legacy.stoicera.com`)"
+      traefik.http.routers.ml-legacy.entrypoints: "websecure"
+      traefik.http.routers.ml-legacy.tls.certresolver: "letsencrypt"
+      traefik.http.routers.ml-legacy.middlewares: "ml-legacy-auth,ml-legacy-ratelimit"
+      traefik.http.routers.ml-legacy.service: "ml-legacy"
+      traefik.http.services.ml-legacy.loadbalancer.server.port: "8080"
+
+      # HTTP router — redirect only, using the host's existing middleware.
+      traefik.http.routers.ml-legacy-web.rule: "Host(`migration-lab-legacy.stoicera.com`)"
+      traefik.http.routers.ml-legacy-web.entrypoints: "web"
+      traefik.http.routers.ml-legacy-web.middlewares: "redirect-to-https@file"
+      traefik.http.routers.ml-legacy-web.service: "ml-legacy"
+
+      traefik.http.middlewares.ml-legacy-auth.basicauth.users: "${LEGACY_ADMIN_AUTH:?LEGACY_ADMIN_AUTH is not set — the legacy stand does not go public ungated}"
+      traefik.http.middlewares.ml-legacy-auth.basicauth.realm: "WerkstattCRM Legacy-Exponat"
+
+      # Same token bucket as the modern stand. The auth gate keeps strangers out;
+      # the rate limit keeps a shared demo credential from becoming a load test.
+      traefik.http.middlewares.ml-legacy-ratelimit.ratelimit.average: "${LEGACY_RATELIMIT_AVERAGE:-30}"
+      traefik.http.middlewares.ml-legacy-ratelimit.ratelimit.burst: "${LEGACY_RATELIMIT_BURST:-60}"
+      traefik.http.middlewares.ml-legacy-ratelimit.ratelimit.period: "1s"
+
+networks:
+  dokploy-network:
+    external: true
+
+volumes:
+  legacy-werkstatt-db:
