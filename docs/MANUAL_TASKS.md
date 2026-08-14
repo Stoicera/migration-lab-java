@@ -17,11 +17,11 @@ one.
 
 | | Task | Where | Effort |
 |---|---|---|---|
-| 1 | **Enable private vulnerability reporting** — it is off, so `SECURITY.md` §2 currently has to document its own absence instead of pointing at it | [§E](#e-repository-administration-on-github) | 2 minutes, in the GitHub UI |
+| 1 | ~~**Enable private vulnerability reporting**~~ — **done 2026-08-14** via `gh api -X PUT`, verified `{"enabled":true}`; `SECURITY.md` §2 now points at the button | [§E](#e-repository-administration-on-github) | — |
 | 2 | **Try the two stage-6 add-ons once** (edge, observability) so the commands are familiar before a real host depends on them — including the one visual check no test can do | [§H](#h-operating-the-stage-6-add-ons) | ~15 minutes, local |
 | 3 | **Decide and procure what a deployment needs** — host, domains, whether the legacy stand goes public at all, three repository secrets | [§I](#i-before-a-production-deployment-can-be-written-down-at-all) | the real work |
 
-Nothing in this repository is blocked on 1 and 2. **Everything about stage 6's completion is
+Nothing in this repository is blocked on 2. **Everything about stage 6's completion is
 blocked on 3**, and deliberately so: the tag `stage-6-cloud-ops`, the playbook's closing chapter
 and release v1.0.0 all wait on a deployment that exists.
 
@@ -149,15 +149,13 @@ behaviour, and a failing PDF build must not be able to block a fix to the applic
 want it required, it must run once first, then be added in **Settings → Branches** as
 `playbook-pdf`.
 
-### One-time, still open
+### One-time, done 2026-08-14
 
-- [ ] **Enable private vulnerability reporting.** Settings → Advanced Security → *Private
-      vulnerability reporting*. It is **off** today (checked 2026-08-05:
-      `gh api repos/Stoicera/migration-lab-java/private-vulnerability-reporting` returns
-      `{"enabled":false}`), so the *Security → Report a vulnerability* button does not exist and
-      [`SECURITY.md`](../SECURITY.md) §2 currently has to say so instead of pointing at it.
-      Verify with the same command afterwards, then delete the "not enabled" paragraph in
-      `SECURITY.md` §2 and its German counterpart.
+- [x] **Private vulnerability reporting enabled** — via
+      `gh api -X PUT repos/Stoicera/migration-lab-java/private-vulnerability-reporting`, verified
+      with the GET returning `{"enabled":true}`. The *Security → Report a vulnerability* button
+      now exists, and [`SECURITY.md`](../SECURITY.md) §2 points at it instead of documenting its
+      absence.
 
 ### Ongoing
 
