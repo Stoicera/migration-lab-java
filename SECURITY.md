@@ -14,12 +14,16 @@ is that row being closed on **2026-08-05**.
 | How to report a vulnerability, and what response to expect | **[§2](#2-reporting-a-vulnerability)** |
 | Protections built in stage 6 — what they cover, measured | **[§5](#5-what-stage-6-protects--and-the-measurement)** |
 | Protections that do **not** exist | **[§6](#6-what-is-not-protected)** |
-| A deployed system, a public URL, TLS, backups | **none of it exists — [§1.2](#12-what-this-repository-is-not)** |
+| The deployed demo instances, TLS, backups | **exist since 2026-08-14 — [`docs/deployment.md` §10](docs/deployment.md#10-production-deployment)** |
 
-**Nothing in this repository is deployed anywhere.** There is no server, no domain, no TLS
-certificate and no backup. Every measurement quoted below was taken on 2026-08-05 against
-containers on one developer machine. Stage 6 is **not complete and not tagged**; what follows
-describes what was built and verified, not a finished stage.
+**Since 2026-08-14 both stands are deployed as public demo instances** —
+<https://migration-lab.stoicera.cyou> (public, admin surface gated) and
+<https://migration-lab-legacy.stoicera.cyou> (**entirely behind Basic auth**, because that
+stand preserves SQL injection and an EOL database on purpose; ADR-0016 records the
+decision). The application ports are not published on the host; TLS terminates at the
+host's Traefik; nightly backups run with an executed restore rehearsal. Measurements
+below dated 2026-08-05 were taken against local containers; the deployment's own
+evidence is dated 2026-08-14 and lives in `docs/deployment.md` §10.
 
 ---
 
@@ -45,9 +49,10 @@ modernised beyond what that file documents. **The exhibit is not retouched.**
 
 ### 1.2 What this repository is not
 
-It is not a service. There is no deployment, no hosted instance, no TLS termination, no backup
-job and no production data — [`docs/deployment.md` §10](docs/deployment.md#10-production-deployment--not-yet)
-says so in the operations document itself rather than leaving the reader to find out. The data in
+It is not a customer-facing service and holds no production data. What exists since
+2026-08-14 is a **public demo deployment** of both stands
+([`docs/deployment.md` §10](docs/deployment.md#10-production-deployment)) — a portfolio
+exhibit, not a system anyone's business depends on. The data in
 both stands is a synthetic seed of 10 fictional customers ([`legacy/db/init/02-daten.sql`](legacy/db/init/02-daten.sql)).
 **No real personal data exists in this repository.** Where this document talks about personal
 data, it talks about what happens when somebody runs this *pattern* with real customers in it —
@@ -61,7 +66,7 @@ which is the entire point of a playbook aimed at Austrian SMEs.
 | A weakness in `legacy/` that is **not** in the catalogue | **Wanted.** The catalogue claims completeness; a gap in it is a real defect of this repo. That has happened before: the 2026-07-30 correction in `LEGACY_NOTES.md` records that B4 understated the attack surface, found by review. |
 | A weakness in `modern/` | **Wanted**, unless it is a registered sanctioned divergence ([ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md)) or a row in `DEVIATIONS.md`. |
 | A weakness in the edge overlay, the CI workflows or the AI-experiment harness | **Wanted.** |
-| Anything that requires a hosted instance | There is none. Run the stands locally. |
+| A weakness in the deployed demo (TLS, the gates, the host Traefik path) | **Wanted.** The demo instances are in scope; the legacy stand's catalogued warts stay the subject matter even behind their gate. |
 
 ---
 
@@ -215,8 +220,11 @@ hiding it.
 
 Reduced, not removed: `--providers.docker.exposedbydefault=false` means a new container does not
 become publicly routable merely by existing, and `--api=false` means there is no dashboard. A real
-deployment would have to do better than that — a filtered socket proxy, or Traefik's file provider
-instead of the Docker provider. Neither has been built here.
+deployment would have to do better than that — and the real deployment does: in production there
+is **no second Traefik and no socket mount in this repository's compose files at all**. The
+measured middlewares attach to the host's existing Traefik via labels, so the socket consumer this
+overlay adds locally simply does not exist there (ADR-0016 §3; the local overlay keeps the mount
+because a dev machine has no ingress to attach to).
 
 ---
 
@@ -255,8 +263,10 @@ against the running stands on **2026-08-05**, exit 0:
 
 Two configuration choices in that set are deliberate and would be wrong to "fix":
 
-- **HSTS is off** (`stsSeconds: 0`). Switched on over plain HTTP it teaches the browser to refuse
-  `http://localhost` for a year. Only a TLS-terminating host sets it — and there is none.
+- **HSTS is off locally** (`stsSeconds: 0`). Switched on over plain HTTP it teaches the browser
+  to refuse `http://localhost` for a year. Only a TLS-terminating host sets it — and since
+  2026-08-14 the deployed host does, after its certificate was verified
+  (`docs/deployment.md` §10.4).
 - **`/actuator` is behind the auth**, not public. Health is operationally useful to us and free
   reconnaissance for anybody else.
 
@@ -298,12 +308,12 @@ Stated as a list rather than left to inference, because the gap between "we have
 | Per-user identity, roles, authorization | **not built** | there is one shared Basic-auth credential, nothing more |
 | CSRF token | **deliberately not added** — see [§8](#8-the-residual-risk-we-accept-basic-auth-and-the-browsers-credential-cache) | the app has no sessions, no cookies, no ambient authority |
 | Audit log | **not built** | `DEVIATIONS.md`, deferred(post-v1.0) |
-| TLS | **not built** — there is nothing to terminate it on | `docs/deployment.md` §10 |
-| Backups | **not built** | `docs/deployment.md` §10 |
+| TLS | **built 2026-08-14** — Let's Encrypt at the host Traefik, verified by issuer; app ports unpublished | `docs/deployment.md` §10 |
+| Backups | **built 2026-08-14** — nightly `pg_dump`, both stands, restore rehearsal executed; **off-site copy still open** and not claimed | `docs/deployment.md` §10.6 |
 | Input validation at the boundary | **not built** on either stand | wart B12, pinned by characterization |
 | Container image scanning | **built 2026-08-05, reporting-only** | Trivy scans the built modern image for CRITICAL/HIGH in OS packages and Java dependencies in `modern-ci` — the base-image layer no dependency scanner can see. Runs with `exit-code: 0`, so it reports and does not block; recorded that way in `DEVIATIONS.md` |
 | OWASP dependency-check | **not built** | `DEVIATIONS.md` — Dependabot covers the Maven modules, the frontend npm ecosystem and the Actions; `legacy/` is excluded on purpose |
-| Secret management beyond `.env` | **not built** | one credential exists (`OPENROUTER_API_KEY`); measured 2026-08-05: the repository has **no GitHub Actions secrets at all** |
+| Secret management beyond `.env` | **platform stores since 2026-08-14** | locally one credential (`OPENROUTER_API_KEY`, git-ignored `.env`); the repository carries two Actions secrets (`DOKPLOY_URL`, `DOKPLOY_TOKEN` — MANUAL_TASKS §I) and the per-stand credentials live in the deployment platform's env store, never in a file in this repo |
 
 ---
 
@@ -393,8 +403,13 @@ for `/admin`, and close it afterwards.
 Dieses Dokument ist die **Sicherheitsbetrachtung** des Repos und erfüllt `ENGINEERING_STANDARDS.md`
 §4 (STRIDE-light-Threat-Model), offen seit 2026-07-31, geschlossen am 2026-08-05.
 
-**Nichts davon ist deployed.** Es gibt keinen Server, keine Domain, kein TLS, keine Backups. Alle
-genannten Messungen stammen von lokalen Containern auf einem Entwicklungsrechner, 2026-08-05.
+**Seit 2026-08-14 sind beide Stände als öffentliche Demo deployed** —
+migration-lab.stoicera.cyou (öffentlich, Admin-Fläche hinter Basic-Auth) und
+migration-lab-legacy.stoicera.cyou (komplett hinter Basic-Auth, weil der Stand absichtlich eine
+SQL-Injection und eine End-of-Life-Datenbank konserviert). TLS am Host-Traefik, nächtliche
+Backups mit durchgeführter Rückspielprobe; die Anwendungsports sind auf dem Host nicht
+veröffentlicht. Messungen mit Datum 2026-08-05 stammen von lokalen Containern; die
+Deployment-Evidenz vom 2026-08-14 steht in `docs/deployment.md` §10.
 
 Die fünf Punkte, auf die es ankommt:
 

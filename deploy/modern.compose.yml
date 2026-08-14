@@ -53,6 +53,9 @@ services:
 
   app:
     image: ghcr.io/stoicera/migration-lab-java-modern:master
+    # without this, "docker compose up" ignores a moved :master tag and a green
+    # redeploy silently keeps the old build running — measured 2026-08-14 (§10.7)
+    pull_policy: always
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/werkstatt
       SPRING_DATASOURCE_USERNAME: werkstatt
@@ -86,7 +89,7 @@ services:
       traefik.docker.network: "dokploy-network"
 
       # --- 1) protected surface — identical scope to the local edge overlay ---
-      traefik.http.routers.ml-modern-admin.rule: "Host(`migration-lab.stoicera.com`) && (PathPrefix(`/admin`) || PathPrefix(`/api/admin`) || PathPrefix(`/actuator`))"
+      traefik.http.routers.ml-modern-admin.rule: "Host(`migration-lab.stoicera.cyou`) && (PathPrefix(`/admin`) || PathPrefix(`/api/admin`) || PathPrefix(`/actuator`))"
       traefik.http.routers.ml-modern-admin.priority: "100"
       traefik.http.routers.ml-modern-admin.entrypoints: "websecure"
       traefik.http.routers.ml-modern-admin.tls.certresolver: "letsencrypt"
@@ -94,7 +97,7 @@ services:
       traefik.http.routers.ml-modern-admin.middlewares: "ml-modern-auth,ml-modern-headers,ml-modern-ratelimit"
 
       # --- 2) public surface ---
-      traefik.http.routers.ml-modern.rule: "Host(`migration-lab.stoicera.com`)"
+      traefik.http.routers.ml-modern.rule: "Host(`migration-lab.stoicera.cyou`)"
       traefik.http.routers.ml-modern.priority: "1"
       traefik.http.routers.ml-modern.entrypoints: "websecure"
       traefik.http.routers.ml-modern.tls.certresolver: "letsencrypt"
@@ -102,7 +105,7 @@ services:
       traefik.http.routers.ml-modern.middlewares: "ml-modern-headers,ml-modern-ratelimit"
 
       # --- 3) HTTP: redirect only, host's existing middleware ---
-      traefik.http.routers.ml-modern-web.rule: "Host(`migration-lab.stoicera.com`)"
+      traefik.http.routers.ml-modern-web.rule: "Host(`migration-lab.stoicera.cyou`)"
       traefik.http.routers.ml-modern-web.entrypoints: "web"
       traefik.http.routers.ml-modern-web.middlewares: "redirect-to-https@file"
       traefik.http.routers.ml-modern-web.service: "ml-modern"

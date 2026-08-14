@@ -2,6 +2,11 @@
 
 *Meilenstein: G7 · Etappe `stage-6-cloud-ops`: **begonnen, nicht abgeschlossen** — es gibt keinen Tag, die Begründung steht am Ende dieses Kapitels*
 
+> *Nachtrag 2026-08-14: Die Etappe ist inzwischen abgeschlossen — das Deployment ist erfolgt
+> und getaggt. Der Statusblock unten bleibt unverändert stehen, weil er die Lage zum
+> Zeitpunkt seiner Niederschrift korrekt beschreibt; die Fortsetzung ist
+> [Kapitel 8](08-der-live-gang-und-was-das-heisst.md).*
+
 > **Status dieses Kapitels: die Härtung ist gebaut und gemessen — das Deployment ist es
 > nicht.** Alles, was unten steht, läuft lokal in Docker Compose und wurde dort am
 > 2026-08-05 gemessen. Es gibt **keinen Server, keine Domain, kein TLS, kein Backup**

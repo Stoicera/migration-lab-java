@@ -4,12 +4,13 @@
 [![modern-ci](https://github.com/Stoicera/migration-lab-java/actions/workflows/modern-ci.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/modern-ci.yml)
 [![e2e](https://github.com/Stoicera/migration-lab-java/actions/workflows/e2e.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/e2e.yml)
 [![ai-testgen](https://github.com/Stoicera/migration-lab-java/actions/workflows/ai-testgen.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/ai-testgen.yml)
+[![deploy](https://github.com/Stoicera/migration-lab-java/actions/workflows/deploy.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/deploy.yml)
 
 **A public, reproducible legacy modernization:**
 Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 22 —
 safety net first, honest numbers, reusable German migration playbook.
 
-> **Status: stages 0–5 done; stage 6 (operations and hardening) in progress.**
+> **Status: all six stages done — v1.0.0, deployed.**
 > The modern stand runs Spring Boot 4.1.0 / Java 25 with an Angular 22 UI, migrated
 > route by route via Strangler Fig, the same Selenium scenarios green on the old AND
 > the new UI — functionally equivalent to the frozen 2016 stand for all legitimate
@@ -26,10 +27,13 @@ safety net first, honest numbers, reusable German migration playbook.
 > **Survivorship bias, measured and published rather than quietly kept.** Six repaired
 > test classes were adopted into `modern/` (88 methods,
 > [ADR-0011](docs/adr/0011-adopting-generated-tests.md)), lifting its coverage 37 % → **81 %**.
-> **Stage 6 is not finished, and the honest half of that is: nothing is deployed.**
-> No server, no domain, no TLS, no backups — the tag `stage-6-cloud-ops` does not
-> exist and there is no v1.0.0 release. What stage 6 *has* delivered, measured, is in
-> [*Where stage 6 stands*](#where-stage-6-stands-measured-2026-08-05).
+> **Stage 6 closed 2026-08-14 with the deployment it was waiting for:** both stands
+> live on the Stoicera fleet — [migration-lab.stoicera.cyou](https://migration-lab.stoicera.cyou)
+> (modern, public) and [migration-lab-legacy.stoicera.cyou](https://migration-lab-legacy.stoicera.cyou)
+> (the 2016 exhibit, **entirely behind Basic auth** — it preserves SQL injection on
+> purpose) — TLS, nightly backups with an **executed** restore rehearsal, tag
+> `stage-6-cloud-ops`, release v1.0.0. The nine days between the measured ops half
+> (2026-08-05) and the deployment are visible in the history, not smoothed over.
 > Progress: [`stages.md`](stages.md) · [`docs/worklog.md`](docs/worklog.md).
 
 ## Why this exists
@@ -292,29 +296,33 @@ what each is for are described in
 
 ## Deployment
 
-**Nothing is deployed.** There is no running instance of either stand, no URL, no TLS
-certificate and no backup schedule — and this section will not describe steps for
-infrastructure that does not exist. The rule and its reasoning are in
-[`docs/deployment.md`](docs/deployment.md) §10.
+**Both stands run live on the Stoicera fleet since 2026-08-14** — every step executed
+before it was documented ([`docs/deployment.md`](docs/deployment.md) §10, decisions in
+[ADR-0016](docs/adr/0016-deployment-dokploy-stoicera-fleet.md)):
 
-What exists today is the part a deployment needs and that can be verified locally:
-container images built by multi-stage Dockerfiles, an application healthcheck that
-actually fails when the database is gone, Flyway migrations that run on start,
-structured logs, optional OTLP tracing, and a reverse-proxy overlay carrying auth,
-security headers and rate limiting — each measured, see
-[*Where stage 6 stands*](#where-stage-6-stands-measured-2026-08-05). The host, the TLS
-termination, image publishing and backup/restore are open, and until they are done,
-stage 6 stays open with them.
+| | URL | Access |
+|---|---|---|
+| Modern stand | <https://migration-lab.stoicera.cyou> | public; `/admin`, `/api/admin`, `/actuator` behind Basic auth (ADR-0014's boundary, now with TLS in front) |
+| Legacy stand | <https://migration-lab-legacy.stoicera.cyou> | **entirely behind Basic auth, credential on request** — it preserves SQL injection (SD-1) and an EOL database on purpose; the exhibit goes public gated or not at all |
+
+Images are built by CI and pulled from GHCR (`deploy.yml`); the application ports are
+not published on the host — the only way in is the host's Traefik on 443, carrying the
+same middleware values the local edge overlay measures with `verify-edge.sh`. Nightly
+`pg_dump` backups run on the host, and the restore rehearsal was **executed**, not
+planned (kunde 10/10, fahrzeug 13/13, auftrag 16/16, rechnung 8/8 on both stands,
+2026-08-14). Live verification: [`deploy/verify-live.sh`](deploy/verify-live.sh).
+The data on both stands is the synthetic ten-customer seed; public visitors can mutate
+the modern stand's copy, and the backup doubles as the reset path.
 
 ## Screenshots
 
-Pending, deliberately. The screenshots this README should carry are of the two stands
-*as deployed*, side by side ([`docs/DEVIATIONS.md`](docs/DEVIATIONS.md): "diagram and
-screenshots land with the deployed stands they should show"). Since no deployment
-happened, those screenshots do not exist, and no image path is referenced here that the
-repository cannot back up with a file. Both UIs render locally one `docker compose up`
-after the quickstart above; the architecture is the diagram, not a picture of a
-browser.
+The two stands **as deployed**, same screen, ten years apart — captured from the live
+instances on 2026-08-14. They look almost identical, and that is the point: functional
+equivalence is the product, and the same Selenium scenarios pass on both.
+
+| 2016 — AngularJS 1.8 on Spring Boot 1.5 | 2026 — Angular 22 on Spring Boot 4.1 |
+|---|---|
+| ![Legacy stand, customer list](docs/screenshots/legacy-kunden-live.png) | ![Modern stand, customer list](docs/screenshots/modern-kunden-live.png) |
 
 ## Honest limits
 

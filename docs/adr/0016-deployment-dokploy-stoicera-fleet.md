@@ -1,7 +1,7 @@
 # ADR-0016 — Deployment: Dokploy on the Stoicera fleet, GHCR images, one Traefik, legacy gated
 
 **Status:** accepted · **Date:** 2026-08-14 · **Milestone:** G7 (stage 6, deployment half) · **Deciders:** Sebastian Kern (owner, via standing autonomous-execution mandate)
-**Context:** [`docs/MANUAL_TASKS.md` §I](../MANUAL_TASKS.md#i-before-a-production-deployment-can-be-written-down-at-all) listed what had to be decided or procured before any deployment step could honestly be written down. This ADR records those decisions and their reasons; [`docs/deployment.md` §10](../deployment.md#10-production-deployment--not-yet) is replaced by executed steps in the same PR series.
+**Context:** [`docs/MANUAL_TASKS.md` §I](../MANUAL_TASKS.md#i-before-a-production-deployment-can-be-written-down-at-all) listed what had to be decided or procured before any deployment step could honestly be written down. This ADR records those decisions and their reasons; [`docs/deployment.md` §10](../deployment.md#10-production-deployment) is replaced by executed steps in the same PR series.
 
 ## Decision 1 — Platform: Dokploy on `skdevserver1`, not Coolify, not a new host
 
@@ -66,12 +66,12 @@ database (P2) — that is the exhibit, and putting it on the open internet ungat
 operating a deliberately vulnerable service. Of the three honest options (not public /
 gated / public with a banner):
 
-- **Legacy: public behind Basic auth** (`migration-lab-legacy.stoicera.com`, whole-site,
+- **Legacy: public behind Basic auth** (`migration-lab-legacy.stoicera.cyou`, whole-site,
   plus the same rate limit as modern). The side-by-side demo effect survives — a guided
   viewer gets a credential; bots and scanners get 401. The demo credential is a shared
   secret for a synthetic 10-customer seed, not an identity system, and it protects the
   *host and audience*, not data.
-- **Modern: public, admin surface gated** (`migration-lab.stoicera.com`) — exactly the
+- **Modern: public, admin surface gated** (`migration-lab.stoicera.cyou`) — exactly the
   ADR-0014 boundary, now with TLS in front. Its write endpoints remain unauthenticated
   inside the app (pinned contracts, ADR-0004); the rate limiter bounds abuse, and the data
   is the synthetic seed.
@@ -87,12 +87,15 @@ visitors can mutate the modern stand's synthetic data; the backup/restore arrang
 
 ## Decision 6 — Domains
 
-`migration-lab.stoicera.com` and `migration-lab-legacy.stoicera.com`, A records to
-`128.140.63.38` (the app node — never the panel). Chosen over the private-label domains
-because this is a Stoicera Software Group portfolio piece and the URLs will outlive the
-session that created them. `stoicera.com` DNS is on Hostinger (hPanel) with no API access
-from this machine — the two records are an owner step, and everything else in this stage
-is staged so certificates issue the moment they exist.
+`migration-lab.stoicera.cyou` and `migration-lab-legacy.stoicera.cyou`, A records to
+`128.140.63.38` (the app node — never the panel). The zone is an owner rule set during
+this stage: **`stoicera.com` is the brand domain and is not used for lab projects;
+`stoicera.cyou` is the fleet's lab/infrastructure zone** (it already carries the Coolify
+controller and the CBZ shop). The zone sits on Hostinger with a wildcard parking record,
+so "resolves" proves nothing — the explicit records were verified by value against the
+app node's address before anything else proceeded. DNS is on Hostinger hPanel with no
+API access from this machine — the two records were the one owner step of the
+deployment, and everything else was staged so certificates issue the moment they exist.
 
 ## What was explicitly NOT built
 

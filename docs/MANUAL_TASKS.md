@@ -9,21 +9,13 @@ do things in.
 
 ---
 
-## What is actually open right now — state of 2026-08-05, after session 14
+## What is actually open right now — state of 2026-08-14, after session 15
 
-Stage 6's ops half is merged and green; its deployment half has not started, and everything
-below is the reason. Ordered by effort, so the cheap ones are not blocked behind the expensive
-one.
+Stage 6 is **complete**: both stands are deployed, verified, backed up and tagged
+(`stage-6-cloud-ops`, release v1.0.0). What remains by hand is small and periodic:
 
 | | Task | Where | Effort |
-|---|---|---|---|
-| 1 | ~~**Enable private vulnerability reporting**~~ — **done 2026-08-14** via `gh api -X PUT`, verified `{"enabled":true}`; `SECURITY.md` §2 now points at the button | [§E](#e-repository-administration-on-github) | — |
-| 2 | **Try the two stage-6 add-ons once** (edge, observability) so the commands are familiar before a real host depends on them — including the one visual check no test can do | [§H](#h-operating-the-stage-6-add-ons) | ~15 minutes, local |
-| 3 | **Decide and procure what a deployment needs** — host, domains, whether the legacy stand goes public at all, three repository secrets | [§I](#i-before-a-production-deployment-can-be-written-down-at-all) | the real work |
-
-Nothing in this repository is blocked on 2. **Everything about stage 6's completion is
-blocked on 3**, and deliberately so: the tag `stage-6-cloud-ops`, the playbook's closing chapter
-and release v1.0.0 all wait on a deployment that exists.
+|
 
 ---
 
@@ -239,47 +231,42 @@ Both are opt-in and neither is needed for the normal quickstart.
 
 ---
 
-## I. Before a production deployment can be written down at all
+## I. The production deployment — decided, procured, executed (2026-08-14)
 
-**This is not a deployment checklist — there is still nothing to deploy to**
-([`deployment.md` §10](deployment.md#10-production-deployment--not-yet)). It is the list of things
-only you can decide or procure, and until they exist any deployment instructions would be invented.
-That distinction is the whole reason this document is trustworthy.
+This section used to be the list of things only the owner could decide or procure.
+Every line has been decided and executed; the decisions live in
+[ADR-0016](adr/0016-deployment-dokploy-stoicera-fleet.md), the executed walkthrough in
+[`deployment.md` §10](deployment.md#10-production-deployment). For the record:
 
-**Procure / decide:**
+- **Host:** the existing Dokploy app node (ADR-0016 §1). No new VPS.
+- **Domains:** `migration-lab.stoicera.cyou` (modern) · `migration-lab-legacy.stoicera.cyou`
+  (legacy), A records at Hostinger → the app node.
+- **Legacy exposure:** public **behind Basic auth**, whole site + rate limit (ADR-0016 §4).
+  The demo credential is shared on request and lives in the Dokploy env store.
+- **Secrets:** `DOKPLOY_URL` + `DOKPLOY_TOKEN` exist as repository secrets (created
+  2026-08-14). `GHCR_TOKEN` was **deliberately not created** — `GITHUB_TOKEN` with
+  `packages: write` pushes, and both GHCR packages allow anonymous pulls (verified).
+- **Edge credentials** (`MODERN_ADMIN_AUTH`, `LEGACY_ADMIN_AUTH`) sit in Dokploy's env
+  store per service — **htpasswd values need doubled dollars** (`$$apr1$$…`), the reason
+  is a measured trap in `deployment.md` §10.3.
 
-- [ ] Which host: a Hetzner VPS with Dokploy (`deploy` skill: skdevserver1) or a new one
-- [ ] Which domain(s) — one per stand, since the demo effect is the two side by side
-- [ ] Whether the **legacy** stand goes public at all. It has SQL injection preserved on purpose
-      (SD-1), no authentication, and an end-of-life database. The honest options are: not public;
-      public behind the same Basic auth; or public with a visible warning banner. This one is a
-      real decision, not a formality.
-- [ ] Repository secrets — **none exist today** (`gh secret list` is empty), so any workflow
-      referencing them fails at runtime, not at lint time: `DOKPLOY_URL`, `DOKPLOY_TOKEN`,
-      `GHCR_TOKEN` (reserved in `.env.example`). Plain CLI, no infrastructure needed:
-      ```bash
-      gh secret list                                  # confirm the empty starting point
-      gh secret set DOKPLOY_URL   --body 'https://…'
-      gh secret set DOKPLOY_TOKEN                     # prompts, so it stays out of shell history
-      gh secret set GHCR_TOKEN                        # only if GITHUB_TOKEN's packages:write is not enough
-      ```
-      `GHCR_TOKEN` may well be unnecessary: Actions' built-in `GITHUB_TOKEN` can push to GHCR
-      with `permissions: packages: write`. Check that before creating a PAT — one credential
-      not created is one credential that cannot leak.
-- [ ] The admin credential the edge needs, generated the same way locally and on the host:
-      ```bash
-      MODERN_ADMIN_AUTH="admin:$(openssl passwd -apr1 'your-password')"
-      ```
-      On a host it goes in as a Dokploy secret, never into a file in the repository.
+---
 
-**Then, and only then, the following become writable — each must be executed before it is documented:**
+## J. Operating the deployment
 
-- [ ] Image build and push to GHCR from CI
-- [ ] Dokploy application per stand, environment variables from `.env.example`
-- [ ] TLS via Traefik/Let's Encrypt, and switching `MODERN_HSTS_SECONDS` on once TLS holds
-- [ ] `MODERN_ADMIN_AUTH` set as a Dokploy secret — and the application port **not** published,
-      or the edge is decoration ([`deployment.md` §12](deployment.md#12-the-reverse-proxy-edge))
-- [ ] `pg_dump` backup cron plus one **restore rehearsal** — a backup nobody has restored is a
-      hope, not a backup
-- [ ] Only after all of the above: the annotated tag `stage-6-cloud-ops`, the `stages.md` row, the
-      playbook closing chapter (Kap. 8), and release v1.0.0
+- [ ] **Deploy** = merge to `master`. CI builds both images, pushes to GHCR and triggers
+      both Dokploy services; the app services carry `pull_policy: always`, so a redeploy
+      without a fresh image is a no-op and a redeploy with one recreates the container.
+      Watch it end-to-end the first time after any workflow change: run green, then
+      `docker ps` on the app node showing a new container from the new digest.
+- [ ] **After any CSP or frontend change:** `deploy/verify-live.sh` AND a real browser
+      console on <https://migration-lab.stoicera.cyou/kunden> — no script here can see a
+      CSP violation (§H's rule, now with a live URL).
+- [ ] **Rotate a credential:** Dokploy → service → Environment (htpasswd values with
+      `$$`), redeploy the service, then re-run `deploy/verify-live.sh` — it asserts the
+      lock opens as well as closes, which is exactly the direction that broke once.
+- [ ] **Off-site backups (open):** procure the Storage Box, create
+      `/opt/einvoice-at/offsite.env` per einvoice-at's §10.4 — the migration-lab cron
+      already calls the shared sync script and will start shipping the moment the target
+      exists. Until then: dumps + rehearsal exist, off-site copies do **not**.
+- [ ] **Restore rehearsal** after any schema change: procedure in `deployment.md` §10.6.
