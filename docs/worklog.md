@@ -1135,3 +1135,81 @@ that do not exist yet). Nothing further can be honestly written until those exis
 they do: image push to GHCR, Dokploy per stand, TLS plus switching HSTS on, `pg_dump` cron
 **with a restore rehearsal**, then the tag `stage-6-cloud-ops`, playbook Kapitel 8 and
 v1.0.0.
+
+## 2026-08-14 — G7 part 2: the deployment, executed end to end; stage 6 closed, v1.0.0 — session 15
+
+**The owner-blocked half stopped being blocked by the owner delegating it.** Session 14
+ended on "nothing further can be honestly written until host, domains, the legacy-exposure
+decision and the secrets exist." This session decided, procured and executed all of it
+under a standing autonomous mandate — with exactly one step remaining human by nature
+(two DNS records in a web panel; no DNS API credential exists on this machine, verified
+before claiming so). Everything else in MANUAL_TASKS' open list was done, not delegated
+back: private vulnerability reporting enabled via API and `SECURITY.md` §2 updated
+(PR #37); the §H add-on trial run — edge verified, observability with real Tempo traces,
+and the one visual CSP check done in a real browser (zero violations); the §I decisions
+taken and recorded as **ADR-0016**.
+
+**The deployment itself** (PR #38 + this PR): CI builds both stands' images and pushes to
+GHCR with the built-in `GITHUB_TOKEN` — the reserved `GHCR_TOKEN` was deliberately never
+created, and both packages allow anonymous pulls, so no registry credential exists
+anywhere on the platform side. One Dokploy compose service per stand runs
+`deploy/*.compose.yml` from this repository: no published app or DB ports, the local edge
+overlay's **measured middleware values attached to the host's Traefik as labels** — one
+proxy instead of a proxy behind a proxy, which also removes the Docker-socket mount
+SECURITY.md §4.6 called the overlay's largest single risk, and gives the rate limiter
+real client addresses. The legacy stand went public **gated**: whole-site Basic auth plus
+rate limit, because an exhibit with preserved SQL injection either goes public behind a
+lock or not at all.
+
+**Three traps were found by verifying rather than trusting, and each is now a documented
+rule.** (1) The htpasswd hash: Dokploy strips quotes from stored env values and the
+compose dotenv parser then expands `$apr1` and the salt to empty — the gate returned
+**401 with correct credentials** while every other signal looked healthy. Found because
+verify-edge's discipline checks both directions; a lock nobody can open is a broken lock.
+Fix: `$$`-escaping (deployment.md §10.3). (2) A green Dokploy redeploy **does not pull a
+moved image tag** — the first post-setup merge redeployed "successfully" while the old
+build kept running; `pull_policy: always` now says so in the compose file, with the
+measurement in the comment. (3) The host's fleet-wide security middleware **overwrites
+two response headers** after the router middlewares (X-Frame-Options, Referrer-Policy);
+protection holds via this stand's own CSP `frame-ancestors 'none'`, and
+`deploy/verify-live.sh` asserts the effective contract with the reason in a comment.
+
+**DNS, TLS, HSTS in the §I order.** Owner rule recorded: `stoicera.com` is brand-only,
+lab projects live under `stoicera.cyou` — whose wildcard parking record makes "it
+resolves" worthless, so both records were verified **by value** against the app node.
+Let's Encrypt issued unattended; HSTS was switched on only after the certificate was
+read via openssl. Then the full ladder: `verify-live.sh` **all assertions hold** (issuer,
+308s, both auth directions on both stands, headers incl. HSTS, 125×429 under a
+200-request concurrent burst) and a real browser transaction on the live modern stand —
+a search through the UI filtering the customer list — with a clean console.
+
+**Backups exist and were restored, same day.** Nightly `pg_dump` cron for both stands
+(via `docker exec`; no DB port exists to connect to), `gzip -t` + size floor + 14-day
+retention, and the **restore rehearsal executed**: each first dump loaded into a scratch
+database and counted table by table against live — kunde 10/10, fahrzeug 13/13, auftrag
+16/16, rechnung 8/8, both stands. Off-site remains honestly open: the cron already calls
+the host's shared off-site script, which reports NOT CONFIGURED until the storage target
+the fleet is waiting on exists — nothing anywhere claims a second location.
+
+**Security sweep along the way:** the Dependabot triage found CVE-2026-54291 — the exact
+CVE this repo's image scan famously caught on 2026-08-05 — still open in the
+characterization and e2e suites' own poms. Closed with the same minimum-fixed-version
+policy (42.7.12, plus assertj 3.27.7 for CVE-2026-24400; PR #40, all four suites green
+locally first), and the two frontend lockfile CVEs via Dependabot PRs #27/#39.
+
+**Hours:** 2.4 *(measured wall time across two stints — 12:15–13:55 and 20:20–21:00 CEST,
+the gap being DNS wait on the owner; agent wall-clock under supervision, see the README
+disclosure)*
+
+**Decisions:** ADR-0016 (platform, GHCR images, one-Traefik topology, legacy gated /
+modern open, demo seed stays, `stoicera.cyou` zone rule) · MANUAL_TASKS §I rewritten from
+checklist to record, new §J (operating the deployment) · deployment.md §10 replaced by
+the executed protocol · playbook **Kapitel 8** · SECURITY.md reframed for the deployed
+state · DEVIATIONS rows 28/29/30 closed · README: live URLs, deploy badge, screenshots
+of the two stands **as deployed** — the row the ledger kept open for exactly this.
+
+**Next:** stage tag `stage-6-cloud-ops` + release v1.0.0 land with this PR's merge (in
+that order: merge → auto-deploy proven by the merge itself → tag → release). After that:
+off-site backup target (owner procures the Storage Box; mechanism already wired), the
+remaining non-security Dependabot bumps, and the case-study/marketing assets that now
+may say "live".

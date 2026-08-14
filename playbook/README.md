@@ -33,7 +33,7 @@ Regeln:
 | 5 — AngularJS → Angular 22 | Strangler Fig, dieselben E2E-Szenarien auf beiden UIs | fertig (Etappe 5) |
 | 6 — KI-Testgenerierung, gemessen | Präregistriertes Experiment, beide Phasen | **abgeschlossen 2026-08-02** (kein Etappen-Kapitel: G6 war ein Milestone ohne Etappe) |
 | 7 — Betrieb & Härtung | Datenbank-Hebung, Health, Beobachtbarkeit, Härtung am Rand, Lasttest | **neu 2026-08-05**, Etappe 6 ist damit **nicht** abgeschlossen |
-| 8 — Was das für Ihr Projekt heißt | Schlusskapitel | offen — kommt mit dem tatsächlichen Deployment |
+| 8 — Der Live-Gang, und was das für Ihr Projekt heißt | Deployment auf die Stoicera-Flotte (ausgeführt, mit Evidenz), Backups mit Rückspielprobe, die Regeln aus acht Kapiteln | **abgeschlossen 2026-08-14** — mit dem tatsächlichen Deployment, wie angekündigt |
 
 **Warum die Nummerierung ab hier von den Etappen abweicht:** Kapitel und Etappe waren bis
 G5 dasselbe. Mit Kapitel 6 ist das gebrochen, weil G6 ein Milestone ohne Etappe war. Das

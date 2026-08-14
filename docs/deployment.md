@@ -12,7 +12,7 @@ deviations ledger either. That hole is now closed in both directions: the docume
 | Running both stands locally (Docker Compose) | **documented here, works today** |
 | Running every test suite | **documented here, works today** |
 | Running the AI test-generation experiment | **documented here, works today** |
-| Production deployment (Hetzner VPS + Dokploy, TLS, backups) | **does not exist yet — [§10](#10-production-deployment--not-yet)** |
+| Production deployment (Hetzner VPS + Dokploy, TLS, backups) | **does not exist yet — [§10](#10-production-deployment)** |
 
 Every command below was executed against this repository before being written down — §1–§10 on
 2026-08-02, the stage-6 material (§4.5, §4.6, §11–§13) on 2026-08-05. Where a command's output is
@@ -575,45 +575,132 @@ Symptoms are what you actually see; causes are what is actually wrong.
 
 ---
 
-## 10. Production deployment — not yet
+## 10. Production deployment
 
-**There is no production deployment, and this section deliberately contains no instructions for
-one.** `ENGINEERING_STANDARDS.md` §7 requires deployment documentation covering a Hetzner VPS
-with Dokploy, `pg_dump` backup cron, and TLS via Traefik/Let's Encrypt. None of that has been
-built. Writing plausible steps for infrastructure that does not exist is precisely the kind of
-documentation this project exists to argue against — you would follow it, it would not work, and
-you would trust the rest of the repo less.
+**Executed 2026-08-14.** Every step below was run before it was written down, in this
+order; where a value is quoted, it was measured on that date. The decisions behind the
+topology — platform, image supply, one-Traefik design, the gated legacy stand, the demo
+seed — are argued in [ADR-0016](adr/0016-deployment-dokploy-stoicera-fleet.md); this
+section is the how and the evidence. Operating day-2 facts live in
+[`deploy/README.md`](../deploy/README.md).
 
-What is true today, so the gap is measurable rather than vague:
+### 10.1 What runs where
 
-| Required by §7 | Status |
-|---|---|
-| Local full environment via Compose | **done** — [§2](#2-first-run); the observability profile arrived 2026-08-05 ([§11](#11-observability-locally)), Keycloak and Mailpit are still absent and are ledgered, not forgotten |
-| Hetzner VPS + Dokploy deployment steps | **not started** |
-| Backups (`pg_dump` cron) | **not started** |
-| TLS (Traefik / Let's Encrypt via Dokploy) | **not started** — the Traefik configuration that will carry it exists and is tested locally ([§12](#12-the-reverse-proxy-edge)); terminating TLS needs a host and a domain |
-| 12-factor config via environment | **partly** — both stands take `SPRING_DATASOURCE_*` from the environment, and stage 6 added log format, tracing, Flyway locations and every edge setting as environment variables; `.env.example` reserves `DOKPLOY_URL`, `DOKPLOY_TOKEN`, `GHCR_TOKEN` |
-| Automatic migrations (Flyway) | **done** 2026-08-05 — [ADR-0013](adr/0013-flyway-statt-handgestarteter-sql.md), wart B18 closed |
+| | Legacy stand | Modern stand |
+|---|---|---|
+| URL | <https://migration-lab-legacy.stoicera.cyou> — **Basic auth over everything** | <https://migration-lab.stoicera.cyou> — public; `/admin`, `/api/admin`, `/actuator` gated |
+| Platform service | Dokploy compose service `legacy-stand` | Dokploy compose service `modern-stand` |
+| Compose file | [`deploy/legacy.compose.yml`](../deploy/legacy.compose.yml) | [`deploy/modern.compose.yml`](../deploy/modern.compose.yml) |
+| Image | `ghcr.io/stoicera/migration-lab-java-legacy` | `ghcr.io/stoicera/migration-lab-java-modern` |
+| Published ports | **none** — the host's Traefik on 443 is the only way in | **none** |
 
-What stage 6 *did* deliver is operations readiness, and it is all runnable on a laptop today:
-health checks the platform can actually use ([§11](#11-observability-locally)), the reverse
-proxy with authentication, security headers and rate limiting that a public demo needs
-([§12](#12-the-reverse-proxy-edge)), and a load baseline ([§13](#13-the-load-scenario)). What is
-missing is the host — and a host is exactly the thing that cannot be written down before it
-exists.
+The demo credential for the legacy stand is shared on request, never published — the
+stand preserves SQL injection (SD-1) and an EOL database on purpose, and ADR-0016
+records why "public but gated" beat both "not public" and "public with a banner".
 
-Two things must be settled **before** anything is exposed publicly, and both are already in the
-ledger rather than being discovered later:
+### 10.2 Images: CI builds, GHCR serves, the host never builds
 
-1. **Neither stand has authentication** — including the destructive `POST /admin/bereinigen`
-   inherited from the JSP admin page. A public demo must protect `/admin` at minimum.
-2. **PostgreSQL 9.6 is end-of-life** ([§4.5](#45-postgresql-96-is-end-of-life)). An unpatched
-   9.6 reachable from a network is not acceptable; the upgrade needs its own ADR because
-   collation changes can move the golden masters.
+[`deploy.yml`](../../.github/workflows/deploy.yml) runs on every push to `master`:
+both stands' images are built with their unchanged Dockerfiles and pushed with a
+`master` tag plus an immutable `sha-` tag. Authentication is the built-in
+`GITHUB_TOKEN` with `packages: write` — the `GHCR_TOKEN` that `.env.example` §5 had
+reserved was **deliberately never created** (`MANUAL_TASKS` §I suspected as much).
+Both packages allow anonymous pulls (verified 2026-08-14 with `docker logout ghcr.io`
+first), so no registry credential exists anywhere on the platform side.
 
-This section gets replaced by real, executed steps when G7 lands — not before.
+The workflow is deliberately **not a required check** — same reasoning as the playbook
+PDF: it produces a deployment, it does not guard behaviour, and a registry hiccup must
+never block a fix. The Dokploy trigger step is gated on the repository **variables**
+`DOKPLOY_LEGACY_COMPOSE_ID` / `DOKPLOY_MODERN_COMPOSE_ID`: unset means a notice and a
+green skip (that path ran once, on the first master build of 2026-08-14, before the
+services existed); set means `curl --fail` against `compose.deploy` — a broken trigger
+is a red job, never a green one that deployed nothing.
 
----
+### 10.3 The Dokploy services
+
+One project (`migration-lab`), two compose services on the app node, each pulling this
+repository (`master`) and running its `deploy/*.compose.yml`. Per-service environment
+lives in Dokploy's env store, never in the repo: `LEGACY_ADMIN_AUTH`,
+`LEGACY_DB_PASSWORD` · `MODERN_ADMIN_AUTH`, `MODERN_DB_PASSWORD`, `MODERN_HSTS_SECONDS`.
+
+**The trap that bit, kept loud for the next person:** an htpasswd hash is full of `$`.
+Dokploy strips quotes from stored env values, and the compose dotenv parser then
+expands `$apr1` and the salt as (empty) variables — the deployed label contained a
+fragment of the hash, and the gate returned **401 with correct credentials** while
+looking perfectly healthy from every other angle. Store such values with doubled
+dollars (`$$apr1$$…`). Found because the verification checks both directions; a
+lock nobody can open is a broken lock (§10.5).
+
+### 10.4 DNS and TLS
+
+Two A records at Hostinger — `migration-lab` and `migration-lab-legacy` under
+`stoicera.cyou` → `128.140.63.38` (the app node, never the panel host). The zone is an
+owner rule (ADR-0016 §6): `stoicera.com` stays brand-only, `stoicera.cyou` is the lab
+zone — and it carries a **wildcard parking record**, so both names were verified **by
+value** before anything proceeded ("resolves" proves nothing there). Let's Encrypt then
+issued via the host resolver's HTTP-challenge with no further action; the issuer was
+read with `openssl x509 -noout -issuer`, not trusted from a browser padlock.
+`MODERN_HSTS_SECONDS=31536000` was set and redeployed **only after** the certificate
+was verified — the §I ordering, executed as written (HSTS taught over plain HTTP is a
+one-year browser lockout).
+
+### 10.5 Verification — the evidence, not the tile
+
+[`deploy/verify-live.sh`](../deploy/verify-live.sh) is the production sibling of
+`verify-edge.sh` and asserts from outside: certificate issuer, HTTP→HTTPS redirects,
+the auth boundary **in both directions** (rejects without credentials on all four
+protected paths and the whole legacy stand · opens with them), the public surface
+staying public, the headers, and the rate limiter under a genuinely concurrent burst.
+
+Measured on 2026-08-14 — first pre-DNS via `--resolve` against the host, then the
+full run against public DNS after certificates issued (**all assertions hold**):
+
+- Auth: 401/401 without → 200/200 with credentials, both stands, after the `$$` fix.
+- A real domain operation through the public path: `/api/kunden` returns the ten seed
+  customers on both stands (the legacy one only with the credential).
+- Rate limit: 200 concurrent requests → **131 × 429** through the edge; the assertion
+  stays `> 0` because the count is a property of the machine, not the configuration.
+- Headers: the CSP arrives exactly as configured (`script-src 'self'` strict). Two
+  header values are **overridden by the host's fleet-wide security middleware** on the
+  response path — `X-Frame-Options: SAMEORIGIN` and
+  `Referrer-Policy: strict-origin-when-cross-origin` win over this stand's stricter
+  `DENY`/`no-referrer`, because entrypoint middlewares write response headers after
+  router middlewares. Framing protection still holds via this stand's own
+  `frame-ancestors 'none'` (CSP beats XFO in every current browser); the app-level
+  values remain in the compose file as the floor that applies the day the host-global
+  middleware disappears. `verify-live.sh` asserts the *effective* contract and says why.
+
+### 10.6 Backups — and the rehearsal that makes them backups
+
+`/etc/cron.d/migration-lab-backup` on the app node runs nightly at 02:45:
+`pg_dump` of both stands via `docker exec` (no DB port is published), `gzip -t` on
+every dump, a size floor, 14 days retention — then hands the directory to the host's
+shared off-site script, which exits loudly with `NOT CONFIGURED` until the off-site
+target exists (one mechanism and one future `offsite.env` for every product on this
+host; until it is configured, nothing here claims an off-site copy exists).
+
+**Restore rehearsal, executed 2026-08-14:** each first-night dump was restored into a
+scratch database and counted table by table against the live one — kunde 10/10,
+fahrzeug 13/13, auftrag 16/16, rechnung 8/8, on **both** stands, scratch dropped
+afterwards. A backup nobody has restored is a hope; these were restored.
+
+### 10.7 Day-2 operations
+
+- **Deploy:** merge to `master` — CI builds, pushes, triggers both stands. The app
+  services carry `pull_policy: always`, and that line exists because its absence was
+  measured: the first post-setup merge triggered a green redeploy that silently kept
+  the old image running (`docker compose up` does not re-pull a moved tag). Proven
+  end-to-end with the stage-completion merge itself on 2026-08-14: run green → both
+  services redeployed → containers recreated from the new digest, checked with
+  `docker ps` on the host, not the tile.
+- **Rotate a credential:** change it in the Dokploy service's Environment tab
+  (mind `$$` for htpasswd values), redeploy the service.
+- **Logs:** the modern stand emits ECS JSON (`docker logs` on the app container);
+  remember SECURITY.md §7 before ever attaching a shipper.
+- **After any CSP or frontend change:** `deploy/verify-live.sh` *and* a real browser
+  console on the live site — no script can see a CSP violation (MANUAL_TASKS §H).
+- **Reset the demo data:** restore the latest dump (the §10.6 rehearsal is the
+  procedure), or redeploy with a wiped volume for a fresh Flyway seed.
 
 ---
 
@@ -802,5 +889,10 @@ Die drei Dinge, die erfahrungsgemäß Zeit kosten und deshalb oben ausführlich 
    der Lauf wird grün und hat den *Legacy*-Stand geprüft. Es braucht `-DbaseUrl`, `-DdbUrl` und
    `-Dstand` zusammen ([§5.1](#51-characterization--the-equivalence-gate)).
 
-**Produktivdeployment gibt es noch nicht** (Etappe G7). [§10](#10-production-deployment--not-yet)
-listet die offenen Punkte, statt Schritte für eine Infrastruktur zu erfinden, die es nicht gibt.
+**Produktivdeployment: seit 2026-08-14.** Beide Stände laufen auf der Stoicera-Flotte —
+<https://migration-lab.stoicera.cyou> (öffentlich, Admin-Fläche hinter Basic-Auth) und
+<https://migration-lab-legacy.stoicera.cyou> (komplett hinter Basic-Auth, Zugang auf Anfrage —
+der Stand konserviert absichtlich eine SQL-Injection). [§10](#10-production-deployment) ist das
+ausgeführte Protokoll: jeder Schritt wurde ausgeführt, bevor er dokumentiert wurde, inklusive
+Backups mit **durchgeführter** Rückspielprobe und der einen Falle (htpasswd-`$$`-Escaping), die
+erst im Betrieb zubiss.

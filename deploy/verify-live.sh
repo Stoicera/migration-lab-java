@@ -13,8 +13,8 @@
 # real browser and read the console (docs/MANUAL_TASKS.md §H).
 set -euo pipefail
 
-MODERN_URL="${MODERN_URL:-https://migration-lab.stoicera.com}"
-LEGACY_URL="${LEGACY_URL:-https://migration-lab-legacy.stoicera.com}"
+MODERN_URL="${MODERN_URL:-https://migration-lab.stoicera.cyou}"
+LEGACY_URL="${LEGACY_URL:-https://migration-lab-legacy.stoicera.cyou}"
 : "${EDGE_USER:?EDGE_USER is not set}"
 : "${EDGE_PASSWORD:?EDGE_PASSWORD is not set}"
 : "${LEGACY_USER:?LEGACY_USER is not set}"
@@ -66,13 +66,23 @@ for path in / /api/kunden /rechnungen; do
 done
 
 echo "6. Security headers on public responses"
+# Two values assert the EFFECTIVE contract, not this repo's label values: the
+# host's fleet-wide security middleware runs on the websecure entrypoint and
+# overwrites response headers AFTER the router middlewares, so its SAMEORIGIN /
+# strict-origin-when-cross-origin win over this stand's DENY / no-referrer
+# (measured 2026-08-14). Framing protection still holds through this stand's
+# own CSP frame-ancestors 'none', which is the stronger control — the app-level
+# values stay in the compose file as the floor for the day the host-global
+# middleware changes. deployment.md §10.5 has the full story.
 H=$(curl -s -D - -o /dev/null "$MODERN_URL/")
-echo "$H" | grep -qi '^x-frame-options: DENY'          && ok "X-Frame-Options: DENY"        || fail "X-Frame-Options missing/wrong"
+echo "$H" | grep -qiE '^x-frame-options: (DENY|SAMEORIGIN)' && ok "X-Frame-Options present" || fail "X-Frame-Options missing"
 echo "$H" | grep -qi '^x-content-type-options: nosniff' && ok "X-Content-Type-Options"      || fail "X-Content-Type-Options missing"
-echo "$H" | grep -qi '^referrer-policy: no-referrer'    && ok "Referrer-Policy"             || fail "Referrer-Policy missing/wrong"
+echo "$H" | grep -qiE '^referrer-policy: (no-referrer|strict-origin-when-cross-origin)' && ok "Referrer-Policy present" || fail "Referrer-Policy missing"
 echo "$H" | grep -qi "^content-security-policy: .*script-src 'self'" && ok "CSP with strict script-src" \
   || fail "CSP missing or script-src relaxed"
-if [ "${EXPECT_HSTS:-0}" = "1" ]; then
+echo "$H" | grep -qi "^content-security-policy: .*frame-ancestors 'none'" && ok "CSP frame-ancestors 'none'" \
+  || fail "CSP frame-ancestors missing — the framing protection this script relies on"
+if [ "${EXPECT_HSTS:-1}" = "1" ]; then
   echo "$H" | grep -qi '^strict-transport-security:' && ok "HSTS present" || fail "HSTS expected but missing"
 fi
 
