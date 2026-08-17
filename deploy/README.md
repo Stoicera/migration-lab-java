@@ -28,7 +28,11 @@ overlay) are unchanged by any of this; the quickstart still needs no env file.
   on 443. Path to the data: `docker exec` on the app node.
 - Backups: `pg_dump` from both stands' db containers via the host cron
   (`/etc/cron.d/migration-lab-backup` on the app node), dated dumps under
-  `/var/backups/migration-lab/`, 14 days retention, and a copy pulled off the machine.
+  `/var/backups/migration-lab/`, 14 days retention. **No off-site copy exists yet** — the
+  cron hands the directory to the host's shared off-site script, which logs
+  `OFF-SITE SYNC NOT CONFIGURED` every night until a storage target is configured
+  (`docs/MANUAL_TASKS.md` §J, `docs/deployment.md` §10.6). Nothing here claims a copy
+  that is not there.
   The restore rehearsal — an actual restore, not a hope — is recorded with its date in
   `docs/deployment.md` §10.
 - After any CSP or frontend change: `deploy/verify-live.sh` **and** a real browser's

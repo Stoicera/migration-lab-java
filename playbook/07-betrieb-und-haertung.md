@@ -358,6 +358,19 @@ Wer daraus „hält 1.146 Anfragen“ liest, liest etwas hinein, das nicht gemes
 
 ## Was offen ist — und warum es offen bleibt
 
+> *Nachtrag 2026-08-14: Die Punkte 1 und 2 dieser Liste sind eingelöst — das Deployment ist
+> erfolgt, der Tag `stage-6-cloud-ops` und das Release v1.0.0 existieren, und die Secrets
+> `DOKPLOY_URL`/`DOKPLOY_TOKEN` sind angelegt; `GHCR_TOKEN` wurde bewusst nie angelegt, weil
+> der eingebaute `GITHUB_TOKEN` den Push nach GHCR erledigt. Der Vollzug mit Evidenz steht in
+> [Kapitel 8](08-der-live-gang-und-was-das-heisst.md). Punkt 3 (OAuth2/OIDC, Keycloak,
+> Audit-Log) bleibt unverändert offen — eigentümergebundener Umfang in `docs/DEVIATIONS.md`.
+> Punkt 4 gilt weiter: Der Legacy-Stand ist unverändert live gegangen, abgesichert
+> ausschließlich am Rand. Neu offen seit dem Live-Gang: Die nächtlichen Sicherungen liegen
+> auf demselben Host — eine Auslagerung an einen zweiten Standort **gibt es nicht**. Die
+> Liste bleibt wörtlich stehen; eine Dokumentation, die ihre offenen Punkte nachträglich
+> verschwinden lässt, tut genau das, wogegen dieses Repo argumentiert. Stand bei Abfassung:
+> 05.08.2026.*
+
 Diese Liste ist der eigentliche Grund, warum dieses Kapitel kein Etappenabschluss ist:
 
 - **Es hat kein Deployment stattgefunden.** Kein Hetzner-VPS, kein Dokploy, kein TLS,

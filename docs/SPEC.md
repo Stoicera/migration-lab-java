@@ -16,9 +16,10 @@ migration-lab/
 ├── e2e/                     # Selenium WebDriver suite — runs against BOTH apps via config (base URL + selector map)
 ├── characterization/        # approval/golden-master tests captured from legacy behaviour (API + DB state)
 ├── ai-testgen/              # experiment harness: prompts, generated tests, PIT mutation reports, evaluation notebook/report
-├── playbook/                # German markdown chapters, one per stage; exportable
+├── playbook/                # German markdown chapters — 8 today: ch. 1–5 = stages 1–5, then the seam (ch. 6 = AI test-gen, a milestone without a stage; ch. 7 + ch. 8 = stage 6, ops and go-live); exportable
+├── deploy/                  # production deployment since 2026-08-14: per-stand Dokploy compose files + verify-live.sh
 ├── docs/                    # PRD, SPEC, MILESTONES, ADRs, glossary, worklog
-└── .github/workflows/       # legacy-ci.yml (must stay green), modern-ci.yml, e2e.yml (matrix: legacy|modern), ai-testgen.yml
+└── .github/workflows/       # legacy-ci.yml (must stay green), modern-ci.yml, e2e.yml (matrix: legacy|modern), ai-testgen.yml, playbook.yml (PDF, since 2026-08-05), deploy.yml (both stands → GHCR → Dokploy, since 2026-08-14)
 ```
 
 **Git tags are first-class deliverables:** `stage-0-legacy`, `stage-1-safety-net`, `stage-2-jdk-build`, `stage-3-boot-2.7`, `stage-4-boot-4x`, `stage-5-angular`, `stage-6-cloud-ops`. Every tag: checkout → `docker compose up` → working app. A `stages.md` table maps tag → state → playbook chapter.
@@ -59,7 +60,7 @@ Method (pre-registered in `ai-testgen/PROTOCOL.md` before running — Plösch-st
 
 ## 7. Playbook (`playbook/`, German)
 
-Chapters mirror stages: Ausgangslage → Vorgehen → Stolperfallen → Aufwand (ehrliche Stunden) → Entscheidungsregeln ("Wann 1.5→2.7 direkt, wann Zwischenschritte?"). Final chapter: "Was das für Ihr Projekt heißt" (the sales bridge). Exportable as PDF via pandoc in CI (artifact) — usable as Direktvergabe attachment.
+Per chapter: Ausgangslage → Vorgehen → Stolperfallen → Aufwand (ehrliche Stunden) → Entscheidungsregeln ("Wann 1.5→2.7 direkt, wann Zwischenschritte?"). **Stand bei Abfassung: chapters mirror stages 1:1.** That mapping held only through stage 5. It broke at chapter 6, which belongs to the AI test-generation milestone (G6 was a milestone *without* being a stage), so ops stage 6 is carried by **chapter 7** ("Betrieb & Härtung", 2026-08-05) and the closing **chapter 8** ("Der Live-Gang, und was das für Ihr Projekt heißt", 2026-08-14) — the sales bridge and the last of eight chapters. The seam is recorded openly in [`../stages.md`](../stages.md) rather than renumbered away. Exportable as PDF via pandoc in CI (artifact) — usable as Direktvergabe attachment.
 
 ## 8. Honest limits (README)
 

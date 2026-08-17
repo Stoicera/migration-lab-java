@@ -9,13 +9,26 @@ do things in.
 
 ---
 
-## What is actually open right now — state of 2026-08-14, after session 15
+## What is actually open right now — state of 2026-08-17
 
 Stage 6 is **complete**: both stands are deployed, verified, backed up and tagged
-(`stage-6-cloud-ops`, release v1.0.0). What remains by hand is small and periodic:
+(`stage-6-cloud-ops`, release v1.0.0). All milestones G0–G7 are done — nothing is left to
+*build*. What remains by hand is small, periodic, and listed here in full:
 
-| | Task | Where | Effort |
-|
+| Task | When | Where | Effort |
+|---|---|---|---|
+| Run `deploy/verify-live.sh` with the four credentials (`EDGE_USER`, `EDGE_PASSWORD`, `LEGACY_USER`, `LEGACY_PASSWORD`) | after every deploy that touched the edge, auth, headers or the frontend | [§J](#j-operating-the-deployment) | 2 min |
+| Open the live site in a **real browser** and read the console for CSP violations | after any CSP or frontend change — no script can see this | [§H](#h-operating-the-stage-6-add-ons) · [§J](#j-operating-the-deployment) | 2 min |
+| Review Dependabot PRs; close the ones targeting `legacy/` or `ai-testgen/testbed/legacy/` instead of merging them | weekly | [§E](#ongoing) | 10 min |
+| Read the **Trivy image-scan output** in the `modern-build` job — it runs with `exit-code: 0` and fails nothing, so it is invisible unless somebody looks | every merge to `master` | [§E](#ongoing) | 2 min |
+| Restore rehearsal — load the newest dump into a scratch database and count table by table against live | after any schema change | [`deployment.md` §10.6](deployment.md#10-production-deployment) | 15 min |
+| Rotate a credential (htpasswd values need doubled dollars, `$$apr1$$…`), then re-run `verify-live.sh` | when the demo credential has been shared too widely | [§J](#j-operating-the-deployment) | 10 min |
+| **Off-site backup copies — deliberately deferred.** The nightly cron already calls the shared off-site script; it logs `OFF-SITE SYNC NOT CONFIGURED` every night until a storage target exists. Dumps and an executed restore rehearsal exist; a **second location does not** | when the owner procures the storage target | [§J](#j-operating-the-deployment) | 30 min |
+| Delete the retired PostgreSQL 9.6 volume on your local machine — it holds disk for nothing | once, locally | [§H](#one-off-after-the-postgresql-upgrade) | 1 min |
+
+**Nothing on this list is a defect or a blocker.** The one genuinely open item is the
+off-site copy, and it is open by decision rather than by oversight — which is why no
+document in this repository describes off-site backups in the past tense.
 
 ---
 
@@ -49,7 +62,12 @@ Do **not** install a JDK 8 unless you specifically need to build `legacy/` outsi
 
 - [ ] `git pull`
 - [ ] Read the last entry in [`worklog.md`](worklog.md) — it ends with a **Next** line
-- [ ] Read the current milestone in [`MILESTONES.md`](MILESTONES.md)
+- [ ] Read [`MILESTONES.md`](MILESTONES.md) — as of 2026-08-14 there is no *current* milestone
+      any more: G0–G7 are all complete (tag `stage-6-cloud-ops`, release v1.0.0). It stays here
+      unchanged as the plan that was executed, not as a work queue; what the stages actually
+      produced is in [`../stages.md`](../stages.md). New work now comes from the table at the top
+      of this file or from a deferred row in [`DEVIATIONS.md`](DEVIATIONS.md), each of which needs
+      an owner decision or a fresh ADR.
 - [ ] Bring up the stands you need:
       ```bash
       docker compose -f legacy/docker-compose.yml up -d --wait

@@ -102,9 +102,14 @@ other change in this repo: a dated entry, not a silent commit.
 | The write endpoints | `POST`/`PUT`/`DELETE` under `/api/kunden`, `/api/fahrzeuge`, `/api/auftraege`, `/api/rechnungen` | Unauthenticated on both stands. `DELETE /api/kunden/{id}` hard-deletes and leaves vehicles and orders behind — the code says so: *"Fahrzeuge und Auftraege bleiben stehen, hat noch nie Probleme gemacht"* (wart B13) |
 | The database | `127.0.0.1:5433` / `:5434` | Loopback-bound in both compose files, so not reachable from the network — one of the few things that is right by construction |
 | The Docker socket | `modern/docker-compose.edge.yml`, mounted into Traefik | Root-equivalent access to the host ([§4.6](#46-e--elevation-of-privilege)) |
-| The one real credential | `OPENROUTER_API_KEY` in `.env` (git-ignored) | The only secret this project has. Everything else in the compose files is a dev-only value in plain sight, on purpose |
+| The one real credential in the working tree | `OPENROUTER_API_KEY` in `.env` (git-ignored) | The only secret the quickstart needs; everything else in the compose files is a dev-only value in plain sight, on purpose. Running the edge overlay adds `MODERN_ADMIN_AUTH` to the same `.env`. Since 2026-08-14 there are also secrets **outside** the tree: the Actions secrets `DOKPLOY_URL` / `DOKPLOY_TOKEN` and the per-stand Basic-auth and database credentials in the deployment platform's env store ([`docs/deployment.md` §10](docs/deployment.md#10-production-deployment)) |
 
-Trust boundaries, as they actually stand today:
+Trust boundaries on a developer machine, as they stand today — and since 2026-08-14 that is no
+longer the only boundary: the deployed demo is a second and different one, where the internet
+reaches nothing but the host's Traefik on 443 (TLS, rate limit, security headers, Basic auth over
+the whole legacy stand and over the modern stand's `/admin`, `/api/admin` and `/actuator`), and
+neither stand publishes an application or a database port of its own
+([`docs/deployment.md` §10](docs/deployment.md#10-production-deployment)):
 
 ```
   developer machine
@@ -201,8 +206,12 @@ an audit log, it is not shipped anywhere, and it is not retained.
 - **PostgreSQL 9.6 on the legacy stand receives no security patches of any kind** and never will
   again (final release 2021-11-11). It stays, because it is the exhibit — registered as **P2** in
   `DEVIATIONS.md`. The modern stand moved to 18.4 in stage 6 (ADR-0012). "The legacy stand keeps an
-  unpatched database" is a statement about a demonstration container on a laptop; it would be an
-  unacceptable statement about anything reachable from a network.
+  unpatched database" was a statement about a demonstration container on a laptop when this was
+  written (2026-08-05); since 2026-08-14 the same stand, PostgreSQL 9.6 included, also runs on a
+  host reachable from the internet. That is exactly why the deployed legacy stand sits **entirely**
+  behind Basic auth and a rate limit at the host's Traefik, publishes neither an application nor a
+  database port, and holds nothing but the fictional 10-customer seed (ADR-0016 §4). It would still
+  be an unacceptable statement about anything holding real data.
 - No CPU or memory limits are set in either compose file.
 
 ### 4.6 E — Elevation of privilege

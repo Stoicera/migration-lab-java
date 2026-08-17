@@ -50,5 +50,6 @@ docker compose -f modern/docker-compose.yml up -d --wait   # modern stand (8090,
 # modern verify builds the Angular frontend too (frontend-maven-plugin installs its
 # own Node, npm ci) and runs the lint/format gates (Spotless, ng lint, prettier).
 ./mvnw verify -f modern/pom.xml                      # modern build — NEEDS A RUNNING DOCKER DAEMON
-                                                     # (Testcontainers); 11 module tests since G6
+                                                     # (Testcontainers); 100 module tests since G6
+                                                     # (12 hand-written + the 88 adopted under ADR-0011)
 ```

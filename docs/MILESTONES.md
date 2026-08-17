@@ -2,6 +2,8 @@
 
 Empfohlene Reihenfolge: **nach einvoice-at starten** (oder frühestens nach dessen M3, wenn Parallelität nötig). Geschätzter Gesamtaufwand: ~5 Wochen fokussiert.
 
+> **Stand 14.08.2026: alle Milestones G0–G7 sind abgeschlossen** (Tag `stage-6-cloud-ops`, Release v1.0.0). Schätzung und Reihenfolgeempfehlung oben bleiben als Planungsstand bei Abfassung stehen und werden nicht rückwirkend korrigiert; die tatsächlichen Aufwände je Session stehen in [`worklog.md`](worklog.md), die Etappen-Tabelle (Tag → Zustand → Playbook-Kapitel) in [`../stages.md`](../stages.md).
+
 Regel wie überall: Ein Milestone = demonstrierbares Inkrement + Definition of Done (ENGINEERING_STANDARDS.md) + grüne CI. Zusätzlich hier: **jede Etappe endet mit Git-Tag + Playbook-Kapitel.**
 
 ---

@@ -3,7 +3,10 @@
 Required by [`ENGINEERING_STANDARDS.md`](ENGINEERING_STANDARDS.md) §7. **This file was missing
 until 2026-08-02** — the obligation existed, the document did not, and it was not in the
 deviations ledger either. That hole is now closed in both directions: the document exists, and
-[`DEVIATIONS.md`](DEVIATIONS.md) carries the part it cannot yet deliver.
+[`DEVIATIONS.md`](DEVIATIONS.md) carried what it could not yet deliver. At the time of writing
+that was the entire production half; it was executed on 2026-08-14 and
+[§10](#10-production-deployment) is its protocol, so the ledger row now reads **met
+(2026-08-14)** — with off-site backup copies as the one item still open.
 
 **Scope, stated up front so you do not go looking for something that is not here:**
 
@@ -12,11 +15,13 @@ deviations ledger either. That hole is now closed in both directions: the docume
 | Running both stands locally (Docker Compose) | **documented here, works today** |
 | Running every test suite | **documented here, works today** |
 | Running the AI test-generation experiment | **documented here, works today** |
-| Production deployment (Hetzner VPS + Dokploy, TLS, backups) | **does not exist yet — [§10](#10-production-deployment)** |
+| Production deployment (Hetzner + Dokploy, TLS, backups) | **did not exist when this table was written (2026-08-02) — live since 2026-08-14**; [§10](#10-production-deployment) is the executed protocol, and the off-site backup copy is the one part still open |
 
-Every command below was executed against this repository before being written down — §1–§10 on
-2026-08-02, the stage-6 material (§4.5, §4.6, §11–§13) on 2026-08-05. Where a command's output is
-quoted, that is the real output, not an illustration.
+Every command below was executed against this repository before being written down — §1–§9 on
+2026-08-02 (§10 then carried no instructions at all: it documented the *absence* of a deployment),
+the stage-6 ops material (§4.5, §4.6, §11–§13) on 2026-08-05, and the executed §10 protocol on
+2026-08-14, the day both stands went live. Where a command's output is quoted, that is the real
+output, not an illustration.
 
 **Companion document:** [`MANUAL_TASKS.md`](MANUAL_TASKS.md) is the checklist of steps a human
 must do by hand. This file explains *how* and *why*; that one is what you tick off.
@@ -222,8 +227,11 @@ The two run side by side on purpose — that is the exhibit. Both use PostgreSQL
 the database is one variable fewer while everything above it changes.
 
 **On the credentials:** they are dev-only and deliberately in plain sight in the compose files.
-Nothing here is a secret. The only real credential in the project is the OpenRouter API key
-([§8](#8-the-ai-test-generation-experiment-g6)).
+Nothing here is a secret. The only real credential *in this repository's working tree* is the
+OpenRouter API key ([§8](#8-the-ai-test-generation-experiment-g6)). Since the deployment of
+2026-08-14 there are credentials outside it: the Actions secrets `DOKPLOY_URL` and
+`DOKPLOY_TOKEN`, and the per-service Basic-auth and database values in Dokploy's env store
+([§10](#10-production-deployment)). None of them live in a file in this repo, which is the point.
 
 **On network exposure — read this before running on an untrusted network.** The two **database**
 ports are bound to `127.0.0.1` and are unreachable from outside the machine. The two
@@ -600,7 +608,7 @@ records why "public but gated" beat both "not public" and "public with a banner"
 
 ### 10.2 Images: CI builds, GHCR serves, the host never builds
 
-[`deploy.yml`](../../.github/workflows/deploy.yml) runs on every push to `master`:
+[`deploy.yml`](../.github/workflows/deploy.yml) runs on every push to `master`:
 both stands' images are built with their unchanged Dockerfiles and pushed with a
 `master` tag plus an immutable `sha-` tag. Authentication is the built-in
 `GITHUB_TOKEN` with `packages: write` — the `GHCR_TOKEN` that `.env.example` §5 had

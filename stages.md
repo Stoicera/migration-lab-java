@@ -17,7 +17,10 @@ Git tags are first-class deliverables: every tag is a checkout-and-run state
 until 2026-08-05, and that promise was already broken when it was written: chapter 6 is
 the AI test-generation chapter, because G6 was a milestone *without* being a stage. The
 1:1 mapping between stages and chapters that SPEC assumes ends there. The ops chapter is
-therefore **Kapitel 7** and the closing chapter will be **Kapitel 8** — recorded here
+therefore **Kapitel 7**, and the closing chapter is **Kapitel 8**
+([Der Live-Gang](playbook/08-der-live-gang-und-was-das-heisst.md) — still unwritten when
+this note was first recorded on 2026-08-05, delivered with the deployment on
+2026-08-14) — recorded here
 rather than renumbered quietly, because a documentation set that silently rewrites its
 own history is worth less than one with a visible seam.
 
