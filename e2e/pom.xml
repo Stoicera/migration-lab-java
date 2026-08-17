@@ -18,7 +18,7 @@
 		<junit.version>5.14.4</junit.version>
 		<selenium.version>4.46.0</selenium.version>
 		<assertj.version>3.27.7</assertj.version>
-		<postgresql.version>42.7.12</postgresql.version>
+		<postgresql.version>42.7.13</postgresql.version>
 		<!-- -Dtarget=legacy|modern selects base URL, selector map and DB -->
 		<target>legacy</target>
 	</properties>
