@@ -7,34 +7,38 @@
   }
 
   <table class="table table-bordered" style="max-width: 400px" data-testid="admin-statistik">
-    <tr>
-      <th>Kennzahl</th>
-      <th>Wert</th>
-    </tr>
-    <tr>
-      <td>Kunden</td>
-      <td>{{ d.statistik.kunden }}</td>
-    </tr>
-    <tr>
-      <td>Fahrzeuge</td>
-      <td>{{ d.statistik.fahrzeuge }}</td>
-    </tr>
-    <tr>
-      <td>Aufträge gesamt</td>
-      <td>{{ d.statistik.auftraege }}</td>
-    </tr>
-    <tr>
-      <td>Aufträge offen</td>
-      <td>{{ d.statistik.auftraegeOffen }}</td>
-    </tr>
-    <tr>
-      <td>Rechnungen gesamt</td>
-      <td>{{ d.statistik.rechnungen }}</td>
-    </tr>
-    <tr>
-      <td>Rechnungen unbezahlt</td>
-      <td>{{ d.statistik.rechnungenOffen }}</td>
-    </tr>
+    <thead>
+      <tr>
+        <th>Kennzahl</th>
+        <th>Wert</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Kunden</td>
+        <td>{{ d.statistik.kunden }}</td>
+      </tr>
+      <tr>
+        <td>Fahrzeuge</td>
+        <td>{{ d.statistik.fahrzeuge }}</td>
+      </tr>
+      <tr>
+        <td>Aufträge gesamt</td>
+        <td>{{ d.statistik.auftraege }}</td>
+      </tr>
+      <tr>
+        <td>Aufträge offen</td>
+        <td>{{ d.statistik.auftraegeOffen }}</td>
+      </tr>
+      <tr>
+        <td>Rechnungen gesamt</td>
+        <td>{{ d.statistik.rechnungen }}</td>
+      </tr>
+      <tr>
+        <td>Rechnungen unbezahlt</td>
+        <td>{{ d.statistik.rechnungenOffen }}</td>
+      </tr>
+    </tbody>
   </table>
 
   <div class="panel panel-danger" style="max-width: 600px">

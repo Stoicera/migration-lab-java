@@ -15,30 +15,34 @@
 </div>
 
 <table class="table table-striped table-hover" data-testid="fahrzeuge-tabelle">
-  <tr>
-    <th>Kennzeichen</th>
-    <th>Marke</th>
-    <th>Modell</th>
-    <th>Baujahr</th>
-    <th>km-Stand</th>
-    <th>Pickerl bis</th>
-    <th>Besitzer</th>
-  </tr>
-  @for (f of gefiltert(); track f.id) {
-    <tr data-testid="fahrzeug-zeile">
-      <td>{{ f.kennzeichen }}</td>
-      <td>{{ f.marke }}</td>
-      <td>{{ f.modell }}</td>
-      <td>{{ f.baujahr }}</td>
-      <td>{{ f.kmStand }}</td>
-      <td>{{ f.pickerlDatum | date: 'dd.MM.yyyy' }}</td>
-      <td>
-        @if (f.kundeId) {
-          <a [routerLink]="['/kunden', f.kundeId]">{{ f.kundeName }}</a>
-        }
-      </td>
+  <thead>
+    <tr>
+      <th>Kennzeichen</th>
+      <th>Marke</th>
+      <th>Modell</th>
+      <th>Baujahr</th>
+      <th>km-Stand</th>
+      <th>Pickerl bis</th>
+      <th>Besitzer</th>
     </tr>
-  }
+  </thead>
+  <tbody>
+    @for (f of gefiltert(); track f.id) {
+      <tr data-testid="fahrzeug-zeile">
+        <td>{{ f.kennzeichen }}</td>
+        <td>{{ f.marke }}</td>
+        <td>{{ f.modell }}</td>
+        <td>{{ f.baujahr }}</td>
+        <td>{{ f.kmStand }}</td>
+        <td>{{ f.pickerlDatum | date: 'dd.MM.yyyy' }}</td>
+        <td>
+          @if (f.kundeId) {
+            <a [routerLink]="['/kunden', f.kundeId]">{{ f.kundeName }}</a>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
 </table>
 
 <p class="text-muted">Fahrzeuge werden beim jeweiligen Kunden angelegt.</p>

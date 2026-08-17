@@ -11,36 +11,38 @@
   <div class="row">
     <div class="col-md-4">
       <table class="table table-condensed">
-        <tr>
-          <th>Kunde</th>
-          <td>
-            <a [routerLink]="['/kunden', a.kundeId]">{{ a.kundeName }}</a>
-          </td>
-        </tr>
-        <tr>
-          <th>Fahrzeug</th>
-          <td>{{ a.kennzeichen }} - {{ a.fahrzeugBezeichnung }}</td>
-        </tr>
-        <tr>
-          <th>km-Stand</th>
-          <td>{{ a.kmStand }}</td>
-        </tr>
-        <tr>
-          <th>Angenommen</th>
-          <td>{{ a.angenommenAm | date: 'dd.MM.yyyy HH:mm' }}</td>
-        </tr>
-        @if (a.fertigAm) {
+        <tbody>
           <tr>
-            <th>Fertig</th>
-            <td>{{ a.fertigAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+            <th>Kunde</th>
+            <td>
+              <a [routerLink]="['/kunden', a.kundeId]">{{ a.kundeName }}</a>
+            </td>
           </tr>
-        }
-        @if (a.abgeholtAm) {
           <tr>
-            <th>Abgeholt</th>
-            <td>{{ a.abgeholtAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+            <th>Fahrzeug</th>
+            <td>{{ a.kennzeichen }} - {{ a.fahrzeugBezeichnung }}</td>
           </tr>
-        }
+          <tr>
+            <th>km-Stand</th>
+            <td>{{ a.kmStand }}</td>
+          </tr>
+          <tr>
+            <th>Angenommen</th>
+            <td>{{ a.angenommenAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+          </tr>
+          @if (a.fertigAm) {
+            <tr>
+              <th>Fertig</th>
+              <td>{{ a.fertigAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+            </tr>
+          }
+          @if (a.abgeholtAm) {
+            <tr>
+              <th>Abgeholt</th>
+              <td>{{ a.abgeholtAm | date: 'dd.MM.yyyy HH:mm' }}</td>
+            </tr>
+          }
+        </tbody>
       </table>
       <p><strong>Beschreibung:</strong><br />{{ a.beschreibung }}</p>
 
@@ -101,33 +103,37 @@
     <div class="col-md-8">
       <h4>Positionen</h4>
       <table class="table table-striped" data-testid="positionen-tabelle">
-        <tr>
-          <th>Typ</th>
-          <th>Bezeichnung</th>
-          <th class="text-right">Menge</th>
-          <th class="text-right">Einzelpreis</th>
-          <th class="text-right">Gesamt</th>
-          <th></th>
-        </tr>
-        @for (p of a.positionen; track p.id) {
-          <tr data-testid="position-zeile">
-            <td>{{ p.typ === 'ARBEIT' ? 'Arbeit' : 'Material' }}</td>
-            <td>{{ p.bezeichnung }}</td>
-            <td class="text-right">{{ p.menge }}</td>
-            <td class="text-right">{{ p.einzelpreis | euro }}</td>
-            <td class="text-right">{{ p.gesamtpreis | euro }}</td>
-            <td class="text-right">
-              @if (a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT') {
-                <button class="btn btn-xs btn-danger" (click)="positionLoeschen(p)">X</button>
-              }
-            </td>
+        <thead>
+          <tr>
+            <th>Typ</th>
+            <th>Bezeichnung</th>
+            <th class="text-right">Menge</th>
+            <th class="text-right">Einzelpreis</th>
+            <th class="text-right">Gesamt</th>
+            <th></th>
           </tr>
-        }
-        <tr>
-          <th colspan="4" class="text-right">Summe netto</th>
-          <th class="text-right" data-testid="summe-netto">{{ a.summeNetto | euro }}</th>
-          <th></th>
-        </tr>
+        </thead>
+        <tbody>
+          @for (p of a.positionen; track p.id) {
+            <tr data-testid="position-zeile">
+              <td>{{ p.typ === 'ARBEIT' ? 'Arbeit' : 'Material' }}</td>
+              <td>{{ p.bezeichnung }}</td>
+              <td class="text-right">{{ p.menge }}</td>
+              <td class="text-right">{{ p.einzelpreis | euro }}</td>
+              <td class="text-right">{{ p.gesamtpreis | euro }}</td>
+              <td class="text-right">
+                @if (a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT') {
+                  <button class="btn btn-xs btn-danger" (click)="positionLoeschen(p)">X</button>
+                }
+              </td>
+            </tr>
+          }
+          <tr>
+            <th colspan="4" class="text-right">Summe netto</th>
+            <th class="text-right" data-testid="summe-netto">{{ a.summeNetto | euro }}</th>
+            <th></th>
+          </tr>
+        </tbody>
       </table>
 
       @if (a.status === 'ANGENOMMEN' || a.status === 'IN_ARBEIT') {

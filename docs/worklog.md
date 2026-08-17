@@ -1213,3 +1213,70 @@ that order: merge → auto-deploy proven by the merge itself → tag → release
 off-site backup target (owner procures the Storage Box; mechanism already wired), the
 remaining non-security Dependabot bumps, and the case-study/marketing assets that now
 may say "live".
+
+## 2026-08-17 — post-launch documentation sweep, and a visual regression the safety net could not see — session 16
+
+**Two things happened in this session, and the second one matters more.**
+
+**Erstens, die Dokumentation.** Stage 6 closed on 2026-08-14 with the deployment, the tag and
+v1.0.0 — but no document was swept afterwards. A five-way audit with adversarial verification
+found **38 confirmed statements** that a reader today takes as current fact and that are false:
+the README stage row still read *"in progress (G7) — tag not created"*, its German status block
+still said *"es läuft nichts öffentlich, es gibt keinen Server, kein TLS und keine Sicherungen"*,
+`playbook/README.md` announced *"Kapitel 1–7 veröffentlicht, Etappe 6 nicht fertig"*, and
+`docs/deployment.md` said the production deployment *"does not exist yet"*. Two were honesty
+defects rather than staleness: **`deploy/README.md` claimed the nightly dumps included "a copy
+pulled off the machine"** — no off-site copy exists, the cron logs `OFF-SITE SYNC NOT CONFIGURED`
+every night — and **`CLAUDE.md` said "11 module tests since G6"** when the module has 100. Every
+stale passage was dated and pointed forward rather than deleted (PR #43).
+
+**Zweitens, und das ist der eigentliche Fund: Seit dem Angular-Umstieg rendern ALLE Tabellen des
+modernen Standes ohne Bootstrap-Styling — live, seit dem 14.08.** Keine Zellinnenabstände, keine
+Zeilenlinien, kein Zebrastreifen, und die Aktions-Buttons treiben rechts aus der Zeile. Gefunden
+wurde es nicht von einer Suite, sondern weil der Inhaber die beiden Screenshots nebeneinander legte
+und sagte, die neue Version sehe schlechter aus als die alte.
+
+**Die Ursache, im Live-DOM gemessen:** Es gibt kein `<tbody>`. Die `<tr>` hängen direkt am
+`<table>` (`table.children` = 11 × `<tr>`; `getComputedStyle` auf einer `<td>` meldet
+`padding: 0px`, `border-top: 0px`, während die Tabelle ihre `width: 100 %` behält). Bootstrap 3
+gestaltet Tabellen ausschließlich über Direktkind-Ketten — `.table > tbody > tr > td`,
+`.table-striped > tbody > tr:nth-of-type(odd)` —, und ohne `<tbody>` in der Kette greift **keine
+einzige** dieser Regeln. Die `width: 100 %` überlebt, weil sie auf `.table` selbst sitzt: genau
+deshalb sieht die Tabelle nicht kaputt, sondern nur lieblos aus.
+
+**Warum es erst durch die Migration entstand — und warum `legacy/` nicht angefasst wird:** Die
+Legacy-Templates enthalten **dasselbe Markup ohne `<thead>`/`<tbody>`**. Dort ist es korrekt, weil
+AngularJS-Templates als HTML geladen und vom **HTML-Parser** des Browsers verarbeitet werden, der
+laut Spezifikation ein `<tbody>` einfügt. Angular 22 kompiliert Templates zu programmatischem
+DOM-Aufbau (`createElement`/`appendChild`) — dort läuft diese Parser-Regel nie. **Identisches
+Markup, anderer Renderer, stille visuelle Regression.**
+
+**Was das über das Sicherheitsnetz sagt, ehrlich:** Die Charakterisierungstests prüfen
+HTTP-Nutzlasten und Datenbankzustände — eine fehlende `<tbody>` ändert beide nicht. Die
+Selenium-Suite prüft Verhalten und Text über `data-testid` — die Zeilen sind da, die Werte
+stimmen, 34/34 grün. **Beide Netze waren korrekt und beide waren blind**, und zwar für exakt die
+Klasse Fehler, die am 05.08. schon einmal zugeschlagen hat (32 von 34 Szenarien grün, während der
+Browser Angulars Styles blockierte, `MANUAL_TASKS` §H). Damals wurde daraus eine menschliche
+Sichtprüfung als Pflichtschritt. Diese Regression ist durch dieselbe Lücke gefallen, weil die
+Sichtprüfung „keine CSP-Verstöße, Seite ist gestylt" fragt — und die Seite *ist* gestylt: Navbar,
+Buttons und Formularfelder stimmen. Nur die Tabellen nicht. **Eine Prüfregel, die auf
+„sieht gestylt aus" hinausläuft, ist keine Prüfregel.**
+
+**Behoben** in allen zehn Templates (`thead`/`tbody` ergänzt, Kontrollfluss-Blöcke *innerhalb*
+der `tbody`), `legacy/` unverändert. Verifiziert: Tag-Bilanz und `data-testid`-Multimenge je Datei
+gegen HEAD geprüft (keine Drift), Inhalt außerhalb der neuen Tags zeichengleich, `prettier --check`
+grün, Angular-Produktionsbuild grün.
+
+**Offen und bewusst nicht in diesem PR:** eine automatisierte Regressionsschranke für Aussehen.
+Der ehrliche Befund ist, dass dieses Projekt dafür bisher **kein** Instrument hat — weder
+Visual-Regression-Snapshots noch eine Assertion auf berechnete Stile. Das ist eine echte Lücke und
+gehört als eigener Punkt entschieden, nicht als Beifang eines Bugfixes.
+
+**Hours:** 1.1 *(gemessene Wandzeit; Agent-Wandzeit unter Aufsicht, siehe README-Offenlegung)*
+
+**Decisions:** keine ADR — der Fix stellt das beabsichtigte Rendering wieder her und ändert weder
+Verhalten noch Vertrag. Kandidat für ein Playbook-Kapitel bzw. die Case Study: „Wie eine
+Migration ein Aussehen verliert, ohne dass ein Test rot wird."
+
+**Next:** Sichtprüfung am Live-Stand nach dem Deploy (DOM enthält `tbody`, `td` hat Innenabstand),
+danach die Neuaufnahme der beiden Kern-Screenshots — **erst dann** Marketing.
