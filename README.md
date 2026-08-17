@@ -148,7 +148,7 @@ working application. Long form, including what broke in each stage:
 | `stage-3-boot-2.7` | Boot 1.5.22 → 2.7.18 + Java 17; three real breaks, one of them invisible in the UI and caught only by the golden master | [Kap. 3](playbook/03-der-weite-sprung-boot-27.md) | **done** (2026-07-30) |
 | `stage-4-boot-4x` | Boot 2.7 → 3.5 → 4.1 + Java 25; OpenRewrite used AND evaluated; SQL-injection wart closed as a registered divergence | [Kap. 4](playbook/04-boot-3-4-java-25-und-openrewrite.md) | **done** (2026-07-30) |
 | `stage-5-angular` | AngularJS → Angular 22.1.0 via Strangler Fig on a URL seam, no ngUpgrade; JSP admin page absorbed; WAR → JAR | [Kap. 5](playbook/05-angularjs-nach-angular-22.md) | **done** (2026-07-31) |
-| `stage-6-cloud-ops` | Operations and hardening: PostgreSQL 18, Flyway, Actuator health probes, OTel, edge auth, load baseline — **deployment still open** | [Kap. 7](playbook/07-betrieb-und-haertung.md) | **in progress** (G7) — ops half measured 2026-08-05; **tag not created** |
+| `stage-6-cloud-ops` | Operations and hardening: PostgreSQL 18, Flyway, Actuator health probes, OTel, edge auth, load baseline — and the deployment the stage was waiting for: both stands live on the Stoicera fleet (Hetzner + Dokploy), GHCR images, TLS, nightly `pg_dump` ([ADR-0016](docs/adr/0016-deployment-dokploy-stoicera-fleet.md)) | [Kap. 7](playbook/07-betrieb-und-haertung.md) · [Kap. 8](playbook/08-der-live-gang-und-was-das-heisst.md) | **done** (2026-08-14) — ops half measured 2026-08-05, deployment half 2026-08-14 |
 
 The AI test-generation experiment (G6) is not a migration stage; it carries one tag of
 its own, `ai-testgen-protocol-v1`, which is a **pre-registration marker, not a
@@ -158,7 +158,14 @@ runs one ahead of the stages from here on: a non-stage milestone took chapter 6,
 stage 6 gets chapter 7. Renaming it quietly would have been the easier and the more
 dishonest option.
 
-## Where stage 6 stands (measured 2026-08-05)
+## Where stage 6 stood after the ops half (measured 2026-08-05)
+
+> **Snapshot at the time of writing.** The deployment half landed nine days later, on
+> 2026-08-14 — see [Deployment](#deployment) below,
+> [Kap. 8](playbook/08-der-live-gang-und-was-das-heisst.md) and
+> [ADR-0016](docs/adr/0016-deployment-dokploy-stoicera-fleet.md). This section is kept as
+> written rather than rewritten, so the gap between "measured locally" and "running in
+> production" stays visible.
 
 Everything in this section was measured on one machine on 2026-08-05 and is written
 down with its caveats in [`docs/worklog.md`](docs/worklog.md); the decisions have ADRs
@@ -210,15 +217,27 @@ down with its caveats in [`docs/worklog.md`](docs/worklog.md); the decisions hav
   mistake is half a guard. Both flags are now validated eagerly and the wrong one aborts
   the run.
 
-### Not delivered
+### Not delivered as of 2026-08-05
 
-- **No deployment happened.** There is no host, no Dokploy project, no domain, no TLS,
-  no `pg_dump` schedule and no published image. The repository has no GitHub secrets at
-  all, so a deploy workflow would fail at runtime — none was written, rather than
-  committing one that cannot run.
-- **Therefore the tag `stage-6-cloud-ops` does not exist and v1.0.0 is not released.**
-  Stage 6 is in progress, and saying otherwise would be exactly the smoothing this
-  repository exists to argue against.
+> The first two points were **redeemed on 2026-08-14**; the third is still open. They are
+> kept as written — deleting the evidence that something used to be open is the
+> beautification this repository argues against.
+
+- **No deployment had happened at that point.** There was no host, no Dokploy project, no
+  domain, no TLS, no `pg_dump` schedule and no published image. The repository had no
+  GitHub secrets at all, so a deploy workflow would have failed at runtime — none was
+  written, rather than committing one that cannot run.
+  **Resolved 2026-08-14:** both stands run on the Stoicera fleet (Hetzner + Dokploy), CI
+  pushes both images to GHCR with the built-in `GITHUB_TOKEN` (`packages:write`) — the
+  separate registry token was never needed and never created — the repository secrets
+  `DOKPLOY_URL` and `DOKPLOY_TOKEN` exist since that day, TLS is Let's Encrypt, and a
+  nightly `pg_dump` runs for both stands with a restore rehearsal that was **executed**.
+  Off-site copies of those dumps are still open.
+- **Therefore, at that point, the tag `stage-6-cloud-ops` did not exist and v1.0.0 was not
+  released.** Stage 6 was in progress, and saying otherwise would have been exactly the
+  smoothing this repository exists to argue against. Both were **redeemed on 2026-08-14**,
+  once the deployment was proven: tag `stage-6-cloud-ops`, GitHub release v1.0.0
+  ([`stages.md`](stages.md), [Kap. 8](playbook/08-der-live-gang-und-was-das-heisst.md)).
 - OAuth2/OIDC, an audit log and Angular's `CSP_NONCE` remain owner-scoped in
   [`docs/DEVIATIONS.md`](docs/DEVIATIONS.md). Basic auth at the edge is a lock on the one
   door that deletes data, not an identity system, and it is described as such.
@@ -234,7 +253,8 @@ down with its caveats in [`docs/worklog.md`](docs/worklog.md); the decisions hav
 | [`ai-testgen/`](ai-testgen/) | Pre-registered AI test-generation experiment (G6) — protocol, harness, runs and the full report of both phases |
 | [`load/`](load/) | k6 read-path scenario, run against both stands (one scenario, by design) |
 | [`scripts/`](scripts/) | Repository guards used by CI, e.g. the schema-drift check |
-| [`playbook/`](playbook/) | German playbook, one chapter per stage |
+| [`deploy/`](deploy/) | Production deployment since 2026-08-14 — the per-stand Dokploy compose files and `verify-live.sh`, which asserts certificates, auth boundary, headers and rate limit against the live URLs from outside ([ADR-0016](docs/adr/0016-deployment-dokploy-stoicera-fleet.md)) |
+| [`playbook/`](playbook/) | German playbook, eight chapters (01–08): one per migration stage (stage 0's Ausgangslage sits in Kap. 1), plus Kap. 6 for the non-stage AI test-generation milestone — which is why stage 6 is Kap. 7 — and Kap. 8 for the live deployment |
 | [`docs/`](docs/) | PRD, SPEC, milestones, ADRs, worklog, deviations ledger, glossary, deployment and manual-task docs |
 
 ## Quickstart
@@ -307,7 +327,14 @@ before it was documented ([`docs/deployment.md`](docs/deployment.md) §10, decis
 
 Images are built by CI and pulled from GHCR (`deploy.yml`); the application ports are
 not published on the host — the only way in is the host's Traefik on 443, carrying the
-same middleware values the local edge overlay measures with `verify-edge.sh`. Nightly
+same middleware as the local edge overlay, with two measured exceptions: the host's
+fleet-wide middleware writes `X-Frame-Options: SAMEORIGIN` and
+`Referrer-Policy: strict-origin-when-cross-origin` over this stand's stricter `DENY` /
+`no-referrer` (measured 2026-08-14 — framing protection still holds through the stand's
+own CSP `frame-ancestors 'none'`; [`docs/deployment.md`](docs/deployment.md) §10.5 has
+the full story). That is expected rather than a defect, which is why
+`deploy/verify-live.sh` accepts either value while `verify-edge.sh` keeps pinning the
+strict one locally. Nightly
 `pg_dump` backups run on the host, and the restore rehearsal was **executed**, not
 planned (kunde 10/10, fahrzeug 13/13, auftrag 16/16, rechnung 8/8 on both stands,
 2026-08-14). Live verification: [`deploy/verify-live.sh`](deploy/verify-live.sh).
@@ -367,14 +394,29 @@ Docker-Compose-Stand. Sackgassen werden dokumentiert statt gelöscht, und das
 KI-Testgenerierungs-Experiment folgt einem **vorab festgeschriebenen Protokoll**
 mit Mutation-Testing-Auswertung (PIT).
 
-**Stand heute:** Etappen 0–5 sind abgeschlossen, Etappe 6 (Betrieb und Härtung) läuft.
-Gemessen erledigt sind PostgreSQL 18, Flyway-Migrationen, aussagekräftige Health-Checks,
-strukturierte Logs mit optionalem Tracing, ein Reverse Proxy mit Authentifizierung,
-Security-Headern und Rate Limit sowie eine Last-Messbasis. **Nicht erledigt ist die
-Inbetriebnahme selbst:** Es läuft nichts öffentlich, es gibt keinen Server, kein TLS und
-keine Sicherungen — folglich existiert weder der Tag `stage-6-cloud-ops` noch ein
-Release v1.0.0. Das steht hier so, weil das Weglassen genau die Schönfärberei wäre,
-gegen die dieses Repository argumentiert.
+**Stand heute:** Die Etappen 0–6 sind abgeschlossen. Etappe 6 (Betrieb und Härtung) wurde
+am 14.08.2026 mit dem Live-Gang geschlossen: Beide Stände laufen auf der Stoicera-Flotte
+(Hetzner + Dokploy) — [migration-lab.stoicera.cyou](https://migration-lab.stoicera.cyou)
+(moderner Stand, öffentlich; `/admin`, `/api/admin` und `/actuator` hinter Basic Auth) und
+[migration-lab-legacy.stoicera.cyou](https://migration-lab-legacy.stoicera.cyou) (der
+2016er-Stand, **vollständig hinter Basic Auth**, weil er die SQL-Injection absichtlich
+bewahrt) —, dazu Images aus der CI über GHCR, TLS von Let's Encrypt sowie nächtliche
+`pg_dump`-Sicherungen für beide Stände mit **durchgeführter** Restore-Probe. Tag
+`stage-6-cloud-ops` und Release v1.0.0 existieren seither
+([ADR-0016](docs/adr/0016-deployment-dokploy-stoicera-fleet.md),
+[Kapitel 8](playbook/08-der-live-gang-und-was-das-heisst.md)). **Bewusst offen bleibt die
+Off-site-Kopie der Sicherungen:** Sie ist nicht eingerichtet, der nächtliche Job
+protokolliert das jede Nacht. Auch das steht hier, statt es wegzulassen.
+
+*Stand bei Abfassung (05.08.2026), absichtlich nicht gelöscht:* Etappen 0–5 waren
+abgeschlossen, Etappe 6 lief. Gemessen erledigt waren PostgreSQL 18, Flyway-Migrationen,
+aussagekräftige Health-Checks, strukturierte Logs mit optionalem Tracing, ein Reverse
+Proxy mit Authentifizierung, Security-Headern und Rate Limit sowie eine Last-Messbasis.
+**Nicht erledigt war die Inbetriebnahme selbst:** Es lief nichts öffentlich, es gab keinen
+Server, kein TLS und keine Sicherungen — folglich existierte damals weder der Tag
+`stage-6-cloud-ops` noch ein Release v1.0.0. Das stand hier so, weil das Weglassen genau
+die Schönfärberei wäre, gegen die dieses Repository argumentiert; **eingelöst am
+14.08.2026.** Die neun Tage dazwischen bleiben in der Historie sichtbar.
 
 **Transparenz zur Entstehung:** Die Umsetzung erfolgte KI-gestützt — ein
 Claude-Code-Agent hat unter Anleitung und Review des Inhabers gearbeitet. Die

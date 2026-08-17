@@ -47,7 +47,7 @@ Ein Repo (Monorepo mit zwei Application-Ständen + Playbook), das eine realistis
 ## 6. User Stories (Auszug)
 
 1. Als Interessent öffne ich das Playbook und sehe je Etappe: Ausgangslage, Schritte, Ergebnis, Aufwand ehrlich in Stunden.
-2. Als Entwickler checke ich Tag `stage-0-legacy` aus und starte die Alt-App in Docker; Tag `stage-6-modern` zeigt denselben Funktionsumfang im neuen Stack — dieselbe Selenium-Suite läuft gegen beide.
+2. Als Entwickler checke ich Tag `stage-0-legacy` aus und starte die Alt-App in Docker; Tag `stage-5-angular` zeigt denselben Funktionsumfang im neuen Stack, `stage-6-cloud-ops` den Endzustand inklusive Betrieb — dieselbe Selenium-Suite läuft gegen Alt- und Neu-Stand. *(Der bei Abfassung geplante Tag-Name `stage-6-modern` wurde nie vergeben; die tatsächliche Tag-Liste steht in [`../stages.md`](../stages.md).)*
 3. Als Prüfer lese ich den KI-Testgen-Bericht: Anzahl generierter Tests, Mutation Score vor/nach menschlicher Nachbesserung, Kostenaufstellung.
 4. Als JKU-Gesprächspartner sehe ich, dass die Migrationsstrecke der Ausschreibung (Angular/Spring Boot + Selenium) bereits einmal vollständig öffentlich durchlaufen wurde.
 
@@ -65,6 +65,8 @@ Ein Repo (Monorepo mit zwei Application-Ständen + Playbook), das eine realistis
 - Playbook als eigenständiges PDF/Website-Kapitel exportierbar; ≥ 1 Gespräch mit Verweis darauf innerhalb von 3 Monaten.
 
 ## 9. Offene Punkte an den Owner
+
+> **Stand bei Abfassung — die folgenden Punkte bleiben als historischer Beleg stehen und werden nicht gelöscht.** Inzwischen erledigt: Das Kickoff-Gate ist am 30.07.2026 zugunsten des synthetischen WerkstattCRM entschieden ([ADR-0001](adr/0001-synthetic-legacy-application.md)); der Name `migration-lab` ist mit dem Release v1.0.0 vom 14.08.2026 fixiert; die Reihenfolgefrage zu einvoice-at hat sich mit dem vollständig durchlaufenen Projekt (G0–G7, Tag `stage-6-cloud-ops`, siehe [Kapitel 8](../playbook/08-der-live-gang-und-was-das-heisst.md)) erledigt. Aus dieser Liste offen bleibt allein die Serie auf austrianbusiness.at (siehe [VERMARKTUNG.md](VERMARKTUNG.md)).
 
 - Name (Arbeitstitel migration-lab) & ob das Playbook zusätzlich auf austrianbusiness.at als Serie erscheint.
 - Kickoff-Gate: reale abandonnierte OSS-App vs. synthetisches WerkstattCRM (Default: synthetisch, transparent gekennzeichnet).

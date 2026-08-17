@@ -14,8 +14,15 @@ docker compose -f modern/docker-compose.yml up -d --wait
 - PostgreSQL: 127.0.0.1:5434 (werkstatt/werkstatt), same committed seed as legacy
 
 **`./mvnw verify -f modern/pom.xml` requires a running Docker daemon** — the module
-tests include a Testcontainers integration test that starts a real `postgres:9.6`
-from the very same `db/init` scripts the compose stand mounts. Full operations
+tests include a Testcontainers integration test that starts a real `postgres:18`
+with the stand's pinned `en_US.utf8` collation — image and collation both matter,
+because collation decides `ORDER BY` and the golden masters are sensitive to it
+([ADR-0012](../docs/adr/0012-postgresql-18-und-fixierte-collation.md)) — and lets
+**Flyway** build the schema from the same locations the compose stand migrates on
+start (`src/main/resources/db/migration` for the schema, `db/demo` for the seed;
+production drops the second), so there is one schema source and not two copies
+([ADR-0013](../docs/adr/0013-flyway-statt-handgestarteter-sql.md)). Until stage 6
+this was `postgres:9.6` seeded from mounted `db/init` scripts. Full operations
 reference: [`docs/deployment.md`](../docs/deployment.md).
 
 ## Frontend build (stage 5)
@@ -58,20 +65,35 @@ THIS table is the disposition of each wart on the migrating stand, so
 
 | Wart | Status in modern/ |
 |---|---|
-| B1 God class | **survives** until G6 — it is the study object of the AI test-gen experiment |
+| B1 God class | **survives** — it was G6's study object (completed 2026-08-02) and stayed after it, deliberately: 728 lines at v1.0.0, not split. Sanctioned in `docs/DEVIATIONS.md` (ArchUnit row: a God class on purpose, not an architecture violation) |
 | B2 field injection | removed (stage 4 constructor-injection sweep, complete) |
 | B3/B4 SQL concatenation | removed — string sinks in stage 4, remaining typed-ID sites in the review remediation; `modern/` is concatenation-free |
 | B7 no transactions | **survives** — pinned by characterization (km side effect); fix would be behaviour-relevant → needs ADR-0004 sanctioning first |
 | B8 money as double | **survives** — disposition in `docs/DEVIATIONS.md`; rounding behaviour pinned by characterization |
-| B9 static SimpleDateFormat | **survives** — single-threaded usage today; candidate for the G6 test target list |
+| B9 static SimpleDateFormat | **survives** — as written (2026-07-30): "single-threaded usage today; candidate for the G6 test target list". Both halves have since been overtaken, kept here rather than rewritten: `WerkstattService` *was* the headline G6 target (`ai-testgen/PROTOCOL.md`, slice S1) and the wart outlived the experiment; and on 2026-08-05 the stage-6 static analysis re-found the same field independently, filed as `LEGACY_NOTES` B20 and ledgered `deferred(post-v1.0)` in `docs/DEVIATIONS.md`. Since the stand went live (2026-08-14, Kap. 8) the disposition rests on that ledger entry, not on the "single-threaded usage" premise |
 | B10 raw error messages (500 + `e.getMessage()`) | **survives** — the error contract is pinned by characterization; sanitising it is a contract change (ADR-0004 gate) |
 | B11–B13, B19 | **survive** — pinned where observable; same ADR-0004 gate for any change |
 | B14 debug leftovers / dead code | removed (stage 2, documented) |
 | B16 JSP admin page incl. destructive POST | removed (stage 5, SD-2) — absorbed as SPA route `/admin` + `GET /api/admin/statistik`; `POST /admin/bereinigen` keeps path/status/meldung (pinned); JSP/JSTL/gson retired, WAR→JAR |
-| B17 config duplication w/ plaintext password | removed (review remediation) — `application-prod.properties` deleted; real deployment config arrives with G7 via environment, see `.env.example` |
-| B18 hand-run SQL schema | **survives** — Flyway disposition in `docs/DEVIATIONS.md` (G7) |
+| B17 config duplication w/ plaintext password | removed (review remediation) — `application-prod.properties` deleted; deployment config comes from the environment (`.env.example`). *As written this was still pending G7; redeemed on 2026-08-14 (`stage-6-cloud-ops`, v1.0.0) — the live stands read their secrets from Dokploy's per-service env store, never from this repository ([ADR-0016](../docs/adr/0016-deployment-dokploy-stoicera-fleet.md))* |
+| B18 hand-run SQL schema | removed (stage 6 / G7, 2026-08-05) — schema and demo data are Flyway migrations under `src/main/resources/db/{migration,demo}`, `modern/db/init/` is gone ([ADR-0013](../docs/adr/0013-flyway-statt-handgestarteter-sql.md)); `legacy/` keeps its hand-run scripts — there, the wart is the exhibit |
 
 ## Stage log
+
+- **Stage 6 (`stage-6-cloud-ops`, done 2026-08-14):** ops half on 2026-08-05 — PostgreSQL
+  9.6 → 18 with pinned collation ([ADR-0012](../docs/adr/0012-postgresql-18-und-fixierte-collation.md)),
+  schema via Flyway instead of mounted init scripts ([ADR-0013](../docs/adr/0013-flyway-statt-handgestarteter-sql.md)),
+  Actuator-based health checks whose readiness actually tracks the database, OpenTelemetry
+  and structured logs ([ADR-0015](../docs/adr/0015-observability-actuator-otel-strukturierte-logs.md)),
+  Error Prone, and the reverse-proxy edge as an auth boundary
+  ([ADR-0014](../docs/adr/0014-authentifizierung-am-edge.md); overlay `docker-compose.edge.yml`,
+  check `edge/verify-edge.sh`). Deployment half on 2026-08-14 — CI-built GHCR images, one
+  Dokploy compose service per stand on the Stoicera fleet, TLS from Let's Encrypt, nightly
+  `pg_dump` with an **executed** restore rehearsal
+  ([ADR-0016](../docs/adr/0016-deployment-dokploy-stoicera-fleet.md)); the modern stand is
+  public at <https://migration-lab.stoicera.cyou> with its admin surface gated. Off-site
+  copies of those dumps do **not** exist yet — deliberately deferred, and the nightly job
+  logs that fact.
 
 - **Stage 5 (`stage-5-angular`):** AngularJS 1.8 → Angular 22.1.0 via Strangler
   Fig on a URL seam ([ADR-0009](../docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md)):
