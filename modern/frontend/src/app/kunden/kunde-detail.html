@@ -126,29 +126,33 @@
     <div class="col-md-6">
       <h4>Fahrzeuge</h4>
       <table class="table table-condensed" data-testid="fahrzeuge-tabelle">
-        <tr>
-          <th>Kennzeichen</th>
-          <th>Fahrzeug</th>
-          <th>Baujahr</th>
-          <th>Pickerl bis</th>
-          <th></th>
-        </tr>
-        @for (f of fahrzeuge(); track f.id) {
-          <tr data-testid="fahrzeug-zeile">
-            <td>{{ f.kennzeichen }}</td>
-            <td>{{ f.marke }} {{ f.modell }}</td>
-            <td>{{ f.baujahr }}</td>
-            <td>{{ f.pickerlDatum | date: 'dd.MM.yyyy' }}</td>
-            <td class="text-right">
-              <button class="btn btn-xs btn-danger" (click)="fahrzeugLoeschen(f)">X</button>
-            </td>
-          </tr>
-        }
-        @if (fahrzeuge().length === 0) {
+        <thead>
           <tr>
-            <td colspan="5" class="text-muted">Noch kein Fahrzeug angelegt.</td>
+            <th>Kennzeichen</th>
+            <th>Fahrzeug</th>
+            <th>Baujahr</th>
+            <th>Pickerl bis</th>
+            <th></th>
           </tr>
-        }
+        </thead>
+        <tbody>
+          @for (f of fahrzeuge(); track f.id) {
+            <tr data-testid="fahrzeug-zeile">
+              <td>{{ f.kennzeichen }}</td>
+              <td>{{ f.marke }} {{ f.modell }}</td>
+              <td>{{ f.baujahr }}</td>
+              <td>{{ f.pickerlDatum | date: 'dd.MM.yyyy' }}</td>
+              <td class="text-right">
+                <button class="btn btn-xs btn-danger" (click)="fahrzeugLoeschen(f)">X</button>
+              </td>
+            </tr>
+          }
+          @if (fahrzeuge().length === 0) {
+            <tr>
+              <td colspan="5" class="text-muted">Noch kein Fahrzeug angelegt.</td>
+            </tr>
+          }
+        </tbody>
       </table>
 
       <button

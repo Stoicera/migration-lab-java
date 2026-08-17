@@ -39,38 +39,44 @@
       </p>
 
       <table class="table" data-testid="rechnung-positionen">
-        <tr>
-          <th>Position</th>
-          <th class="text-right">Menge</th>
-          <th class="text-right">Einzelpreis</th>
-          <th class="text-right">Betrag</th>
-        </tr>
-        @for (p of a.positionen; track p.id) {
-          <tr data-testid="rechnung-position-zeile">
-            <td>{{ p.bezeichnung }}</td>
-            <td class="text-right">{{ p.menge }}</td>
-            <td class="text-right">{{ p.einzelpreis | euro }}</td>
-            <td class="text-right">{{ p.gesamtpreis | euro }}</td>
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th class="text-right">Menge</th>
+            <th class="text-right">Einzelpreis</th>
+            <th class="text-right">Betrag</th>
           </tr>
-        }
+        </thead>
+        <tbody>
+          @for (p of a.positionen; track p.id) {
+            <tr data-testid="rechnung-position-zeile">
+              <td>{{ p.bezeichnung }}</td>
+              <td class="text-right">{{ p.menge }}</td>
+              <td class="text-right">{{ p.einzelpreis | euro }}</td>
+              <td class="text-right">{{ p.gesamtpreis | euro }}</td>
+            </tr>
+          }
+        </tbody>
       </table>
     }
 
     <table class="table" style="max-width: 300px; margin-left: auto">
-      <tr>
-        <th>Summe netto</th>
-        <td class="text-right" data-testid="rechnung-netto">{{ r.summeNetto | euro }}</td>
-      </tr>
-      <tr>
-        <th>USt 20%</th>
-        <td class="text-right" data-testid="rechnung-ust">{{ r.ust | euro }}</td>
-      </tr>
-      <tr>
-        <th>Gesamt</th>
-        <td class="text-right" data-testid="rechnung-brutto">
-          <strong>{{ r.summeBrutto | euro }}</strong>
-        </td>
-      </tr>
+      <tbody>
+        <tr>
+          <th>Summe netto</th>
+          <td class="text-right" data-testid="rechnung-netto">{{ r.summeNetto | euro }}</td>
+        </tr>
+        <tr>
+          <th>USt 20%</th>
+          <td class="text-right" data-testid="rechnung-ust">{{ r.ust | euro }}</td>
+        </tr>
+        <tr>
+          <th>Gesamt</th>
+          <td class="text-right" data-testid="rechnung-brutto">
+            <strong>{{ r.summeBrutto | euro }}</strong>
+          </td>
+        </tr>
+      </tbody>
     </table>
 
     <p class="text-muted" style="margin-top: 30px; font-size: 11px">
