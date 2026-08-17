@@ -344,7 +344,8 @@ the modern stand's copy, and the backup doubles as the reset path.
 ## Screenshots
 
 The two stands **as deployed**, same screen, ten years apart — captured from the live
-instances on 2026-08-14. They look almost identical, and that is the point: functional
+instances on 2026-08-17, address bar included, so the provenance is in the picture rather
+than in the filename. They look almost identical, and that is the point: functional
 equivalence is the product, and the same Selenium scenarios pass on both.
 
 | 2016 — AngularJS 1.8 on Spring Boot 1.5 | 2026 — Angular 22 on Spring Boot 4.1 |
