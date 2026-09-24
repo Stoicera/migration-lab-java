@@ -22,8 +22,8 @@ Stage 6 is **complete**: both stands are deployed, verified, backed up and tagge
 | Review Dependabot PRs; close the ones targeting `legacy/` or `ai-testgen/testbed/legacy/` instead of merging them | weekly | [§E](#ongoing) | 10 min |
 | Read the **Trivy image-scan output** in the `modern-build` job — it runs with `exit-code: 0` and fails nothing, so it is invisible unless somebody looks | every merge to `master` | [§E](#ongoing) | 2 min |
 | Restore rehearsal — load the newest dump into a scratch database and count table by table against live | after any schema change | [`deployment.md` §10.6](deployment.md#10-production-deployment) | 15 min |
-| Rotate a credential (htpasswd values need doubled dollars, `$$apr1$$…`), then re-run `verify-live.sh` | when the demo credential has been shared too widely | [§J](#j-operating-the-deployment) | 10 min |
-| **Off-site backup copies — deliberately deferred.** The nightly cron already calls the shared off-site script; it logs `OFF-SITE SYNC NOT CONFIGURED` every night until a storage target exists. Dumps and an executed restore rehearsal exist; a **second location does not** | when the owner procures the storage target | [§J](#j-operating-the-deployment) | 30 min |
+| Rotate a credential (htpasswd values with single dollars from Dokploy 0.30, `$apr1$…`), then re-run `verify-live.sh` | when the demo credential has been shared too widely | [§J](#j-operating-the-deployment) | 10 min |
+| **Off-site outside Hetzner.** Since 2026-09-23 the nightly dumps are copied to the Dokploy panel (`backupsink@10.10.1.1`, read-back verified); that covers the app node, not the Hetzner account | when the owner procures a Storage Box | [§J](#j-operating-the-deployment) | 30 min |
 | Delete the retired PostgreSQL 9.6 volume on your local machine — it holds disk for nothing | once, locally | [§H](#one-off-after-the-postgresql-upgrade) | 1 min |
 
 **Nothing on this list is a defect or a blocker.** The one genuinely open item is the
@@ -265,8 +265,8 @@ Every line has been decided and executed; the decisions live in
   2026-08-14). `GHCR_TOKEN` was **deliberately not created** — `GITHUB_TOKEN` with
   `packages: write` pushes, and both GHCR packages allow anonymous pulls (verified).
 - **Edge credentials** (`MODERN_ADMIN_AUTH`, `LEGACY_ADMIN_AUTH`) sit in Dokploy's env
-  store per service — **htpasswd values need doubled dollars** (`$$apr1$$…`), the reason
-  is a measured trap in `deployment.md` §10.3.
+  store per service — **htpasswd values with single dollars** (`$apr1$…`) from Dokploy 0.30;
+  0.29 needed doubled ones. The measured trap is in `deployment.md` §10.3.
 
 ---
 
@@ -281,10 +281,9 @@ Every line has been decided and executed; the decisions live in
       console on <https://migration-lab.stoicera.cyou/kunden> — no script here can see a
       CSP violation (§H's rule, now with a live URL).
 - [ ] **Rotate a credential:** Dokploy → service → Environment (htpasswd values with
-      `$$`), redeploy the service, then re-run `deploy/verify-live.sh` — it asserts the
+      single `$` from Dokploy 0.30), redeploy the service, then re-run `deploy/verify-live.sh` — it asserts the
       lock opens as well as closes, which is exactly the direction that broke once.
-- [ ] **Off-site backups (open):** procure the Storage Box, create
-      `/opt/einvoice-at/offsite.env` per einvoice-at's §10.4 — the migration-lab cron
-      already calls the shared sync script and will start shipping the moment the target
-      exists. Until then: dumps + rehearsal exist, off-site copies do **not**.
+- [ ] **Off-site backups:** armed 2026-09-23 via `/opt/einvoice-at/offsite.env` (target
+      `backupsink@10.10.1.1`, the panel over the private network). Open: a location outside
+      the Hetzner account (Storage Box, owner decision).
 - [ ] **Restore rehearsal** after any schema change: procedure in `deployment.md` §10.6.
