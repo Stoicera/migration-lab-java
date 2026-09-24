@@ -631,12 +631,15 @@ repository (`master`) and running its `deploy/*.compose.yml`. Per-service enviro
 lives in Dokploy's env store, never in the repo: `LEGACY_ADMIN_AUTH`,
 `LEGACY_DB_PASSWORD` · `MODERN_ADMIN_AUTH`, `MODERN_DB_PASSWORD`, `MODERN_HSTS_SECONDS`.
 
-**The trap that bit, kept loud for the next person:** an htpasswd hash is full of `$`.
-Dokploy strips quotes from stored env values, and the compose dotenv parser then
-expands `$apr1` and the salt as (empty) variables — the deployed label contained a
-fragment of the hash, and the gate returned **401 with correct credentials** while
-looking perfectly healthy from every other angle. Store such values with doubled
-dollars (`$$apr1$$…`). Found because the verification checks both directions; a
+**The trap that bit, kept loud for the next person:** an htpasswd hash is full of `$`,
+and the right escaping depends on the Dokploy version. Dokploy 0.29 wrote the `.env`
+unquoted, the compose dotenv parser expanded `$apr1` and the salt as (empty) variables,
+and the gate returned **401 with correct credentials** — values needed doubled dollars
+(`$$apr1$$…`). **From Dokploy 0.30 the `.env` is written double-quoted with every `$`
+escaped, so the value is stored with single dollars** (`$apr1$…`); doubled ones reach
+the label literally and again reject every password (fixed on the host 2026-09-23,
+proven with Traefik 3.6.25). Re-check after every Dokploy upgrade: `docker inspect` the
+container and read the label. Found because the verification checks both directions; a
 lock nobody can open is a broken lock (§10.5).
 
 ### 10.4 DNS and TLS
@@ -683,9 +686,11 @@ full run against public DNS after certificates issued (**all assertions hold**):
 `/etc/cron.d/migration-lab-backup` on the app node runs nightly at 02:45:
 `pg_dump` of both stands via `docker exec` (no DB port is published), `gzip -t` on
 every dump, a size floor, 14 days retention — then hands the directory to the host's
-shared off-site script, which exits loudly with `NOT CONFIGURED` until the off-site
-target exists (one mechanism and one future `offsite.env` for every product on this
-host; until it is configured, nothing here claims an off-site copy exists).
+shared off-site script (one mechanism and one `offsite.env` for every product on this
+host). Armed since 2026-09-23: `OFFSITE_SUBDIR=migration-lab OFFSITE_PATTERN='*.sql.gz'`
+on the cron line ships the dumps to `backupsink@10.10.1.1` (the Dokploy panel, private
+network, `rrsync -no-del`) with a sha256 read-back. Same Hetzner account and region: it
+covers the loss of the app node, not of the account.
 
 **Restore rehearsal, executed 2026-08-14:** each first-night dump was restored into a
 scratch database and counted table by table against the live one — kunde 10/10,
@@ -702,7 +707,7 @@ afterwards. A backup nobody has restored is a hope; these were restored.
   services redeployed → containers recreated from the new digest, checked with
   `docker ps` on the host, not the tile.
 - **Rotate a credential:** change it in the Dokploy service's Environment tab
-  (mind `$$` for htpasswd values), redeploy the service.
+  (htpasswd values with single dollars from Dokploy 0.30, §10.3), redeploy the service.
 - **Logs:** the modern stand emits ECS JSON (`docker logs` on the app container);
   remember SECURITY.md §7 before ever attaching a shipper.
 - **After any CSP or frontend change:** `deploy/verify-live.sh` *and* a real browser

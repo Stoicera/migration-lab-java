@@ -1280,3 +1280,7 @@ Migration ein Aussehen verliert, ohne dass ein Test rot wird."
 
 **Next:** Sichtprüfung am Live-Stand nach dem Deploy (DOM enthält `tbody`, `td` hat Innenabstand),
 danach die Neuaufnahme der beiden Kern-Screenshots — **erst dann** Marketing.
+
+## 2026-09-24 — fleet maintenance, docs sync
+
+Dokploy 0.30.7 writes the compose `.env` double-quoted with `$` escaped: the doubled-dollar htpasswd values (0.29 trap) rejected every password; fixed on the host to single dollars 2026-09-23, gates verified 401 without credentials (a login with the real ones is still to do). Off-site copies of the dumps are armed (`backupsink@10.10.1.1`). §10.3, §10.6 and MANUAL_TASKS §J corrected. Hours: 0.1 (docs only).
