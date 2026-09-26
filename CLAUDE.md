@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # CLAUDE.md — migration-lab
 
 You are working on **migration-lab**: a public, reproducible legacy modernization (Java 8 / Spring Boot 1.5 / AngularJS → Java 25 / Spring Boot 4 / Angular 22) with a Selenium safety net, measured AI-assisted test generation, and a German migration playbook. This is a portfolio piece of the Stoicera Software Group aimed at Austrian SMEs and universities (JKU) — it must demonstrate how a senior team de-risks migrations. Honesty and reproducibility are the product.
