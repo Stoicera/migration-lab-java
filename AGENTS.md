@@ -9,22 +9,27 @@ Two founders (Sebastian Kern, Raphael Lugmayr), Upper Austria. Brands: Stoicera 
 
 See `docs/00_ssot.md`. One sentence here: public, reproducible Java legacy modernisation with measured results, for Austrian SMEs and universities.
 Non-goals: <three bullets>.
-Active PRD: `docs/prd/NN_*.md` — read before building.
+Active PRD: `docs/PRD.md` — read before building.
 
 ## How we work here
 
 - Work = GitHub issue. Questions as issue comments, not chat.
-- Fresh git worktree per task from `origin/main` (never build on main), PR against `main` with `Closes #NN` and the template Intent · Gherkin · Evidence · Debt taken · Open. Small PRs. CI green before PR. Full loop: `ai/prompts/factory-feature.md`.
-- Build: `<cmd>` · Test: `<cmd>` · Lint/Typecheck: `<cmd>` · Migrate: `<cmd>`
-- Deploy: push to `main` → GitHub Actions → Coolify (`<app name>`) → smoke test → Sentry check. PostHog receives events from `main` (big products). Rollback: `<cmd>`.
-- Preview per PR at `<pattern>`.
+- Fresh git worktree per task from `origin/master` (never build on master), PR against `master` with `Closes #NN` and the template Intent · Gherkin · Evidence · Debt taken · Open. Small PRs. CI green before PR. Full loop: `ai/prompts/factory-feature.md`.
+- There is no root pom; every Maven call needs `-f <module>/pom.xml`. Commands per `docs/deployment.md` §5–§7:
+- Build: `./mvnw -B verify -f modern/pom.xml` (also runs `npm ci` + Angular build, `ng lint`, `prettier --check`, Spotless, JaCoCo; needs Docker) · legacy: `./mvnw -B verify -f legacy/pom.xml` (JDK 8)
+- Run a stand: `docker compose -f modern/docker-compose.yml up -d --wait` (legacy: `legacy/docker-compose.yml`)
+- Test: `./mvnw verify -f e2e/pom.xml -Dtarget=legacy|modern` · characterization: `./mvnw verify -f characterization/pom.xml` (legacy; modern needs `-DbaseUrl=… -DdbUrl=… -Dstand=modern`) · both need a running stand
+- Lint/Typecheck: part of the modern `verify` above · frontend alone: `npm run lint` in `modern/frontend`
+- Migrate: Flyway runs on application start (`spring-boot-starter-flyway`); no separate command.
+- Deploy: push to `master` → `.github/workflows/deploy.yml` builds both images to GHCR → triggers the Dokploy compose services `legacy-stand` / `modern-stand` → check with `deploy/verify-live.sh` (`docs/deployment.md` §10). Rollback: `<cmd>` (no rollback command in the repo yet; images carry an immutable `sha-` tag).
+- No per-PR preview: `deploy.yml` runs on `master` only.
 - Before you request review: check the result against the intent, fix deviations yourself. Copilot review runs automatically on every PR; a second model reviews security.
 - Decisions with reach → `docs/decisions/` (ADR, one page). Cycle memo → `docs/cycles/`.
 - After any production change: append one line to `ops/runlog.md` (date · agent · what · rollback).
 
 ## Conventions
 
-- Stack: <Next.js 15, TypeScript strict, Prisma, PostgreSQL 17, Tailwind, shadcn/ui>.
+- Stack: legacy stand Java 8, Spring Boot 1.5, PostgreSQL 9.6 (preserved on purpose) · modern stand Java 25, Spring Boot 4.1, Flyway, PostgreSQL 18, Angular 22 frontend · Maven Wrapper, Docker Compose.
 - Money in cents (integer), time zone Europe/Vienna, tenant id on every table.
 - No new dependency without one sentence of justification in the PR. No speculative abstractions.
 - Tests: unit for logic, integration for API, one E2E per critical path. Synthetic data only.
