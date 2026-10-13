@@ -3,16 +3,16 @@
 **Status:** accepted · **Date:** 2026-08-14 · **Milestone:** G7 (stage 6, deployment half) · **Deciders:** Sebastian Kern (owner, via standing autonomous-execution mandate)
 **Context:** [`docs/MANUAL_TASKS.md` §I](../MANUAL_TASKS.md#i-before-a-production-deployment-can-be-written-down-at-all) listed what had to be decided or procured before any deployment step could honestly be written down. This ADR records those decisions and their reasons; [`docs/deployment.md` §10](../deployment.md#10-production-deployment) is replaced by executed steps in the same PR series.
 
-## Decision 1 — Platform: Dokploy on `skdevserver1`, not Coolify, not a new host
+## Decision 1 — Platform: Dokploy on the existing app node, not Coolify, not a new host
 
 `ENGINEERING_STANDARDS.md` §7 has required *"Hetzner VPS mit Dokploy"* since before this
 stage existed — a different platform would be a standards deviation needing its own ledger
 row, and no argument for one survived contact with the facts:
 
-- **The fleet already runs both.** Dokploy drives `skdevserver1` (8 GB, Falkenstein; panel
+- **The fleet already runs both.** Dokploy drives the app node (8 GB, Falkenstein; panel
   on its own control-plane host), Coolify drives two 4 GB nodes that carry *other
   customers' production* (shared blast radius — the deploy skill forbids treating them as
-  spare capacity). `skdevserver1` had 5.3 GB RAM available and 133 GB disk, measured
+  spare capacity). The app node had 5.3 GB RAM available and 133 GB disk, measured
   2026-08-14 — capacity was never the blocker.
 - **The proven walkthrough exists for Dokploy.** einvoice-at went to production on this
   exact host pair in 2026-08, and its documented traps (fail2ban vs. the panel's SSH
@@ -88,7 +88,7 @@ visitors can mutate the modern stand's synthetic data; the backup/restore arrang
 ## Decision 6 — Domains
 
 `migration-lab.stoicera.cyou` and `migration-lab-legacy.stoicera.cyou`, A records to
-`128.140.63.38` (the app node — never the panel). The zone is an owner rule set during
+the app node's address (never the panel; the address lives in the DNS zone and in 1Password). The zone is an owner rule set during
 this stage: **`stoicera.com` is the brand domain and is not used for lab projects;
 `stoicera.cyou` is the fleet's lab/infrastructure zone** (it already carries the Coolify
 controller and the CBZ shop). The zone sits on Hostinger with a wildcard parking record,
