@@ -1,5 +1,5 @@
 # Production compose for the MODERN stand on the Stoicera fleet (Dokploy on
-# skdevserver1). The local dev stand stays modern/docker-compose.yml + the edge
+# the fleet's app node). The local dev stand stays modern/docker-compose.yml + the edge
 # overlay; this file is the production translation of exactly that pair.
 #
 # The one structural difference to the local edge overlay, and its reason

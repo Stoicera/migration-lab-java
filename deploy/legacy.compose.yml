@@ -1,5 +1,5 @@
 # Production compose for the LEGACY stand on the Stoicera fleet (Dokploy on
-# skdevserver1). This file is what the Dokploy compose service runs; the local
+# the fleet's app node). This file is what the Dokploy compose service runs; the local
 # dev stand stays legacy/docker-compose.yml and is unchanged.
 #
 # What is different from the dev stand, and why (ADR-0016):
