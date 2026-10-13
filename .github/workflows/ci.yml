@@ -54,7 +54,7 @@ jobs:
       - if: steps.stack.outputs.docker == 'true'
         run: docker build -t app:${{ github.sha }} .
       - if: steps.stack.outputs.docker == 'true'
-        uses: aquasecurity/trivy-action@0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: app:${{ github.sha }}
           severity: HIGH,CRITICAL
