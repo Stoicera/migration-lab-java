@@ -8,7 +8,7 @@ Two founders (Sebastian Kern, Raphael Lugmayr), Upper Austria. Brands: Stoicera 
 ## What migration-lab is
 
 See `docs/00_ssot.md`. One sentence here: public, reproducible Java legacy modernisation with measured results, for Austrian SMEs and universities.
-Non-goals: <three bullets>.
+Non-goals (`docs/PRD.md` §5 Out of Scope): no database switch — PostgreSQL stays, Oracle→Postgres only as a playbook excursus · no microservice decomposition — staying modular is the deliberate answer (ADR) · no operation of the legacy stand beyond the project end.
 Active PRD: `docs/PRD.md` — read before building.
 
 ## How we work here
@@ -21,7 +21,7 @@ Active PRD: `docs/PRD.md` — read before building.
 - Test: `./mvnw verify -f e2e/pom.xml -Dtarget=legacy|modern` · characterization: `./mvnw verify -f characterization/pom.xml` (legacy; modern needs `-DbaseUrl=… -DdbUrl=… -Dstand=modern`) · both need a running stand
 - Lint/Typecheck: part of the modern `verify` above · frontend alone: `npm run lint` in `modern/frontend`
 - Migrate: Flyway runs on application start (`spring-boot-starter-flyway`); no separate command.
-- Deploy: push to `master` → `.github/workflows/deploy.yml` builds both images to GHCR → triggers the Dokploy compose services `legacy-stand` / `modern-stand` → check with `deploy/verify-live.sh` (`docs/deployment.md` §10). Rollback: `<cmd>` (no rollback command in the repo yet; images carry an immutable `sha-` tag).
+- Deploy: push to `master` → `.github/workflows/deploy.yml` builds both images to GHCR → triggers the Dokploy compose services `legacy-stand` / `modern-stand` → check with `deploy/verify-live.sh` (`docs/deployment.md` §10). Rollback: `git revert --no-edit <sha> && git push origin master` — `deploy.yml` rebuilds both images under the `master` tag and redeploys both Dokploy services (`pull_policy: always`, `docs/deployment.md` §10.7); then `deploy/verify-live.sh`. Every image also carries an immutable `sha-<12>` tag for pinning.
 - No per-PR preview: `deploy.yml` runs on `master` only.
 - Before you request review: check the result against the intent, fix deviations yourself. Copilot review runs automatically on every PR; a second model reviews security.
 - Decisions with reach → `docs/decisions/` (ADR, one page). Cycle memo → `docs/cycles/`.
