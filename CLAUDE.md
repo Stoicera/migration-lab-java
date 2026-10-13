@@ -21,7 +21,7 @@ You are working on **migration-lab**: a public, reproducible legacy modernizatio
 - **Stack of the modern side:** Java 25, Spring Boot 4.1.x, Angular 22 (ADR-0003; was 20), PostgreSQL, Testcontainers, OpenRewrite (used AND evaluated). No other frameworks without ADR + approval.
 - **No secrets in the repo.** `.env.example` complete.
 - Language: code + technical docs English; `playbook/` German (decision-maker
-  audience); the German strategy docs (PRD, MILESTONES, VERMARKTUNG,
+  audience); the German strategy docs (PRD, MILESTONES,
   STOICERA_LABS_KONTEXT, ENGINEERING_STANDARDS) stay German by design;
   `docs/glossary.md` bridges the terms.
 - Standards deviations are never silent: ledger in `docs/DEVIATIONS.md`.
