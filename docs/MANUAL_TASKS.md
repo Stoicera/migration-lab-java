@@ -17,6 +17,7 @@ Stage 6 is **complete**: both stands are deployed, verified, backed up and tagge
 
 | Task | When | Where | Effort |
 |---|---|---|---|
+| **Playbook PDF on the release** — build with `playbook/build-pdf.sh`, attach with `gh release upload v1.0.0 playbook/dist/migration-playbook.pdf`; the README's *For companies* section and `docs/demo.md` link to that asset | once — **being attached today, 2026-10-13**; the asset list was still empty when this row was written, check with `gh release view v1.0.0 --json assets` | [§E](#e-repository-administration-on-github) | 5 min |
 | Run `deploy/verify-live.sh` with the four credentials (`EDGE_USER`, `EDGE_PASSWORD`, `LEGACY_USER`, `LEGACY_PASSWORD`) | after every deploy that touched the edge, auth, headers or the frontend | [§J](#j-operating-the-deployment) | 2 min |
 | Open the live site in a **real browser** and read the console for CSP violations | after any CSP or frontend change — no script can see this | [§H](#h-operating-the-stage-6-add-ons) · [§J](#j-operating-the-deployment) | 2 min |
 | Review Dependabot PRs; close the ones targeting `legacy/` or `ai-testgen/testbed/legacy/` instead of merging them | weekly | [§E](#ongoing) | 10 min |
