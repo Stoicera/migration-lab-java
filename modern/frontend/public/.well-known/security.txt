@@ -1,0 +1,13 @@
+# security.txt (RFC 9116) for the modern stand of migration-lab.
+# Lives in modern/frontend/public/ so the Angular build copies it into the
+# bundle and Spring Boot serves it as a static resource from classpath:/static/.
+# Not an SPA route (SpaForwardController lists its paths explicitly) and not
+# behind the admin Basic-auth router (deploy/modern.compose.yml guards only
+# /admin, /api/admin and /actuator). The legacy stand gets no security.txt:
+# it is the exhibit and sits entirely behind Basic auth.
+Contact: https://github.com/Stoicera/migration-lab-java/security/advisories/new
+Contact: mailto:office@stoicera.com
+Expires: 2027-10-01T00:00:00.000Z
+Preferred-Languages: de, en
+Canonical: https://migration-lab.stoicera.cyou/.well-known/security.txt
+Policy: https://github.com/Stoicera/migration-lab-java/blob/master/SECURITY.md

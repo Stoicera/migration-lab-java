@@ -645,7 +645,7 @@ lock nobody can open is a broken lock (§10.5).
 ### 10.4 DNS and TLS
 
 Two A records at Hostinger — `migration-lab` and `migration-lab-legacy` under
-`stoicera.cyou` → `128.140.63.38` (the app node, never the panel host). The zone is an
+`stoicera.cyou` → the app node's address (never the panel host; address in the zone and in 1Password). The zone is an
 owner rule (ADR-0016 §6): `stoicera.com` stays brand-only, `stoicera.cyou` is the lab
 zone — and it carries a **wildcard parking record**, so both names were verified **by
 value** before anything proceeded ("resolves" proves nothing there). Let's Encrypt then
@@ -688,8 +688,8 @@ full run against public DNS after certificates issued (**all assertions hold**):
 every dump, a size floor, 14 days retention — then hands the directory to the host's
 shared off-site script (one mechanism and one `offsite.env` for every product on this
 host). Armed since 2026-09-23: `OFFSITE_SUBDIR=migration-lab OFFSITE_PATTERN='*.sql.gz'`
-on the cron line ships the dumps to `backupsink@10.10.1.1` (the Dokploy panel, private
-network, `rrsync -no-del`) with a sha256 read-back. Same Hetzner account and region: it
+on the cron line ships the dumps to the backup sink on the Dokploy panel (private
+network, `rrsync -no-del`; target in 1Password) with a sha256 read-back. Same Hetzner account and region: it
 covers the loss of the app node, not of the account.
 
 **Restore rehearsal, executed 2026-08-14:** each first-night dump was restored into a

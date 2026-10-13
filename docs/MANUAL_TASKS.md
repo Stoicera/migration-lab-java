@@ -17,13 +17,14 @@ Stage 6 is **complete**: both stands are deployed, verified, backed up and tagge
 
 | Task | When | Where | Effort |
 |---|---|---|---|
+| **Playbook PDF on the release** — built with `playbook/build-pdf.sh`, attached with `gh release upload v1.0.0 …/migration-playbook.pdf`; the README's *For companies* section and `docs/demo.md` link to that asset | **done — attached 2026-10-13** (`gh release view v1.0.0 --json assets` lists `migration-playbook.pdf`, 215,005 bytes, SHA-256 `d7486923…`); repeat only when the playbook changes and a new release is cut | [§E](#e-repository-administration-on-github) | 5 min |
 | Run `deploy/verify-live.sh` with the four credentials (`EDGE_USER`, `EDGE_PASSWORD`, `LEGACY_USER`, `LEGACY_PASSWORD`) | after every deploy that touched the edge, auth, headers or the frontend | [§J](#j-operating-the-deployment) | 2 min |
 | Open the live site in a **real browser** and read the console for CSP violations | after any CSP or frontend change — no script can see this | [§H](#h-operating-the-stage-6-add-ons) · [§J](#j-operating-the-deployment) | 2 min |
 | Review Dependabot PRs; close the ones targeting `legacy/` or `ai-testgen/testbed/legacy/` instead of merging them | weekly | [§E](#ongoing) | 10 min |
 | Read the **Trivy image-scan output** in the `modern-build` job — it runs with `exit-code: 0` and fails nothing, so it is invisible unless somebody looks | every merge to `master` | [§E](#ongoing) | 2 min |
 | Restore rehearsal — load the newest dump into a scratch database and count table by table against live | after any schema change | [`deployment.md` §10.6](deployment.md#10-production-deployment) | 15 min |
 | Rotate a credential (htpasswd values with single dollars from Dokploy 0.30, `$apr1$…`), then re-run `verify-live.sh` | when the demo credential has been shared too widely | [§J](#j-operating-the-deployment) | 10 min |
-| **Off-site outside Hetzner.** Since 2026-09-23 the nightly dumps are copied to the Dokploy panel (`backupsink@10.10.1.1`, read-back verified); that covers the app node, not the Hetzner account | when the owner procures a Storage Box | [§J](#j-operating-the-deployment) | 30 min |
+| **Off-site outside Hetzner.** Since 2026-09-23 the nightly dumps are copied to the Dokploy panel (private network, read-back verified); that covers the app node, not the Hetzner account | when the owner procures a Storage Box | [§J](#j-operating-the-deployment) | 30 min |
 | Delete the retired PostgreSQL 9.6 volume on your local machine — it holds disk for nothing | once, locally | [§H](#one-off-after-the-postgresql-upgrade) | 1 min |
 
 **Nothing on this list is a defect or a blocker.** The one genuinely open item is the
@@ -283,7 +284,7 @@ Every line has been decided and executed; the decisions live in
 - [ ] **Rotate a credential:** Dokploy → service → Environment (htpasswd values with
       single `$` from Dokploy 0.30), redeploy the service, then re-run `deploy/verify-live.sh` — it asserts the
       lock opens as well as closes, which is exactly the direction that broke once.
-- [ ] **Off-site backups:** armed 2026-09-23 via `/opt/einvoice-at/offsite.env` (target
-      `backupsink@10.10.1.1`, the panel over the private network). Open: a location outside
+- [ ] **Off-site backups:** armed 2026-09-23 via the host's shared `offsite.env` (target: the
+      panel over the private network; path and target in 1Password). Open: a location outside
       the Hetzner account (Storage Box, owner decision).
 - [ ] **Restore rehearsal** after any schema change: procedure in `deployment.md` §10.6.

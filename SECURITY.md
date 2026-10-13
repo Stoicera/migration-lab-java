@@ -82,6 +82,13 @@ which is the entire point of a playbook aimed at Austrian SMEs.
 to monitoring is worse than no address, because it looks like a process. The reporting form above
 is the route somebody has actually committed to monitoring.
 
+Since 2026-10-13 the modern stand also serves a `security.txt` (RFC 9116) at
+<https://migration-lab.stoicera.cyou/.well-known/security.txt>: the reporting form above as the
+first contact, the company's monitored office address as the second — no new mailbox, no new
+promise. The file lives in `modern/frontend/public/.well-known/` and is served as a static
+resource; it is neither an SPA route nor behind the admin gate, and `deploy/verify-live.sh`
+asserts it stays public. The legacy stand gets none: it is the exhibit, entirely behind its gate.
+
 Useful in a report, in this order: which stand (legacy / modern / edge overlay), the commit, what
 you did, what happened, what you expected. A `curl` line beats a paragraph.
 

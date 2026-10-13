@@ -1,6 +1,6 @@
 # deploy/ — the production translation of the two stands
 
-This directory is what runs on the Stoicera fleet (Dokploy on `skdevserver1`); the
+This directory is what runs on the Stoicera fleet (Dokploy on the fleet's app node); the
 decisions behind every file are in [ADR-0016](../docs/adr/0016-deployment-dokploy-stoicera-fleet.md),
 and the executed walkthrough with its verification evidence is
 [`docs/deployment.md` §10](../docs/deployment.md#10-production-deployment).
