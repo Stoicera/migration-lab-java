@@ -81,8 +81,8 @@ führen, Rechnung erzeugen, Monatsbericht prüfen — laufen gegen beide Oberfl�
 Suiten: dieselbe. Der Mechanismus ist unspektakulär: Die Tests kennen keine CSS-Selektoren, nur
 Absichten — ‚der Kunden-Link', ‚die Auftragstabelle'. Welcher Selektor dahintersteht, steht in
 einer Datei pro Oberfläche, und ein Test prüft, dass beide Dateien dieselben Schlüssel haben. Die
-Suite auf die neue Oberfläche zu portieren hieß: eine neue Datei, keine neuen Tests. Zuletzt grün
-in der CI am 1. Oktober 2026, 34 von 34 auf beiden Ständen."
+Suite auf die neue Oberfläche zu portieren hieß: eine neue Datei, keine neuen Tests. In der CI
+am 1. Oktober 2026 gemessen und am 13. Oktober 2026 erneut grün: 34 von 34 auf beiden Ständen."
 
 ### Szene 4 — Charakterisierungstests (5:00–6:30)
 
@@ -92,9 +92,9 @@ divergence".
 
 **Sprechtext:** „Bevor die erste Zeile migriert wurde, haben wir aufgezeichnet, was die alte
 Anwendung tatsächlich antwortet — HTTP-Antworten und Datenbankzustände nach Schreibvorgängen,
-Eigenheiten eingeschlossen. 47 solcher Tests, grün gegen beide Stände, zuletzt in der CI am
-30. September 2026. Beim Sprung von Spring Boot 1.5 auf 2.7 änderte sich die JSON-Darstellung
-eines Datumstyps. Die Oberfläche sah unverändert aus. Der Draht-Kontrakt war anders — jedes
+Eigenheiten eingeschlossen. 47 solcher Tests, grün gegen beide Stände — in der CI am
+30. September 2026 gemessen, am 13. Oktober 2026 erneut. Beim Sprung von Spring Boot 1.5 auf
+2.7 änderte sich die JSON-Darstellung eines Datumstyps. Die Oberfläche sah unverändert aus. Der Draht-Kontrakt war anders — jedes
 Fremdsystem, das dieses Feld liest, wäre irgendwann gebrochen, lange nach dem ‚erfolgreichen'
 Go-live. Gefunden hat es dieser Golden Master, nicht ein Mensch."
 
@@ -196,7 +196,7 @@ je Zelle, keine Statistik.
 2. **„Das Repository nennt 16 Stunden — dann kostet das ja fast nichts."** — Die 16,05 Stunden
    (Stand 01.10.2026) sind die Wandzeit eines KI-Agenten unter Aufsicht für eine Anwendung mit
    1.700 Zeilen, keine Personentage eines Teams. Das Repository verbietet selbst, daraus ein
-   Budget abzuleiten. Wer Ihnen eine Migration „in X Stunden" verspricht, hat nicht gemessen.
+   Budget abzuleiten. Eine Migration „in X Stunden" versprechen wir deshalb nicht.
 
 3. **„KI macht das doch inzwischen automatisch."** — Gemessen: Die Hälfte der generierten
    Testklassen kompilierte nicht, und von 421 reparierten Testmethoden fand keine einen Fehler
@@ -219,17 +219,18 @@ je Zelle, keine Statistik.
    (ADR-0009), bei jedem Schritt mit denselben Szenarien grün. Ein Neubau bleibt danach
    möglich — mit dem Netz.
 
-7. **„Wird die Anwendung danach schneller?"** — Nicht messbar. Beim Vergleich am 02.10.2026
-   lag der Median beim alten Stand vorn (1,17 ms gegen 1,28 ms), das 95. Perzentil beim neuen
-   (2,34 ms gegen 3,99 ms) — Bruchteile von Millisekunden, ein Lauf, ein Rechner. Zehn Jahre
-   Framework-Versionen kaufen Wartbarkeit, Sicherheitsupdates und einen Arbeitsmarkt, nicht
-   Geschwindigkeit. Wer Leistung verspricht, soll vorher messen.
+7. **„Wird die Anwendung danach schneller?"** — Im Referenzprojekt nicht nachweisbar. Beim
+   Vergleich am 02.10.2026 lag der Median beim alten Stand vorn (1,17 ms gegen 1,28 ms), das
+   95. Perzentil beim neuen (2,34 ms gegen 3,99 ms) — Bruchteile von Millisekunden, ein Lauf,
+   ein Rechner. Zehn Jahre Framework-Versionen kaufen Wartbarkeit, Sicherheitsupdates und einen
+   Arbeitsmarkt, nicht Geschwindigkeit. Leistungsgewinne versprechen wir erst nach einer Messung
+   an Ihrer Anwendung.
 
 8. **„Ist der neue Stand dann sicher?"** — Sicherer als der alte, nicht „sicher": Die Suche ist
    gegen SQL-Injection abgedichtet, der Admin-Bereich liegt hinter einer Zugangsschranke,
    Security-Header und Rate-Limit sind gemessen, ein Image-Scan läuft bei jedem Build. Derselbe
-   Scan meldet seit 30.09.2026 wieder Funde im modernen Image; sie sind offen und stehen im
-   Register. Was fehlt, steht in `SECURITY.md`: keine Benutzerverwaltung, kein Audit-Log. Wir
+   Scan meldet seit 30.09.2026 wieder Funde im modernen Image; sie sind offen und noch nicht
+   behoben. Was fehlt, steht in `SECURITY.md`: keine Benutzerverwaltung, kein Audit-Log. Wir
    benennen den Zustand, wir bescheinigen keinen.
 
 9. **„Wir haben Oracle und wollen eigentlich Microservices."** — Beides ist hier bewusst nicht

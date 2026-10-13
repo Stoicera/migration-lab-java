@@ -55,10 +55,10 @@ die Anwendung fachlich kennt, und eines mit dem Betrieb.
 
 **Sie bekommen:** Charakterisierungstests — Golden Master über HTTP-Antworten und über
 Datenbankzustände nach Schreibvorgängen, Eigenheiten eingeschlossen (im Referenzprojekt
-`characterization/`, 47 Tests, zuletzt grün in der CI am 30.09.2026). Eine Selenium-E2E-Suite
+`characterization/`, 47 Tests, grün in der CI am 30.09.2026 und erneut am 13.10.2026). Eine Selenium-E2E-Suite
 über die Arbeitsabläufe Ihrer Anwender mit Selektor-Map: Die Tests sprechen Absichten an, die
 Zuordnung zur Oberfläche steht in einer Datei je Oberfläche, und ein Test prüft, dass beide
-Dateien dieselben Schlüssel tragen (`e2e/`, 34 Szenarien je Stand, zuletzt grün am 01.10.2026).
+Dateien dieselben Schlüssel tragen (`e2e/`, 34 Szenarien je Stand, grün in der CI am 01.10.2026 und erneut am 13.10.2026).
 CI-Gates, die beide Suiten bei jedem Commit ausführen und eine rote Suite zum Stopp machen. Das
 Abweichungsregister — zu Beginn leer. Kapitel 1 des Playbooks als Lesestoff.
 
@@ -73,8 +73,8 @@ auscheckbar und startbar.
 **Ziel:** Ein reproduzierbarer Build, und der neue Stand entsteht als Kopie neben dem alten.
 Der alte Stand wird nicht angefasst.
 
-**Sie bekommen:** Build mit Wrapper (kein lokal installiertes Werkzeug nötig), Container-
-Definition je Stand, Abhängigkeits-Audit mit Entscheidung je Abhängigkeit (behalten, heben,
+**Sie bekommen:** Build mit Wrapper (kein lokal installiertes Werkzeug nötig),
+Container-Definition je Stand, Abhängigkeits-Audit mit Entscheidung je Abhängigkeit (behalten, heben,
 ersetzen), vereinheitlichtes Logging, die ersten Entscheidungsprotokolle (ADR, eine Seite je
 Entscheidung). Kapitel 2 des Playbooks.
 
@@ -142,7 +142,7 @@ geplant.
 - **Keine Zerlegung in Microservices** als Nebeneffekt. Modular bleiben ist in den meisten
   Fällen die richtige Antwort; wenn nicht, ist das eine eigene Entscheidung mit eigenem ADR.
 - **Keine neuen Funktionen** während der Migration.
-- **Keine Leistungsversprechen.** Im Referenzprojekt war der neue Stand nicht messbar
+- **Keine Leistungsversprechen.** Im Referenzprojekt war der neue Stand nicht durchgängig
   schneller (Vergleich vom 02.10.2026). Zehn Jahre Framework-Versionen kaufen Wartbarkeit,
   Sicherheitsupdates und einen Arbeitsmarkt.
 - **Keine Bescheinigungen.** Wir benennen den erreichten Sicherheitszustand und seine Lücken

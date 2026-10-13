@@ -7,7 +7,7 @@
 # it is the exhibit and sits entirely behind Basic auth.
 Contact: https://github.com/Stoicera/migration-lab-java/security/advisories/new
 Contact: mailto:office@stoicera.com
-Expires: 2027-10-13T00:00:00.000Z
+Expires: 2027-10-01T00:00:00.000Z
 Preferred-Languages: de, en
 Canonical: https://migration-lab.stoicera.cyou/.well-known/security.txt
 Policy: https://github.com/Stoicera/migration-lab-java/blob/master/SECURITY.md
