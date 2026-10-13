@@ -64,6 +64,11 @@ for path in / /api/kunden /rechnungen; do
   [ "$(code "$MODERN_URL$path")" = "200" ] && ok "GET $path public (200)" \
     || fail "GET $path not 200 — the gate became an outage"
 done
+# security.txt (RFC 9116, since 2026-10-13): a static file, not an SPA route — so a
+# 200 alone would also be true of the SPA shell. Assert the body is the real file.
+curl -sf "$MODERN_URL/.well-known/security.txt" | grep -q '^Contact: ' \
+  && ok "GET /.well-known/security.txt public and is the real file" \
+  || fail "GET /.well-known/security.txt missing or not the file — check the static-resource path"
 
 echo "6. Security headers on public responses"
 # Two values assert the EFFECTIVE contract, not this repo's label values: the

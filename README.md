@@ -60,6 +60,24 @@ measured effort numbers — how such a migration is de-risked:
 4. **A German migration playbook** ([`playbook/`](playbook/)) with honest effort
    figures and decision rules, reusable for real projects.
 
+## For companies / Für Unternehmen
+
+Two documents written for IT leads and management rather than for contributors — in German,
+because that is who asks:
+
+- [`docs/demo.md`](docs/demo.md) — the ten-minute walkthrough of both live stands and this
+  repository, scene by scene, with the numbers and their measurement dates and ten objections
+  answered.
+- [`docs/enterprise.md`](docs/enterprise.md) — how a modernisation with us runs: six stages,
+  what you hold at the end of each, what we need from you, what we do not do, and the handover.
+- The playbook as one PDF, attached to release v1.0.0:
+  [migration-playbook.pdf](https://github.com/Stoicera/migration-lab-java/releases/download/v1.0.0/migration-playbook.pdf).
+
+**Für Unternehmen:** [`docs/demo.md`](docs/demo.md) ist das Regiebuch für eine zehnminütige
+Vorführung beider Stände, [`docs/enterprise.md`](docs/enterprise.md) beschreibt den Ablauf einer
+Modernisierung mit uns in sechs Etappen, und das Playbook gibt es als
+[PDF am Release v1.0.0](https://github.com/Stoicera/migration-lab-java/releases/download/v1.0.0/migration-playbook.pdf).
+
 ## How this was built — read this before reusing any number
 
 **The execution was AI-assisted: a Claude Code agent performed the work, directed
