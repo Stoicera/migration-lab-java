@@ -69,6 +69,11 @@ done
 curl -sf "$MODERN_URL/.well-known/security.txt" | grep -q '^Contact: ' \
   && ok "GET /.well-known/security.txt public and is the real file" \
   || fail "GET /.well-known/security.txt missing or not the file — check the static-resource path"
+# robots.txt (since 2026-10-15): the demo must stay out of search indexes — assert the
+# file is served and really disallows everything, not that some 200 came back.
+curl -sf "$MODERN_URL/robots.txt" | grep -q '^Disallow: /$' \
+  && ok "GET /robots.txt public and disallows indexing" \
+  || fail "GET /robots.txt missing or does not disallow — the demo would be indexed again"
 
 echo "6. Security headers on public responses"
 # Two values assert the EFFECTIVE contract, not this repo's label values: the
