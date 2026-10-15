@@ -1,17 +1,60 @@
 # migration-lab
 
+A Java 8 / Spring Boot 1.5 / AngularJS application from 2016 and its migration to Java 25 /
+Spring Boot 4.1 / Angular 22, side by side in one public repository, every stage a git tag you can
+check out and run. One safety net runs against both stands on every commit, so "the new system
+does what the old one did" is a test result, not a promise.
+
+[![License: Apache-2.0](https://img.shields.io/github/license/Stoicera/migration-lab-java)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Stoicera/migration-lab-java)](https://github.com/Stoicera/migration-lab-java/releases/tag/v1.0.0)
 [![legacy-ci](https://github.com/Stoicera/migration-lab-java/actions/workflows/legacy-ci.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/legacy-ci.yml)
 [![modern-ci](https://github.com/Stoicera/migration-lab-java/actions/workflows/modern-ci.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/modern-ci.yml)
 [![e2e](https://github.com/Stoicera/migration-lab-java/actions/workflows/e2e.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/e2e.yml)
-[![ai-testgen](https://github.com/Stoicera/migration-lab-java/actions/workflows/ai-testgen.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/ai-testgen.yml)
-[![deploy](https://github.com/Stoicera/migration-lab-java/actions/workflows/deploy.yml/badge.svg)](https://github.com/Stoicera/migration-lab-java/actions/workflows/deploy.yml)
+
+| 2016 — AngularJS 1.8 on Spring Boot 1.5 | 2026 — Angular 22 on Spring Boot 4.1 |
+|---|---|
+| ![Legacy stand, customer list, captured live on 2026-08-17](docs/screenshots/legacy-kunden-live.png) | ![Modern stand, customer list, captured live on 2026-08-17](docs/screenshots/modern-kunden-live.png) |
+
+*The two stands as deployed, same screen, ten years apart — captured from the live instances on
+2026-08-17, address bar included, so the provenance is in the picture rather than in the filename.
+They look almost identical, and that is the point: functional equivalence is the product.*
+
+### What you can verify in 5 minutes
+
+No build, no account — everything below is a link.
+
+1. **The same tests, both stands, green.** The latest runs on `master` (2026-10-15, commit
+   `af42a2c`): 47 characterization tests green against the legacy stand
+   ([legacy-ci](https://github.com/Stoicera/migration-lab-java/actions/runs/38686720213)) and
+   against the modern stand
+   ([modern-ci](https://github.com/Stoicera/migration-lab-java/actions/runs/38686720064)); 34
+   Selenium scenarios green per stand, AngularJS UI and Angular 22 UI
+   ([e2e](https://github.com/Stoicera/migration-lab-java/actions/runs/38686720073)). The e2e
+   workflow also runs nightly.
+2. **One suite, two UIs.** The page objects address elements by intent only; the selectors live
+   in one file per UI: [`legacy.properties`](e2e/src/test/resources/selectors/legacy.properties)
+   and [`modern.properties`](e2e/src/test/resources/selectors/modern.properties).
+3. **What "the same behaviour" means, byte for byte.** The golden masters (HTTP responses and
+   database state) in [`characterization/src/test/resources/golden/`](characterization/src/test/resources/golden/).
+4. **Where the stands differ on purpose.** Three registered divergences, each pinned per stand by
+   a test: [ADR-0004](docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md); every
+   unmet standard in [`docs/DEVIATIONS.md`](docs/DEVIATIONS.md).
+5. **A result that did not flatter us.** The AI test-generation experiment, protocol frozen
+   before the first call, both phases measured:
+   [`ai-testgen/REPORT.md`](ai-testgen/REPORT.md) (German summary first, English detail below).
+
+With more than five minutes and Docker: `docker compose -f modern/docker-compose.yml up -d --wait`
+starts the modern stand on <http://localhost:8090> ([Quickstart](#quickstart)); the stages are
+listed in [`stages.md`](stages.md), the changes since v1.0.0 in [`CHANGELOG.md`](CHANGELOG.md).
+The modern stand also runs publicly at <https://migration-lab.stoicera.cyou>. Case study:
+[stoicera.com/werk/migration-lab-java](https://stoicera.com/werk/migration-lab-java/).
 
 **A public, reproducible legacy modernization:**
 Java 8 / Spring Boot 1.5 / AngularJS 1.8 → Java 25 / Spring Boot 4.1 / Angular 22 —
 safety net first, honest numbers, reusable German migration playbook.
 
 > **Status: all six stages done — v1.0.0, deployed.**
-> The modern stand runs Spring Boot 4.1.0 / Java 25 with an Angular 22 UI, migrated
+> The modern stand runs Spring Boot 4.1 (4.1.1 since 2026-10-13) / Java 25 with an Angular 22 UI, migrated
 > route by route via Strangler Fig, the same Selenium scenarios green on the old AND
 > the new UI — functionally equivalent to the frozen 2016 stand for all legitimate
 > inputs (the deliberate divergences — security fix, absorbed admin page, fixed
@@ -270,7 +313,7 @@ down with its caveats in [`docs/worklog.md`](docs/worklog.md); the decisions hav
 | [`characterization/`](characterization/) | Golden-master tests = the definition of functional equivalence |
 | [`ai-testgen/`](ai-testgen/) | Pre-registered AI test-generation experiment (G6) — protocol, harness, runs and the full report of both phases |
 | [`load/`](load/) | k6 read-path scenario, run against both stands (one scenario, by design) |
-| [`scripts/`](scripts/) | Repository guards used by CI, e.g. the schema-drift check |
+| [`scripts/`](scripts/) | Repository guards used by CI, e.g. the schema-drift check; `social-preview.mjs` renders the GitHub social preview image |
 | [`deploy/`](deploy/) | Production deployment since 2026-08-14 — the per-stand Dokploy compose files and `verify-live.sh`, which asserts certificates, auth boundary, headers and rate limit against the live URLs from outside ([ADR-0016](docs/adr/0016-deployment-dokploy-stoicera-fleet.md)) |
 | [`playbook/`](playbook/) | German playbook, eight chapters (01–08): one per migration stage (stage 0's Ausgangslage sits in Kap. 1), plus Kap. 6 for the non-stage AI test-generation milestone — which is why stage 6 is Kap. 7 — and Kap. 8 for the live deployment |
 | [`docs/`](docs/) | PRD, SPEC, milestones, ADRs, worklog, deviations ledger, glossary, deployment and manual-task docs |
@@ -361,14 +404,8 @@ the modern stand's copy, and the backup doubles as the reset path.
 
 ## Screenshots
 
-The two stands **as deployed**, same screen, ten years apart — captured from the live
-instances on 2026-08-17, address bar included, so the provenance is in the picture rather
-than in the filename. They look almost identical, and that is the point: functional
-equivalence is the product, and the same Selenium scenarios pass on both.
-
-| 2016 — AngularJS 1.8 on Spring Boot 1.5 | 2026 — Angular 22 on Spring Boot 4.1 |
-|---|---|
-| ![Legacy stand, customer list](docs/screenshots/legacy-kunden-live.png) | ![Modern stand, customer list](docs/screenshots/modern-kunden-live.png) |
+The live before/after pair (captured 2026-08-17) is at the [top of this README](#migration-lab);
+the files are in [`docs/screenshots/`](docs/screenshots/).
 
 ## Honest limits
 
