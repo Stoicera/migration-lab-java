@@ -1,0 +1,3 @@
+# robots.txt for the legacy stand (demo exhibit behind Basic auth, synthetic data).
+User-agent: *
+Disallow: /

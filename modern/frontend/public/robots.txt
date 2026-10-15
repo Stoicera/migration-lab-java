@@ -1,0 +1,6 @@
+# robots.txt for the modern stand of migration-lab (demo instance, not a product site).
+# The stand is a public demo with synthetic data; search engines have nothing to
+# index here. Lives in modern/frontend/public/ like security.txt: the Angular build
+# copies it into the bundle and Spring Boot serves it from classpath:/static/.
+User-agent: *
+Disallow: /
