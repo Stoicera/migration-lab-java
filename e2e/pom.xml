@@ -18,6 +18,8 @@
 		<junit.version>5.14.4</junit.version>
 		<selenium.version>4.51.0</selenium.version>
 		<assertj.version>3.27.7</assertj.version>
+		<e2e.excludedGroups>nachweis</e2e.excludedGroups>
+		<e2e.reportsDirectory>${project.build.directory}/surefire-reports</e2e.reportsDirectory>
 		<postgresql.version>42.7.14</postgresql.version>
 		<!-- -Dtarget=legacy|modern selects base URL, selector map and DB -->
 		<target>legacy</target>
@@ -76,6 +78,11 @@
 					<reuseForks>true</reuseForks>
 					<!-- a run that discovers zero tests is a broken gate, not a pass (review finding 7) -->
 					<failIfNoTests>true</failIfNoTests>
+					<!-- The /nachweis page test (tag "nachweis", modern stand only) is not one of the
+					     equivalence scenarios: excluded by default so the count stays 34 per stand,
+					     run as its own step in e2e.yml with its own reports directory. -->
+					<excludedGroups>${e2e.excludedGroups}</excludedGroups>
+					<reportsDirectory>${e2e.reportsDirectory}</reportsDirectory>
 				</configuration>
 			</plugin>
 			<!-- Java format gate (google-java-format) - DEVIATIONS item

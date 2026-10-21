@@ -61,6 +61,14 @@ jobs:
           -DdbUrl=jdbc:postgresql://localhost:5434/werkstatt
           -Dstand=modern
 
+      - name: Upload characterization report (Nachweis)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: nachweis-characterization-modern
+          path: characterization/target/nachweis/
+          if-no-files-found: warn
+
       - name: Upload received captures on mismatch
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -114,3 +122,81 @@ jobs:
           # gate people learn to bypass. It is read at review time; DEVIATIONS.md
           # records this as reporting-only.
           exit-code: '0'
+
+      # Same scan, machine-readable, for the count on /nachweis. The table above stays the
+      # human-readable record; this one is only counted, never interpreted.
+      - name: Scan the modern image (JSON for the Nachweis count)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: migration-lab/modern:ci
+          format: json
+          output: trivy.json
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '0'
+
+      - name: Upload image-scan result (Nachweis)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: nachweis-trivy
+          path: trivy.json
+          if-no-files-found: warn
+
+  # ---- Äquivalenz-Nachweis (/nachweis) ----
+  # Joins what the gates of THIS commit produced — characterization on both stands
+  # (legacy-ci, modern-build), e2e on both stands (e2e.yml), the image scan — into one
+  # nachweis.json artefact. It runs no test itself and is deliberately NOT a required
+  # check: it reports, the gates decide. It waits for the two other workflows of the same
+  # commit, so it finishes last. The deployed page shows the committed copy in
+  # modern/frontend/public/nachweis.json; scripts/nachweis/refresh.sh updates it.
+  nachweis:
+    needs: modern-build
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ env.HEAD_SHA }}
+
+      - name: Collect the gate results of this commit
+        run: |
+          mkdir -p nachweis-in
+          gh run download "$GITHUB_RUN_ID" -R "$GITHUB_REPOSITORY" -p 'nachweis-*' -D nachweis-in/modern-ci \
+            || echo "::warning::no Nachweis artefacts in this run"
+          for wf in legacy-ci.yml e2e.yml; do
+            id=""
+            for i in $(seq 1 40); do
+              id=$(gh run list -R "$GITHUB_REPOSITORY" --workflow "$wf" --commit "$HEAD_SHA" \
+                --event "${{ github.event_name }}" --json databaseId --jq '.[0].databaseId // empty')
+              [ -n "$id" ] && break
+              sleep 15
+            done
+            if [ -z "$id" ]; then echo "::warning::no $wf run for $HEAD_SHA"; continue; fi
+            gh run watch "$id" -R "$GITHUB_REPOSITORY" --interval 30 > /dev/null || true
+            gh run download "$id" -R "$GITHUB_REPOSITORY" -p 'nachweis-*' -D "nachweis-in/$wf" \
+              || echo "::warning::no Nachweis artefacts in $wf run $id"
+          done
+          find nachweis-in -type f | sort
+
+      - name: Build nachweis.json
+        env:
+          NACHWEIS_SHA: ${{ env.HEAD_SHA }}
+          NACHWEIS_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          NACHWEIS_REPO: ${{ github.repository }}
+        run: node scripts/nachweis/aggregate.mjs --in nachweis-in --out nachweis/nachweis.json
+
+      - name: Upload nachweis.json
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: nachweis
+          path: nachweis/nachweis.json
+          if-no-files-found: warn

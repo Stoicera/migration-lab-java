@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Characterizes the DB state transitions of the write paths — the complete status transition
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
  * 11/13 IN_ARBEIT, 14/15 ANGENOMMEN, 4/16 STORNIERT; Rechnung 5 unbezahlt.
  */
 @DisplayName("DB-Zustands-Charakterisierung: Schreibpfade")
+@ExtendWith(NachweisBericht.class)
 class DbStateCharacterizationTest {
 
   @BeforeEach

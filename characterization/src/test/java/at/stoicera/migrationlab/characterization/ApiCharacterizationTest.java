@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -28,6 +29,7 @@ import org.junit.jupiter.params.provider.CsvSource;
  * against src/test/resources/golden/.
  */
 @DisplayName("API-Charakterisierung: Lese-Endpunkte gegen Golden Master")
+@ExtendWith(NachweisBericht.class)
 class ApiCharacterizationTest {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -59,6 +61,7 @@ class ApiCharacterizationTest {
 
     JsonNode received = MAPPER.readTree(response.body());
     JsonNode golden = readGolden(goldenFile);
+    NachweisBericht.erfasse(goldenFile, endpoint, response.body());
 
     if (!received.equals(golden)) {
       Path out = Path.of("target", "characterization-received", goldenFile);
@@ -84,6 +87,9 @@ class ApiCharacterizationTest {
   // -----------------------------------------------------------------
 
   @Test
+  @Sanktioniert(
+      value = "SD-1",
+      quelle = "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md")
   @DisplayName("B4-Suche, Injektionseingabe %' OR '1'='1 — sanktionierte Divergenz (ADR-0004)")
   void sucheMitInjektionsEingabe() throws Exception {
     var response = Stand.get("/api/kunden?suche=" + urlEncode("%' OR '1'='1"));
@@ -102,6 +108,9 @@ class ApiCharacterizationTest {
   }
 
   @Test
+  @Sanktioniert(
+      value = "SD-1",
+      quelle = "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md")
   @DisplayName("B4-Suche, einzelnes Hochkomma — sanktionierte Divergenz (ADR-0004)")
   void sucheMitEinzelnemHochkomma() throws Exception {
     var response = Stand.get("/api/kunden?suche=" + urlEncode("'"));
@@ -129,6 +138,9 @@ class ApiCharacterizationTest {
   }
 
   @Test
+  @Sanktioniert(
+      value = "SD-2",
+      quelle = "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md")
   @DisplayName("Adminseite: JSP-Golden (legacy) / SPA-Route + Statistik-JSON (modern, SD-2)")
   void adminPageMatchesGolden() throws Exception {
     var response = Stand.get("/admin");
@@ -143,7 +155,9 @@ class ApiCharacterizationTest {
       // The admin UI FLOW itself is pinned by e2e AdminTest on both stands.
       assertThat(response.body()).contains("<app-root");
 
-      JsonNode wurzel = MAPPER.readTree(Stand.get("/api/admin/statistik").body());
+      String statistik = Stand.get("/api/admin/statistik").body();
+      NachweisBericht.erfasse("admin.html", "/admin + /api/admin/statistik", statistik);
+      JsonNode wurzel = MAPPER.readTree(statistik);
       assertThat(feldNamen(wurzel)).containsExactlyInAnyOrder("firmaName", "version", "statistik");
       assertThat(wurzel.get("firmaName").asText()).isEqualTo("KFZ-Werkstatt Moser GmbH");
       assertThat(wurzel.get("version").asText()).isEqualTo("1.4.2");
@@ -177,6 +191,7 @@ class ApiCharacterizationTest {
     }
 
     String normalized = normalizeAdminHtml(response.body());
+    NachweisBericht.erfasse("admin.html", "/admin", normalized);
     String golden;
     try (InputStream in = getClass().getResourceAsStream("/golden/admin.html")) {
       assertThat(in).as("golden/admin.html missing").isNotNull();
@@ -210,6 +225,7 @@ class ApiCharacterizationTest {
    * purpose: it exists on BOTH stands and is pinned by adminPageMatchesGolden.)
    */
   @ParameterizedTest(name = "SPA-Dokumentroute {0}")
+  @Sanktioniert(value = "ADR-0009", quelle = "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md")
   @org.junit.jupiter.params.provider.ValueSource(
       strings = {
         "/start",
@@ -226,6 +242,7 @@ class ApiCharacterizationTest {
       })
   void spaRouteServesDocument(String pfad) {
     var response = Stand.get(pfad);
+    NachweisBericht.erfasse(null, pfad, null);
     if (Stand.isModern()) {
       assertThat(response.statusCode()).as("GET %s", pfad).isEqualTo(200);
       assertThat(response.body()).as("GET %s serves the SPA shell", pfad).contains("<app-root");

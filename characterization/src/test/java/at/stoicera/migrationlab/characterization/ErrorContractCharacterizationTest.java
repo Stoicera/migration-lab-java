@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -25,6 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  * one test that mutates state (doppelteRechnung).
  */
 @DisplayName("Fehlerkontrakt-Charakterisierung: 4xx/5xx-Oberfläche")
+@ExtendWith(NachweisBericht.class)
 class ErrorContractCharacterizationTest {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
