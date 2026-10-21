@@ -649,7 +649,10 @@ public class WerkstattService {
             b.setMonat(rs.getInt("monat"));
             b.setAnzahlAuftraege(rs.getInt("anzahl_auftraege"));
             b.setAnzahlRechnungen(rs.getInt("anzahl_rechnungen"));
-            b.setUmsatzNetto(rs.getDouble("umsatz_netto"));
+            // DEMO-REGRESSION (PR demo/regression-rundung, never merged): "Umsatz im Bericht
+            // in ganzen Euro" - plausible as a cleanup, wrong on the wire. The characterization
+            // golden bericht-monat-2026.json catches it; the page still looks reasonable.
+            b.setUmsatzNetto(Math.round(rs.getDouble("umsatz_netto")));
             b.setUmsatzBrutto(rs.getDouble("umsatz_brutto"));
             return b;
           }
