@@ -1,0 +1,1929 @@
+{
+  "schema": 1,
+  "erzeugt": "2026-10-21T22:03:00.466Z",
+  "repo": "https://github.com/Stoicera/migration-lab-java",
+  "commit": {
+    "sha": "00f74d797e6d893e338c41eb9685deec06810f5d",
+    "url": "https://github.com/Stoicera/migration-lab-java/commit/00f74d797e6d893e338c41eb9685deec06810f5d"
+  },
+  "ciLauf": {
+    "url": "https://github.com/Stoicera/migration-lab-java/actions/runs/39682526965"
+  },
+  "register": {
+    "deviations": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/DEVIATIONS.md",
+    "adr0004": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md"
+  },
+  "charakterisierung": {
+    "gesamt": 47,
+    "identisch": 33,
+    "sanktioniert": 14,
+    "regression": 0,
+    "unvollstaendig": 0,
+    "zeilen": [
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#1]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/kunden wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/kunden",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "kunden.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunden.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"angelegtAm\": 1781259000000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"AIGNER, Thomas\",\n    \"email\": \"t.aigner@aon.at\",\n    \"id\": 10,\n    \"nachname\": \"Aigner\",\n    \"notiz\": null,\n    \"ort\": \"Waldhausen\",\n    \"plz\": \"4391\",\n    \"strasse\": \"Waldweg 5\",\n    \"telefon\": \"+43 676 1010101\",\n    \"vorname\": \"Thomas\"\n  },\n  {\n    \"angelegtAm\": 1770021900000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"BRUNNER, Elisabeth\",\n    \"email\": \"e.brunner@liwest.at\",\n    \"id\": 4,\n    \"nachname\": \"Brunner\",\n    \"notiz\": null,\n    \"ort\": \"Linz\",\n    \"plz\": \"4020\",\n    \"strasse\": \"Landstraße 101\",\n    \"telefon\": \"+43 650 4444444\",\n    \"vorname\": \"Elisabeth\"\n  },\n  {\n    \"angelegtAm\": 1767604320000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"HOFER, Franz\",\n    \"email\": \"franz.hofer@aon.at\",\n    \"id\": 1,\n    \"nachname\": \"Hofer\",\n    \"notiz\": \"Stammkunde seit 2016\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Hauptstraße 4\",\n    \"telefon\": \"+43 664 1111111\",\n    \"vorname\": \"Franz\"\n  },\n  {\n    \"angelegtAm\": 1775202900000,\n    \"anrede\": \"Firma\",\n    \"anzeigeName\": \"HUBER TRANSPORTE GMBH, \",\n    \"email\": \"office@huber-transporte.at\",\n    \"id\": 8,\n    \"nachname\": \"Huber Transporte GmbH\",\n    \"notiz\": \"Flottenkunde, Sammelrechnung Monatsende gewuenscht (machen wir nicht)\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Gewerbestraße 9\",\n    \"telefon\": \"+43 7262 88888\",\n    \"vorname\": null\n  },\n  {\n    \"angelegtAm\": 1767868200000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"LEITNER, Maria\",\n    \"email\": \"m.leitner@gmx.at\",\n    \"id\": 2,\n    \"nachname\": \"Leitner\",\n    \"notiz\": null,\n    \"ort\": \"Schwertberg\",\n    \"plz\": \"4311\",\n    \"strasse\": \"Bahnhofstraße 18\",\n    \"telefon\": \"+43 664 2222222\",\n    \"vorname\": \"Maria\"\n  },\n  {\n    \"angelegtAm\": 1772362800000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"MAYR, Anna\",\n    \"email\": \"anna.mayr@gmx.at\",\n    \"id\": 6,\n    \"nachname\": \"Mayr\",\n    \"notiz\": null,\n    \"ort\": \"Naarn\",\n    \"plz\": \"4331\",\n    \"strasse\": \"Am Anger 12\",\n    \"telefon\": \"+43 664 6666666\",\n    \"vorname\": \"Anna\"\n  },\n  {\n    \"angelegtAm\": 1773913200000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"PICHLER, Josef\",\n    \"email\": null,\n    \"id\": 7,\n    \"nachname\": \"Pichler\",\n    \"notiz\": \"kein E-Mail, immer anrufen!\",\n    \"ort\": \"Grein\",\n    \"plz\": \"4360\",\n    \"strasse\": \"Marktplatz 2\",\n    \"telefon\": \"+43 699 7777777\",\n    \"vorname\": \"Josef\"\n  },\n  {\n    \"angelegtAm\": 1770826800000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"STEINER, Karl\",\n    \"email\": \"karl.steiner@aon.at\",\n    \"id\": 5,\n    \"nachname\": \"Steiner\",\n    \"notiz\": \"Reifen lagern bei uns (Keller)\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Feldweg 7\",\n    \"telefon\": \"+43 676 5555555\",\n    \"vorname\": \"Karl\"\n  },\n  {\n    \"angelegtAm\": 1778073300000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"WAGNER, Christine\",\n    \"email\": \"ch.wagner@gmail.com\",\n    \"id\": 9,\n    \"nachname\": \"Wagner\",\n    \"notiz\": null,\n    \"ort\": \"Ried in der Riedmark\",\n    \"plz\": \"4312\",\n    \"strasse\": \"Ringstraße 22\",\n    \"telefon\": \"+43 650 9999999\",\n    \"vorname\": \"Christine\"\n  },\n  {\n    \"angelegtAm\": 1768485900000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"WIMMER, Johann\",\n    \"email\": \"j.wimmer@gmail.com\",\n    \"id\": 3,\n    \"nachname\": \"Wimmer\",\n    \"notiz\": \"zahlt gern bar\",\n    \"ort\": \"Mauthausen\",\n    \"plz\": \"4310\",\n    \"strasse\": \"Donaulände 3\",\n    \"telefon\": \"+43 699 3333333\",\n    \"vorname\": \"Johann\"\n  }\n]",
+          "modern": "[\n  {\n    \"angelegtAm\": 1781259000000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"AIGNER, Thomas\",\n    \"email\": \"t.aigner@aon.at\",\n    \"id\": 10,\n    \"nachname\": \"Aigner\",\n    \"notiz\": null,\n    \"ort\": \"Waldhausen\",\n    \"plz\": \"4391\",\n    \"strasse\": \"Waldweg 5\",\n    \"telefon\": \"+43 676 1010101\",\n    \"vorname\": \"Thomas\"\n  },\n  {\n    \"angelegtAm\": 1770021900000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"BRUNNER, Elisabeth\",\n    \"email\": \"e.brunner@liwest.at\",\n    \"id\": 4,\n    \"nachname\": \"Brunner\",\n    \"notiz\": null,\n    \"ort\": \"Linz\",\n    \"plz\": \"4020\",\n    \"strasse\": \"Landstraße 101\",\n    \"telefon\": \"+43 650 4444444\",\n    \"vorname\": \"Elisabeth\"\n  },\n  {\n    \"angelegtAm\": 1767604320000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"HOFER, Franz\",\n    \"email\": \"franz.hofer@aon.at\",\n    \"id\": 1,\n    \"nachname\": \"Hofer\",\n    \"notiz\": \"Stammkunde seit 2016\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Hauptstraße 4\",\n    \"telefon\": \"+43 664 1111111\",\n    \"vorname\": \"Franz\"\n  },\n  {\n    \"angelegtAm\": 1775202900000,\n    \"anrede\": \"Firma\",\n    \"anzeigeName\": \"HUBER TRANSPORTE GMBH, \",\n    \"email\": \"office@huber-transporte.at\",\n    \"id\": 8,\n    \"nachname\": \"Huber Transporte GmbH\",\n    \"notiz\": \"Flottenkunde, Sammelrechnung Monatsende gewuenscht (machen wir nicht)\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Gewerbestraße 9\",\n    \"telefon\": \"+43 7262 88888\",\n    \"vorname\": null\n  },\n  {\n    \"angelegtAm\": 1767868200000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"LEITNER, Maria\",\n    \"email\": \"m.leitner@gmx.at\",\n    \"id\": 2,\n    \"nachname\": \"Leitner\",\n    \"notiz\": null,\n    \"ort\": \"Schwertberg\",\n    \"plz\": \"4311\",\n    \"strasse\": \"Bahnhofstraße 18\",\n    \"telefon\": \"+43 664 2222222\",\n    \"vorname\": \"Maria\"\n  },\n  {\n    \"angelegtAm\": 1772362800000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"MAYR, Anna\",\n    \"email\": \"anna.mayr@gmx.at\",\n    \"id\": 6,\n    \"nachname\": \"Mayr\",\n    \"notiz\": null,\n    \"ort\": \"Naarn\",\n    \"plz\": \"4331\",\n    \"strasse\": \"Am Anger 12\",\n    \"telefon\": \"+43 664 6666666\",\n    \"vorname\": \"Anna\"\n  },\n  {\n    \"angelegtAm\": 1773913200000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"PICHLER, Josef\",\n    \"email\": null,\n    \"id\": 7,\n    \"nachname\": \"Pichler\",\n    \"notiz\": \"kein E-Mail, immer anrufen!\",\n    \"ort\": \"Grein\",\n    \"plz\": \"4360\",\n    \"strasse\": \"Marktplatz 2\",\n    \"telefon\": \"+43 699 7777777\",\n    \"vorname\": \"Josef\"\n  },\n  {\n    \"angelegtAm\": 1770826800000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"STEINER, Karl\",\n    \"email\": \"karl.steiner@aon.at\",\n    \"id\": 5,\n    \"nachname\": \"Steiner\",\n    \"notiz\": \"Reifen lagern bei uns (Keller)\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Feldweg 7\",\n    \"telefon\": \"+43 676 5555555\",\n    \"vorname\": \"Karl\"\n  },\n  {\n    \"angelegtAm\": 1778073300000,\n    \"anrede\": \"Frau\",\n    \"anzeigeName\": \"WAGNER, Christine\",\n    \"email\": \"ch.wagner@gmail.com\",\n    \"id\": 9,\n    \"nachname\": \"Wagner\",\n    \"notiz\": null,\n    \"ort\": \"Ried in der Riedmark\",\n    \"plz\": \"4312\",\n    \"strasse\": \"Ringstraße 22\",\n    \"telefon\": \"+43 650 9999999\",\n    \"vorname\": \"Christine\"\n  },\n  {\n    \"angelegtAm\": 1768485900000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"WIMMER, Johann\",\n    \"email\": \"j.wimmer@gmail.com\",\n    \"id\": 3,\n    \"nachname\": \"Wimmer\",\n    \"notiz\": \"zahlt gern bar\",\n    \"ort\": \"Mauthausen\",\n    \"plz\": \"4310\",\n    \"strasse\": \"Donaulände 3\",\n    \"telefon\": \"+43 699 3333333\",\n    \"vorname\": \"Johann\"\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden kunden.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunden.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#2]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/kunden?suche=Hofer wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/kunden?suche=Hofer",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "kunden-suche-hofer.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunden-suche-hofer.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"angelegtAm\": 1767604320000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"HOFER, Franz\",\n    \"email\": \"franz.hofer@aon.at\",\n    \"id\": 1,\n    \"nachname\": \"Hofer\",\n    \"notiz\": \"Stammkunde seit 2016\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Hauptstraße 4\",\n    \"telefon\": \"+43 664 1111111\",\n    \"vorname\": \"Franz\"\n  }\n]",
+          "modern": "[\n  {\n    \"angelegtAm\": 1767604320000,\n    \"anrede\": \"Herr\",\n    \"anzeigeName\": \"HOFER, Franz\",\n    \"email\": \"franz.hofer@aon.at\",\n    \"id\": 1,\n    \"nachname\": \"Hofer\",\n    \"notiz\": \"Stammkunde seit 2016\",\n    \"ort\": \"Perg\",\n    \"plz\": \"4320\",\n    \"strasse\": \"Hauptstraße 4\",\n    \"telefon\": \"+43 664 1111111\",\n    \"vorname\": \"Franz\"\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden kunden-suche-hofer.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunden-suche-hofer.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#3]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/kunden?suche=Meier wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/kunden?suche=Meier",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "kunden-suche-meier-leer.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunden-suche-meier-leer.json"
+        },
+        "vergleich": {
+          "golden": "[]",
+          "modern": "[]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden kunden-suche-meier-leer.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunden-suche-meier-leer.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#4]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/kunden/1 wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/kunden/1",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "kunde-1.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunde-1.json"
+        },
+        "vergleich": {
+          "golden": "{\n  \"angelegtAm\": 1767604320000,\n  \"anrede\": \"Herr\",\n  \"anzeigeName\": \"HOFER, Franz\",\n  \"email\": \"franz.hofer@aon.at\",\n  \"id\": 1,\n  \"nachname\": \"Hofer\",\n  \"notiz\": \"Stammkunde seit 2016\",\n  \"ort\": \"Perg\",\n  \"plz\": \"4320\",\n  \"strasse\": \"Hauptstraße 4\",\n  \"telefon\": \"+43 664 1111111\",\n  \"vorname\": \"Franz\"\n}",
+          "modern": "{\n  \"angelegtAm\": 1767604320000,\n  \"anrede\": \"Herr\",\n  \"anzeigeName\": \"HOFER, Franz\",\n  \"email\": \"franz.hofer@aon.at\",\n  \"id\": 1,\n  \"nachname\": \"Hofer\",\n  \"notiz\": \"Stammkunde seit 2016\",\n  \"ort\": \"Perg\",\n  \"plz\": \"4320\",\n  \"strasse\": \"Hauptstraße 4\",\n  \"telefon\": \"+43 664 1111111\",\n  \"vorname\": \"Franz\"\n}",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden kunde-1.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunde-1.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#5]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/kunden/1/fahrzeuge wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/kunden/1/fahrzeuge",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "kunde-1-fahrzeuge.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunde-1-fahrzeuge.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"angelegtAm\": 1767604500000,\n    \"baujahr\": 2006,\n    \"bezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrgestellnr\": \"WVWZZZ1KZ6W000001\",\n    \"id\": 1,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 248000,\n    \"kundeId\": 1,\n    \"kundeName\": null,\n    \"marke\": \"VW\",\n    \"modell\": \"Golf V 1.9 TDI\",\n    \"pickerlDatum\": \"2026-11-30\"\n  },\n  {\n    \"angelegtAm\": 1767604680000,\n    \"baujahr\": 2015,\n    \"bezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrgestellnr\": \"TMBJF7NE0F0000002\",\n    \"id\": 2,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132500,\n    \"kundeId\": 1,\n    \"kundeName\": null,\n    \"marke\": \"Skoda\",\n    \"modell\": \"Octavia Combi\",\n    \"pickerlDatum\": \"2027-03-31\"\n  }\n]",
+          "modern": "[\n  {\n    \"angelegtAm\": 1767604500000,\n    \"baujahr\": 2006,\n    \"bezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrgestellnr\": \"WVWZZZ1KZ6W000001\",\n    \"id\": 1,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 248000,\n    \"kundeId\": 1,\n    \"kundeName\": null,\n    \"marke\": \"VW\",\n    \"modell\": \"Golf V 1.9 TDI\",\n    \"pickerlDatum\": \"2026-11-30\"\n  },\n  {\n    \"angelegtAm\": 1767604680000,\n    \"baujahr\": 2015,\n    \"bezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrgestellnr\": \"TMBJF7NE0F0000002\",\n    \"id\": 2,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132500,\n    \"kundeId\": 1,\n    \"kundeName\": null,\n    \"marke\": \"Skoda\",\n    \"modell\": \"Octavia Combi\",\n    \"pickerlDatum\": \"2027-03-31\"\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden kunde-1-fahrzeuge.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/kunde-1-fahrzeuge.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#6]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/fahrzeuge wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/fahrzeuge",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "fahrzeuge.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/fahrzeuge.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"angelegtAm\": 1770022320000,\n    \"baujahr\": 2018,\n    \"bezeichnung\": \"VW Up 1.0\",\n    \"fahrgestellnr\": \"WVWZZZAAZJD000013\",\n    \"id\": 13,\n    \"kennzeichen\": \"L-246WX\",\n    \"kmStand\": 29800,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"marke\": \"VW\",\n    \"modell\": \"Up 1.0\",\n    \"pickerlDatum\": \"2027-04-30\"\n  },\n  {\n    \"angelegtAm\": 1770022200000,\n    \"baujahr\": 2014,\n    \"bezeichnung\": \"Audi A4 Avant 2.0 TDI\",\n    \"fahrgestellnr\": \"WAUZZZ8K9EA000005\",\n    \"id\": 5,\n    \"kennzeichen\": \"L-345IJ\",\n    \"kmStand\": 141200,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"marke\": \"Audi\",\n    \"modell\": \"A4 Avant 2.0 TDI\",\n    \"pickerlDatum\": \"2027-01-31\"\n  },\n  {\n    \"angelegtAm\": 1767604500000,\n    \"baujahr\": 2006,\n    \"bezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrgestellnr\": \"WVWZZZ1KZ6W000001\",\n    \"id\": 1,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 248000,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"marke\": \"VW\",\n    \"modell\": \"Golf V 1.9 TDI\",\n    \"pickerlDatum\": \"2026-11-30\"\n  },\n  {\n    \"angelegtAm\": 1781259240000,\n    \"baujahr\": 2012,\n    \"bezeichnung\": \"BMW 320d Touring\",\n    \"fahrgestellnr\": \"WBA3K51000F000012\",\n    \"id\": 12,\n    \"kennzeichen\": \"PE-135UV\",\n    \"kmStand\": 167800,\n    \"kundeId\": 10,\n    \"kundeName\": \"Aigner Thomas\",\n    \"marke\": \"BMW\",\n    \"modell\": \"320d Touring\",\n    \"pickerlDatum\": \"2026-08-31\"\n  },\n  {\n    \"angelegtAm\": 1768486080000,\n    \"baujahr\": 2010,\n    \"bezeichnung\": \"Ford Focus 1.6 TDCi\",\n    \"fahrgestellnr\": \"WF0KXXGCBK9000004\",\n    \"id\": 4,\n    \"kennzeichen\": \"PE-234GH\",\n    \"kmStand\": 175300,\n    \"kundeId\": 3,\n    \"kundeName\": \"Wimmer Johann\",\n    \"marke\": \"Ford\",\n    \"modell\": \"Focus 1.6 TDCi\",\n    \"pickerlDatum\": \"2026-08-31\"\n  },\n  {\n    \"angelegtAm\": 1773913440000,\n    \"baujahr\": 2013,\n    \"bezeichnung\": \"Toyota Yaris 1.33\",\n    \"fahrgestellnr\": \"VNKKC96380A000008\",\n    \"id\": 8,\n    \"kennzeichen\": \"PE-321OP\",\n    \"kmStand\": 88700,\n    \"kundeId\": 7,\n    \"kundeName\": \"Pichler Josef\",\n    \"marke\": \"Toyota\",\n    \"modell\": \"Yaris 1.33\",\n    \"pickerlDatum\": \"2026-12-31\"\n  },\n  {\n    \"angelegtAm\": 1767604680000,\n    \"baujahr\": 2015,\n    \"bezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrgestellnr\": \"TMBJF7NE0F0000002\",\n    \"id\": 2,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132500,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"marke\": \"Skoda\",\n    \"modell\": \"Octavia Combi\",\n    \"pickerlDatum\": \"2027-03-31\"\n  },\n  {\n    \"angelegtAm\": 1770827040000,\n    \"baujahr\": 2011,\n    \"bezeichnung\": \"VW Passat Variant\",\n    \"fahrgestellnr\": \"WVWZZZ3CZBE000006\",\n    \"id\": 6,\n    \"kennzeichen\": \"PE-567KL\",\n    \"kmStand\": 189900,\n    \"kundeId\": 5,\n    \"kundeName\": \"Steiner Karl\",\n    \"marke\": \"VW\",\n    \"modell\": \"Passat Variant\",\n    \"pickerlDatum\": \"2026-10-31\"\n  },\n  {\n    \"angelegtAm\": 1775203200000,\n    \"baujahr\": 2015,\n    \"bezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrgestellnr\": \"WDB90663213000009\",\n    \"id\": 9,\n    \"kennzeichen\": \"PE-654QR\",\n    \"kmStand\": 234000,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"marke\": \"Mercedes-Benz\",\n    \"modell\": \"Sprinter 316 CDI\",\n    \"pickerlDatum\": \"2026-09-30\"\n  },\n  {\n    \"angelegtAm\": 1775203320000,\n    \"baujahr\": 2016,\n    \"bezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrgestellnr\": \"WDB90663213000010\",\n    \"id\": 10,\n    \"kennzeichen\": \"PE-655QS\",\n    \"kmStand\": 198500,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"marke\": \"Mercedes-Benz\",\n    \"modell\": \"Sprinter 316 CDI\",\n    \"pickerlDatum\": \"2027-02-28\"\n  },\n  {\n    \"angelegtAm\": 1767868380000,\n    \"baujahr\": 2012,\n    \"bezeichnung\": \"Opel Corsa D 1.2\",\n    \"fahrgestellnr\": \"W0L0SDL08C4000003\",\n    \"id\": 3,\n    \"kennzeichen\": \"PE-789EF\",\n    \"kmStand\": 98000,\n    \"kundeId\": 2,\n    \"kundeName\": \"Leitner Maria\",\n    \"marke\": \"Opel\",\n    \"modell\": \"Corsa D 1.2\",\n    \"pickerlDatum\": \"2026-09-30\"\n  },\n  {\n    \"angelegtAm\": 1772363040000,\n    \"baujahr\": 2016,\n    \"bezeichnung\": \"Renault Clio IV\",\n    \"fahrgestellnr\": \"VF15R240A54000007\",\n    \"id\": 7,\n    \"kennzeichen\": \"PE-890MN\",\n    \"kmStand\": 61000,\n    \"kundeId\": 6,\n    \"kundeName\": \"Mayr Anna\",\n    \"marke\": \"Renault\",\n    \"modell\": \"Clio IV\",\n    \"pickerlDatum\": \"2027-05-31\"\n  },\n  {\n    \"angelegtAm\": 1778073480000,\n    \"baujahr\": 2017,\n    \"bezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrgestellnr\": \"VSSZZZ6JZHR000011\",\n    \"id\": 11,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45200,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"marke\": \"Seat\",\n    \"modell\": \"Ibiza 1.0 TSI\",\n    \"pickerlDatum\": \"2027-06-30\"\n  }\n]",
+          "modern": "[\n  {\n    \"angelegtAm\": 1770022320000,\n    \"baujahr\": 2018,\n    \"bezeichnung\": \"VW Up 1.0\",\n    \"fahrgestellnr\": \"WVWZZZAAZJD000013\",\n    \"id\": 13,\n    \"kennzeichen\": \"L-246WX\",\n    \"kmStand\": 29800,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"marke\": \"VW\",\n    \"modell\": \"Up 1.0\",\n    \"pickerlDatum\": \"2027-04-30\"\n  },\n  {\n    \"angelegtAm\": 1770022200000,\n    \"baujahr\": 2014,\n    \"bezeichnung\": \"Audi A4 Avant 2.0 TDI\",\n    \"fahrgestellnr\": \"WAUZZZ8K9EA000005\",\n    \"id\": 5,\n    \"kennzeichen\": \"L-345IJ\",\n    \"kmStand\": 141200,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"marke\": \"Audi\",\n    \"modell\": \"A4 Avant 2.0 TDI\",\n    \"pickerlDatum\": \"2027-01-31\"\n  },\n  {\n    \"angelegtAm\": 1767604500000,\n    \"baujahr\": 2006,\n    \"bezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrgestellnr\": \"WVWZZZ1KZ6W000001\",\n    \"id\": 1,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 248000,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"marke\": \"VW\",\n    \"modell\": \"Golf V 1.9 TDI\",\n    \"pickerlDatum\": \"2026-11-30\"\n  },\n  {\n    \"angelegtAm\": 1781259240000,\n    \"baujahr\": 2012,\n    \"bezeichnung\": \"BMW 320d Touring\",\n    \"fahrgestellnr\": \"WBA3K51000F000012\",\n    \"id\": 12,\n    \"kennzeichen\": \"PE-135UV\",\n    \"kmStand\": 167800,\n    \"kundeId\": 10,\n    \"kundeName\": \"Aigner Thomas\",\n    \"marke\": \"BMW\",\n    \"modell\": \"320d Touring\",\n    \"pickerlDatum\": \"2026-08-31\"\n  },\n  {\n    \"angelegtAm\": 1768486080000,\n    \"baujahr\": 2010,\n    \"bezeichnung\": \"Ford Focus 1.6 TDCi\",\n    \"fahrgestellnr\": \"WF0KXXGCBK9000004\",\n    \"id\": 4,\n    \"kennzeichen\": \"PE-234GH\",\n    \"kmStand\": 175300,\n    \"kundeId\": 3,\n    \"kundeName\": \"Wimmer Johann\",\n    \"marke\": \"Ford\",\n    \"modell\": \"Focus 1.6 TDCi\",\n    \"pickerlDatum\": \"2026-08-31\"\n  },\n  {\n    \"angelegtAm\": 1773913440000,\n    \"baujahr\": 2013,\n    \"bezeichnung\": \"Toyota Yaris 1.33\",\n    \"fahrgestellnr\": \"VNKKC96380A000008\",\n    \"id\": 8,\n    \"kennzeichen\": \"PE-321OP\",\n    \"kmStand\": 88700,\n    \"kundeId\": 7,\n    \"kundeName\": \"Pichler Josef\",\n    \"marke\": \"Toyota\",\n    \"modell\": \"Yaris 1.33\",\n    \"pickerlDatum\": \"2026-12-31\"\n  },\n  {\n    \"angelegtAm\": 1767604680000,\n    \"baujahr\": 2015,\n    \"bezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrgestellnr\": \"TMBJF7NE0F0000002\",\n    \"id\": 2,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132500,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"marke\": \"Skoda\",\n    \"modell\": \"Octavia Combi\",\n    \"pickerlDatum\": \"2027-03-31\"\n  },\n  {\n    \"angelegtAm\": 1770827040000,\n    \"baujahr\": 2011,\n    \"bezeichnung\": \"VW Passat Variant\",\n    \"fahrgestellnr\": \"WVWZZZ3CZBE000006\",\n    \"id\": 6,\n    \"kennzeichen\": \"PE-567KL\",\n    \"kmStand\": 189900,\n    \"kundeId\": 5,\n    \"kundeName\": \"Steiner Karl\",\n    \"marke\": \"VW\",\n    \"modell\": \"Passat Variant\",\n    \"pickerlDatum\": \"2026-10-31\"\n  },\n  {\n    \"angelegtAm\": 1775203200000,\n    \"baujahr\": 2015,\n    \"bezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrgestellnr\": \"WDB90663213000009\",\n    \"id\": 9,\n    \"kennzeichen\": \"PE-654QR\",\n    \"kmStand\": 234000,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"marke\": \"Mercedes-Benz\",\n    \"modell\": \"Sprinter 316 CDI\",\n    \"pickerlDatum\": \"2026-09-30\"\n  },\n  {\n    \"angelegtAm\": 1775203320000,\n    \"baujahr\": 2016,\n    \"bezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrgestellnr\": \"WDB90663213000010\",\n    \"id\": 10,\n    \"kennzeichen\": \"PE-655QS\",\n    \"kmStand\": 198500,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"marke\": \"Mercedes-Benz\",\n    \"modell\": \"Sprinter 316 CDI\",\n    \"pickerlDatum\": \"2027-02-28\"\n  },\n  {\n    \"angelegtAm\": 1767868380000,\n    \"baujahr\": 2012,\n    \"bezeichnung\": \"Opel Corsa D 1.2\",\n    \"fahrgestellnr\": \"W0L0SDL08C4000003\",\n    \"id\": 3,\n    \"kennzeichen\": \"PE-789EF\",\n    \"kmStand\": 98000,\n    \"kundeId\": 2,\n    \"kundeName\": \"Leitner Maria\",\n    \"marke\": \"Opel\",\n    \"modell\": \"Corsa D 1.2\",\n    \"pickerlDatum\": \"2026-09-30\"\n  },\n  {\n    \"angelegtAm\": 1772363040000,\n    \"baujahr\": 2016,\n    \"bezeichnung\": \"Renault Clio IV\",\n    \"fahrgestellnr\": \"VF15R240A54000007\",\n    \"id\": 7,\n    \"kennzeichen\": \"PE-890MN\",\n    \"kmStand\": 61000,\n    \"kundeId\": 6,\n    \"kundeName\": \"Mayr Anna\",\n    \"marke\": \"Renault\",\n    \"modell\": \"Clio IV\",\n    \"pickerlDatum\": \"2027-05-31\"\n  },\n  {\n    \"angelegtAm\": 1778073480000,\n    \"baujahr\": 2017,\n    \"bezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrgestellnr\": \"VSSZZZ6JZHR000011\",\n    \"id\": 11,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45200,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"marke\": \"Seat\",\n    \"modell\": \"Ibiza 1.0 TSI\",\n    \"pickerlDatum\": \"2027-06-30\"\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden fahrzeuge.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/fahrzeuge.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#7]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/auftraege wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/auftraege",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "auftraege.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/auftraege.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1785247200000,\n    \"auftragNr\": \"A-2026-0015\",\n    \"beschreibung\": \"Klappern vorne rechts bei Kopfsteinpflaster\",\n    \"fahrzeugBezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrzeugId\": 1,\n    \"fertigAm\": null,\n    \"id\": 15,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 248000,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"ANGENOMMEN\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1785143400000,\n    \"auftragNr\": \"A-2026-0014\",\n    \"beschreibung\": \"Jahresservice, bitte auch Wischerblätter\",\n    \"fahrzeugBezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrzeugId\": 2,\n    \"fertigAm\": null,\n    \"id\": 14,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132500,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"ANGENOMMEN\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1784623800000,\n    \"auftragNr\": \"A-2026-0013\",\n    \"beschreibung\": \"§57a Begutachtung (Pickerl)\",\n    \"fahrzeugBezeichnung\": \"VW Up 1.0\",\n    \"fahrzeugId\": 13,\n    \"fertigAm\": null,\n    \"id\": 13,\n    \"kennzeichen\": \"L-246WX\",\n    \"kmStand\": 29800,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"positionen\": [],\n    \"status\": \"IN_ARBEIT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1784115000000,\n    \"auftragNr\": \"A-2026-0016\",\n    \"beschreibung\": \"Radio ohne Funktion - Kunde macht es doch selbst\",\n    \"fahrzeugBezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrzeugId\": 11,\n    \"fertigAm\": null,\n    \"id\": 16,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45200,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"positionen\": [],\n    \"status\": \"STORNIERT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1783410000000,\n    \"auftragNr\": \"A-2026-0012\",\n    \"beschreibung\": \"Bremsen hinten + Handbremse nachstellen\",\n    \"fahrzeugBezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrzeugId\": 10,\n    \"fertigAm\": 1783516200000,\n    \"id\": 12,\n    \"kennzeichen\": \"PE-655QS\",\n    \"kmStand\": 198500,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1782292800000,\n    \"auftragNr\": \"A-2026-0011\",\n    \"beschreibung\": \"Motorlampe leuchtet, Injektor Zylinder 3 defekt\",\n    \"fahrzeugBezeichnung\": \"BMW 320d Touring\",\n    \"fahrzeugId\": 12,\n    \"fertigAm\": null,\n    \"id\": 11,\n    \"kennzeichen\": \"PE-135UV\",\n    \"kmStand\": 167800,\n    \"kundeId\": 10,\n    \"kundeName\": \"Aigner Thomas\",\n    \"positionen\": [],\n    \"status\": \"IN_ARBEIT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1781108400000,\n    \"angenommenAm\": 1780992600000,\n    \"auftragNr\": \"A-2026-0010\",\n    \"beschreibung\": \"Auspuff Endtopf durchgerostet\",\n    \"fahrzeugBezeichnung\": \"Toyota Yaris 1.33\",\n    \"fahrzeugId\": 8,\n    \"fertigAm\": 1781092200000,\n    \"id\": 10,\n    \"kennzeichen\": \"PE-321OP\",\n    \"kmStand\": 88300,\n    \"kundeId\": 7,\n    \"kundeName\": \"Pichler Josef\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1779187500000,\n    \"auftragNr\": \"A-2026-0009\",\n    \"beschreibung\": \"Klimaservice, Kältemittel auffüllen\",\n    \"fahrzeugBezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrzeugId\": 11,\n    \"fertigAm\": 1779269400000,\n    \"id\": 9,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45100,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1778076000000,\n    \"angenommenAm\": 1777966200000,\n    \"auftragNr\": \"A-2026-0008\",\n    \"beschreibung\": \"§57a + Service, Firmenfahrzeug\",\n    \"fahrzeugBezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrzeugId\": 9,\n    \"fertigAm\": 1778068800000,\n    \"id\": 8,\n    \"kennzeichen\": \"PE-654QR\",\n    \"kmStand\": 232900,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1775749500000,\n    \"angenommenAm\": 1775655000000,\n    \"auftragNr\": \"A-2026-0007\",\n    \"beschreibung\": \"Kleines Service, Innenraumfilter\",\n    \"fahrzeugBezeichnung\": \"Renault Clio IV\",\n    \"fahrzeugId\": 7,\n    \"fertigAm\": 1775730000000,\n    \"id\": 7,\n    \"kennzeichen\": \"PE-890MN\",\n    \"kmStand\": 60500,\n    \"kundeId\": 6,\n    \"kundeName\": \"Mayr Anna\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1773855000000,\n    \"angenommenAm\": 1773651600000,\n    \"auftragNr\": \"A-2026-0006\",\n    \"beschreibung\": \"Kupplung rutscht, Tausch Kupplungssatz\",\n    \"fahrzeugBezeichnung\": \"VW Passat Variant\",\n    \"fahrzeugId\": 6,\n    \"fertigAm\": 1773844800000,\n    \"id\": 6,\n    \"kennzeichen\": \"PE-567KL\",\n    \"kmStand\": 189200,\n    \"kundeId\": 5,\n    \"kundeName\": \"Steiner Karl\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1772701200000,\n    \"angenommenAm\": 1772526000000,\n    \"auftragNr\": \"A-2026-0005\",\n    \"beschreibung\": \"Zahnriemen + Wasserpumpe lt. Serviceplan\",\n    \"fahrzeugBezeichnung\": \"Audi A4 Avant 2.0 TDI\",\n    \"fahrzeugId\": 5,\n    \"fertigAm\": 1772644500000,\n    \"id\": 5,\n    \"kennzeichen\": \"L-345IJ\",\n    \"kmStand\": 140100,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1770718500000,\n    \"auftragNr\": \"A-2026-0004\",\n    \"beschreibung\": \"Klimaanlage kühlt nicht - Kunde hat Termin abgesagt\",\n    \"fahrzeugBezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrzeugId\": 2,\n    \"fertigAm\": null,\n    \"id\": 4,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132000,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"STORNIERT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1770309000000,\n    \"angenommenAm\": 1770277500000,\n    \"auftragNr\": \"A-2026-0003\",\n    \"beschreibung\": \"§57a Begutachtung (Pickerl)\",\n    \"fahrzeugBezeichnung\": \"Ford Focus 1.6 TDCi\",\n    \"fahrzeugId\": 4,\n    \"fertigAm\": 1770289200000,\n    \"id\": 3,\n    \"kennzeichen\": \"PE-234GH\",\n    \"kmStand\": 174900,\n    \"kundeId\": 3,\n    \"kundeName\": \"Wimmer Johann\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1769070600000,\n    \"angenommenAm\": 1768901400000,\n    \"auftragNr\": \"A-2026-0002\",\n    \"beschreibung\": \"Bremsen vorne komplett, Geräusch beim Bremsen\",\n    \"fahrzeugBezeichnung\": \"Opel Corsa D 1.2\",\n    \"fahrzeugId\": 3,\n    \"fertigAm\": 1769011200000,\n    \"id\": 2,\n    \"kennzeichen\": \"PE-789EF\",\n    \"kmStand\": 97400,\n    \"kundeId\": 2,\n    \"kundeName\": \"Leitner Maria\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1768410000000,\n    \"angenommenAm\": 1768204800000,\n    \"auftragNr\": \"A-2026-0001\",\n    \"beschreibung\": \"Jahresservice inkl. Öl und Filter\",\n    \"fahrzeugBezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrzeugId\": 1,\n    \"fertigAm\": 1768318200000,\n    \"id\": 1,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 246800,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  }\n]",
+          "modern": "[\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1785247200000,\n    \"auftragNr\": \"A-2026-0015\",\n    \"beschreibung\": \"Klappern vorne rechts bei Kopfsteinpflaster\",\n    \"fahrzeugBezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrzeugId\": 1,\n    \"fertigAm\": null,\n    \"id\": 15,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 248000,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"ANGENOMMEN\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1785143400000,\n    \"auftragNr\": \"A-2026-0014\",\n    \"beschreibung\": \"Jahresservice, bitte auch Wischerblätter\",\n    \"fahrzeugBezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrzeugId\": 2,\n    \"fertigAm\": null,\n    \"id\": 14,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132500,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"ANGENOMMEN\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1784623800000,\n    \"auftragNr\": \"A-2026-0013\",\n    \"beschreibung\": \"§57a Begutachtung (Pickerl)\",\n    \"fahrzeugBezeichnung\": \"VW Up 1.0\",\n    \"fahrzeugId\": 13,\n    \"fertigAm\": null,\n    \"id\": 13,\n    \"kennzeichen\": \"L-246WX\",\n    \"kmStand\": 29800,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"positionen\": [],\n    \"status\": \"IN_ARBEIT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1784115000000,\n    \"auftragNr\": \"A-2026-0016\",\n    \"beschreibung\": \"Radio ohne Funktion - Kunde macht es doch selbst\",\n    \"fahrzeugBezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrzeugId\": 11,\n    \"fertigAm\": null,\n    \"id\": 16,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45200,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"positionen\": [],\n    \"status\": \"STORNIERT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1783410000000,\n    \"auftragNr\": \"A-2026-0012\",\n    \"beschreibung\": \"Bremsen hinten + Handbremse nachstellen\",\n    \"fahrzeugBezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrzeugId\": 10,\n    \"fertigAm\": 1783516200000,\n    \"id\": 12,\n    \"kennzeichen\": \"PE-655QS\",\n    \"kmStand\": 198500,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1782292800000,\n    \"auftragNr\": \"A-2026-0011\",\n    \"beschreibung\": \"Motorlampe leuchtet, Injektor Zylinder 3 defekt\",\n    \"fahrzeugBezeichnung\": \"BMW 320d Touring\",\n    \"fahrzeugId\": 12,\n    \"fertigAm\": null,\n    \"id\": 11,\n    \"kennzeichen\": \"PE-135UV\",\n    \"kmStand\": 167800,\n    \"kundeId\": 10,\n    \"kundeName\": \"Aigner Thomas\",\n    \"positionen\": [],\n    \"status\": \"IN_ARBEIT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1781108400000,\n    \"angenommenAm\": 1780992600000,\n    \"auftragNr\": \"A-2026-0010\",\n    \"beschreibung\": \"Auspuff Endtopf durchgerostet\",\n    \"fahrzeugBezeichnung\": \"Toyota Yaris 1.33\",\n    \"fahrzeugId\": 8,\n    \"fertigAm\": 1781092200000,\n    \"id\": 10,\n    \"kennzeichen\": \"PE-321OP\",\n    \"kmStand\": 88300,\n    \"kundeId\": 7,\n    \"kundeName\": \"Pichler Josef\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1779187500000,\n    \"auftragNr\": \"A-2026-0009\",\n    \"beschreibung\": \"Klimaservice, Kältemittel auffüllen\",\n    \"fahrzeugBezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrzeugId\": 11,\n    \"fertigAm\": 1779269400000,\n    \"id\": 9,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45100,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1778076000000,\n    \"angenommenAm\": 1777966200000,\n    \"auftragNr\": \"A-2026-0008\",\n    \"beschreibung\": \"§57a + Service, Firmenfahrzeug\",\n    \"fahrzeugBezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrzeugId\": 9,\n    \"fertigAm\": 1778068800000,\n    \"id\": 8,\n    \"kennzeichen\": \"PE-654QR\",\n    \"kmStand\": 232900,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1775749500000,\n    \"angenommenAm\": 1775655000000,\n    \"auftragNr\": \"A-2026-0007\",\n    \"beschreibung\": \"Kleines Service, Innenraumfilter\",\n    \"fahrzeugBezeichnung\": \"Renault Clio IV\",\n    \"fahrzeugId\": 7,\n    \"fertigAm\": 1775730000000,\n    \"id\": 7,\n    \"kennzeichen\": \"PE-890MN\",\n    \"kmStand\": 60500,\n    \"kundeId\": 6,\n    \"kundeName\": \"Mayr Anna\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1773855000000,\n    \"angenommenAm\": 1773651600000,\n    \"auftragNr\": \"A-2026-0006\",\n    \"beschreibung\": \"Kupplung rutscht, Tausch Kupplungssatz\",\n    \"fahrzeugBezeichnung\": \"VW Passat Variant\",\n    \"fahrzeugId\": 6,\n    \"fertigAm\": 1773844800000,\n    \"id\": 6,\n    \"kennzeichen\": \"PE-567KL\",\n    \"kmStand\": 189200,\n    \"kundeId\": 5,\n    \"kundeName\": \"Steiner Karl\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1772701200000,\n    \"angenommenAm\": 1772526000000,\n    \"auftragNr\": \"A-2026-0005\",\n    \"beschreibung\": \"Zahnriemen + Wasserpumpe lt. Serviceplan\",\n    \"fahrzeugBezeichnung\": \"Audi A4 Avant 2.0 TDI\",\n    \"fahrzeugId\": 5,\n    \"fertigAm\": 1772644500000,\n    \"id\": 5,\n    \"kennzeichen\": \"L-345IJ\",\n    \"kmStand\": 140100,\n    \"kundeId\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1770718500000,\n    \"auftragNr\": \"A-2026-0004\",\n    \"beschreibung\": \"Klimaanlage kühlt nicht - Kunde hat Termin abgesagt\",\n    \"fahrzeugBezeichnung\": \"Skoda Octavia Combi\",\n    \"fahrzeugId\": 2,\n    \"fertigAm\": null,\n    \"id\": 4,\n    \"kennzeichen\": \"PE-456CD\",\n    \"kmStand\": 132000,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"STORNIERT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1770309000000,\n    \"angenommenAm\": 1770277500000,\n    \"auftragNr\": \"A-2026-0003\",\n    \"beschreibung\": \"§57a Begutachtung (Pickerl)\",\n    \"fahrzeugBezeichnung\": \"Ford Focus 1.6 TDCi\",\n    \"fahrzeugId\": 4,\n    \"fertigAm\": 1770289200000,\n    \"id\": 3,\n    \"kennzeichen\": \"PE-234GH\",\n    \"kmStand\": 174900,\n    \"kundeId\": 3,\n    \"kundeName\": \"Wimmer Johann\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1769070600000,\n    \"angenommenAm\": 1768901400000,\n    \"auftragNr\": \"A-2026-0002\",\n    \"beschreibung\": \"Bremsen vorne komplett, Geräusch beim Bremsen\",\n    \"fahrzeugBezeichnung\": \"Opel Corsa D 1.2\",\n    \"fahrzeugId\": 3,\n    \"fertigAm\": 1769011200000,\n    \"id\": 2,\n    \"kennzeichen\": \"PE-789EF\",\n    \"kmStand\": 97400,\n    \"kundeId\": 2,\n    \"kundeName\": \"Leitner Maria\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": 1768410000000,\n    \"angenommenAm\": 1768204800000,\n    \"auftragNr\": \"A-2026-0001\",\n    \"beschreibung\": \"Jahresservice inkl. Öl und Filter\",\n    \"fahrzeugBezeichnung\": \"VW Golf V 1.9 TDI\",\n    \"fahrzeugId\": 1,\n    \"fertigAm\": 1768318200000,\n    \"id\": 1,\n    \"kennzeichen\": \"PE-123AB\",\n    \"kmStand\": 246800,\n    \"kundeId\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"positionen\": [],\n    \"status\": \"ABGEHOLT\",\n    \"summeNetto\": 0.0\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden auftraege.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/auftraege.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#8]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/auftraege?status=FERTIG wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/auftraege?status=FERTIG",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "auftraege-fertig.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/auftraege-fertig.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1783410000000,\n    \"auftragNr\": \"A-2026-0012\",\n    \"beschreibung\": \"Bremsen hinten + Handbremse nachstellen\",\n    \"fahrzeugBezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrzeugId\": 10,\n    \"fertigAm\": 1783516200000,\n    \"id\": 12,\n    \"kennzeichen\": \"PE-655QS\",\n    \"kmStand\": 198500,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1779187500000,\n    \"auftragNr\": \"A-2026-0009\",\n    \"beschreibung\": \"Klimaservice, Kältemittel auffüllen\",\n    \"fahrzeugBezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrzeugId\": 11,\n    \"fertigAm\": 1779269400000,\n    \"id\": 9,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45100,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  }\n]",
+          "modern": "[\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1783410000000,\n    \"auftragNr\": \"A-2026-0012\",\n    \"beschreibung\": \"Bremsen hinten + Handbremse nachstellen\",\n    \"fahrzeugBezeichnung\": \"Mercedes-Benz Sprinter 316 CDI\",\n    \"fahrzeugId\": 10,\n    \"fertigAm\": 1783516200000,\n    \"id\": 12,\n    \"kennzeichen\": \"PE-655QS\",\n    \"kmStand\": 198500,\n    \"kundeId\": 8,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  },\n  {\n    \"abgeholtAm\": null,\n    \"angenommenAm\": 1779187500000,\n    \"auftragNr\": \"A-2026-0009\",\n    \"beschreibung\": \"Klimaservice, Kältemittel auffüllen\",\n    \"fahrzeugBezeichnung\": \"Seat Ibiza 1.0 TSI\",\n    \"fahrzeugId\": 11,\n    \"fertigAm\": 1779269400000,\n    \"id\": 9,\n    \"kennzeichen\": \"PE-987ST\",\n    \"kmStand\": 45100,\n    \"kundeId\": 9,\n    \"kundeName\": \"Wagner Christine\",\n    \"positionen\": [],\n    \"status\": \"FERTIG\",\n    \"summeNetto\": 0.0\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden auftraege-fertig.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/auftraege-fertig.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#9]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/auftraege/5 wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/auftraege/5",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "auftrag-5.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/auftrag-5.json"
+        },
+        "vergleich": {
+          "golden": "{\n  \"abgeholtAm\": 1772701200000,\n  \"angenommenAm\": 1772526000000,\n  \"auftragNr\": \"A-2026-0005\",\n  \"beschreibung\": \"Zahnriemen + Wasserpumpe lt. Serviceplan\",\n  \"fahrzeugBezeichnung\": \"Audi A4 Avant 2.0 TDI\",\n  \"fahrzeugId\": 5,\n  \"fertigAm\": 1772644500000,\n  \"id\": 5,\n  \"kennzeichen\": \"L-345IJ\",\n  \"kmStand\": 140100,\n  \"kundeId\": 4,\n  \"kundeName\": \"Brunner Elisabeth\",\n  \"positionen\": [\n    {\n      \"auftragId\": 5,\n      \"bezeichnung\": \"Zahnriemen + WaPu tauschen\",\n      \"einzelpreis\": 88.0,\n      \"gesamtpreis\": 396.0,\n      \"id\": 9,\n      \"menge\": 4.5,\n      \"typ\": \"ARBEIT\"\n    },\n    {\n      \"auftragId\": 5,\n      \"bezeichnung\": \"Zahnriemensatz\",\n      \"einzelpreis\": 185.0,\n      \"gesamtpreis\": 185.0,\n      \"id\": 10,\n      \"menge\": 1.0,\n      \"typ\": \"MATERIAL\"\n    },\n    {\n      \"auftragId\": 5,\n      \"bezeichnung\": \"Wasserpumpe\",\n      \"einzelpreis\": 98.0,\n      \"gesamtpreis\": 98.0,\n      \"id\": 11,\n      \"menge\": 1.0,\n      \"typ\": \"MATERIAL\"\n    }\n  ],\n  \"status\": \"ABGEHOLT\",\n  \"summeNetto\": 679.0\n}",
+          "modern": "{\n  \"abgeholtAm\": 1772701200000,\n  \"angenommenAm\": 1772526000000,\n  \"auftragNr\": \"A-2026-0005\",\n  \"beschreibung\": \"Zahnriemen + Wasserpumpe lt. Serviceplan\",\n  \"fahrzeugBezeichnung\": \"Audi A4 Avant 2.0 TDI\",\n  \"fahrzeugId\": 5,\n  \"fertigAm\": 1772644500000,\n  \"id\": 5,\n  \"kennzeichen\": \"L-345IJ\",\n  \"kmStand\": 140100,\n  \"kundeId\": 4,\n  \"kundeName\": \"Brunner Elisabeth\",\n  \"positionen\": [\n    {\n      \"auftragId\": 5,\n      \"bezeichnung\": \"Zahnriemen + WaPu tauschen\",\n      \"einzelpreis\": 88.0,\n      \"gesamtpreis\": 396.0,\n      \"id\": 9,\n      \"menge\": 4.5,\n      \"typ\": \"ARBEIT\"\n    },\n    {\n      \"auftragId\": 5,\n      \"bezeichnung\": \"Zahnriemensatz\",\n      \"einzelpreis\": 185.0,\n      \"gesamtpreis\": 185.0,\n      \"id\": 10,\n      \"menge\": 1.0,\n      \"typ\": \"MATERIAL\"\n    },\n    {\n      \"auftragId\": 5,\n      \"bezeichnung\": \"Wasserpumpe\",\n      \"einzelpreis\": 98.0,\n      \"gesamtpreis\": 98.0,\n      \"id\": 11,\n      \"menge\": 1.0,\n      \"typ\": \"MATERIAL\"\n    }\n  ],\n  \"status\": \"ABGEHOLT\",\n  \"summeNetto\": 679.0\n}",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden auftrag-5.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/auftrag-5.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#10]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/rechnungen wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/rechnungen",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "rechnungen.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/rechnungen.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"auftragId\": 10,\n    \"auftragNr\": \"A-2026-0010\",\n    \"ausgestelltAm\": 1781107200000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1781108400000,\n    \"id\": 8,\n    \"kundeName\": \"Pichler Josef\",\n    \"rechnungNr\": \"R-2026-0008\",\n    \"summeBrutto\": 294.0,\n    \"summeNetto\": 245.0,\n    \"ust\": 49.0\n  },\n  {\n    \"auftragId\": 8,\n    \"auftragNr\": \"A-2026-0008\",\n    \"ausgestelltAm\": 1778075100000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1779967200000,\n    \"id\": 7,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"rechnungNr\": \"R-2026-0007\",\n    \"summeBrutto\": 408.0,\n    \"summeNetto\": 340.0,\n    \"ust\": 68.0\n  },\n  {\n    \"auftragId\": 7,\n    \"auftragNr\": \"A-2026-0007\",\n    \"ausgestelltAm\": 1775748600000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1775749500000,\n    \"id\": 6,\n    \"kundeName\": \"Mayr Anna\",\n    \"rechnungNr\": \"R-2026-0006\",\n    \"summeBrutto\": 179.52,\n    \"summeNetto\": 149.6,\n    \"ust\": 29.92\n  },\n  {\n    \"auftragId\": 6,\n    \"auftragNr\": \"A-2026-0006\",\n    \"ausgestelltAm\": 1773853200000,\n    \"bezahlt\": false,\n    \"bezahltAm\": null,\n    \"id\": 5,\n    \"kundeName\": \"Steiner Karl\",\n    \"rechnungNr\": \"R-2026-0005\",\n    \"summeBrutto\": 912.0,\n    \"summeNetto\": 760.0,\n    \"ust\": 152.0\n  },\n  {\n    \"auftragId\": 5,\n    \"auftragNr\": \"A-2026-0005\",\n    \"ausgestelltAm\": 1772700300000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1773307800000,\n    \"id\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"rechnungNr\": \"R-2026-0004\",\n    \"summeBrutto\": 814.8,\n    \"summeNetto\": 679.0,\n    \"ust\": 135.8\n  },\n  {\n    \"auftragId\": 3,\n    \"auftragNr\": \"A-2026-0003\",\n    \"ausgestelltAm\": 1770307200000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1770309000000,\n    \"id\": 3,\n    \"kundeName\": \"Wimmer Johann\",\n    \"rechnungNr\": \"R-2026-0003\",\n    \"summeBrutto\": 100.8,\n    \"summeNetto\": 84.0,\n    \"ust\": 16.8\n  },\n  {\n    \"auftragId\": 2,\n    \"auftragNr\": \"A-2026-0002\",\n    \"ausgestelltAm\": 1769069700000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1769680800000,\n    \"id\": 2,\n    \"kundeName\": \"Leitner Maria\",\n    \"rechnungNr\": \"R-2026-0002\",\n    \"summeBrutto\": 434.88,\n    \"summeNetto\": 362.4,\n    \"ust\": 72.48\n  },\n  {\n    \"auftragId\": 1,\n    \"auftragNr\": \"A-2026-0001\",\n    \"ausgestelltAm\": 1768409100000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1768410000000,\n    \"id\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"rechnungNr\": \"R-2026-0001\",\n    \"summeBrutto\": 261.6,\n    \"summeNetto\": 218.0,\n    \"ust\": 43.6\n  }\n]",
+          "modern": "[\n  {\n    \"auftragId\": 10,\n    \"auftragNr\": \"A-2026-0010\",\n    \"ausgestelltAm\": 1781107200000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1781108400000,\n    \"id\": 8,\n    \"kundeName\": \"Pichler Josef\",\n    \"rechnungNr\": \"R-2026-0008\",\n    \"summeBrutto\": 294.0,\n    \"summeNetto\": 245.0,\n    \"ust\": 49.0\n  },\n  {\n    \"auftragId\": 8,\n    \"auftragNr\": \"A-2026-0008\",\n    \"ausgestelltAm\": 1778075100000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1779967200000,\n    \"id\": 7,\n    \"kundeName\": \"Huber Transporte GmbH \",\n    \"rechnungNr\": \"R-2026-0007\",\n    \"summeBrutto\": 408.0,\n    \"summeNetto\": 340.0,\n    \"ust\": 68.0\n  },\n  {\n    \"auftragId\": 7,\n    \"auftragNr\": \"A-2026-0007\",\n    \"ausgestelltAm\": 1775748600000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1775749500000,\n    \"id\": 6,\n    \"kundeName\": \"Mayr Anna\",\n    \"rechnungNr\": \"R-2026-0006\",\n    \"summeBrutto\": 179.52,\n    \"summeNetto\": 149.6,\n    \"ust\": 29.92\n  },\n  {\n    \"auftragId\": 6,\n    \"auftragNr\": \"A-2026-0006\",\n    \"ausgestelltAm\": 1773853200000,\n    \"bezahlt\": false,\n    \"bezahltAm\": null,\n    \"id\": 5,\n    \"kundeName\": \"Steiner Karl\",\n    \"rechnungNr\": \"R-2026-0005\",\n    \"summeBrutto\": 912.0,\n    \"summeNetto\": 760.0,\n    \"ust\": 152.0\n  },\n  {\n    \"auftragId\": 5,\n    \"auftragNr\": \"A-2026-0005\",\n    \"ausgestelltAm\": 1772700300000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1773307800000,\n    \"id\": 4,\n    \"kundeName\": \"Brunner Elisabeth\",\n    \"rechnungNr\": \"R-2026-0004\",\n    \"summeBrutto\": 814.8,\n    \"summeNetto\": 679.0,\n    \"ust\": 135.8\n  },\n  {\n    \"auftragId\": 3,\n    \"auftragNr\": \"A-2026-0003\",\n    \"ausgestelltAm\": 1770307200000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1770309000000,\n    \"id\": 3,\n    \"kundeName\": \"Wimmer Johann\",\n    \"rechnungNr\": \"R-2026-0003\",\n    \"summeBrutto\": 100.8,\n    \"summeNetto\": 84.0,\n    \"ust\": 16.8\n  },\n  {\n    \"auftragId\": 2,\n    \"auftragNr\": \"A-2026-0002\",\n    \"ausgestelltAm\": 1769069700000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1769680800000,\n    \"id\": 2,\n    \"kundeName\": \"Leitner Maria\",\n    \"rechnungNr\": \"R-2026-0002\",\n    \"summeBrutto\": 434.88,\n    \"summeNetto\": 362.4,\n    \"ust\": 72.48\n  },\n  {\n    \"auftragId\": 1,\n    \"auftragNr\": \"A-2026-0001\",\n    \"ausgestelltAm\": 1768409100000,\n    \"bezahlt\": true,\n    \"bezahltAm\": 1768410000000,\n    \"id\": 1,\n    \"kundeName\": \"Hofer Franz\",\n    \"rechnungNr\": \"R-2026-0001\",\n    \"summeBrutto\": 261.6,\n    \"summeNetto\": 218.0,\n    \"ust\": 43.6\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden rechnungen.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/rechnungen.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#11]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/rechnungen/4 wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/rechnungen/4",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "rechnung-4.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/rechnung-4.json"
+        },
+        "vergleich": {
+          "golden": "{\n  \"auftragId\": 5,\n  \"auftragNr\": \"A-2026-0005\",\n  \"ausgestelltAm\": 1772700300000,\n  \"bezahlt\": true,\n  \"bezahltAm\": 1773307800000,\n  \"id\": 4,\n  \"kundeName\": \"Brunner Elisabeth\",\n  \"rechnungNr\": \"R-2026-0004\",\n  \"summeBrutto\": 814.8,\n  \"summeNetto\": 679.0,\n  \"ust\": 135.8\n}",
+          "modern": "{\n  \"auftragId\": 5,\n  \"auftragNr\": \"A-2026-0005\",\n  \"ausgestelltAm\": 1772700300000,\n  \"bezahlt\": true,\n  \"bezahltAm\": 1773307800000,\n  \"id\": 4,\n  \"kundeName\": \"Brunner Elisabeth\",\n  \"rechnungNr\": \"R-2026-0004\",\n  \"summeBrutto\": 814.8,\n  \"summeNetto\": 679.0,\n  \"ust\": 135.8\n}",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden rechnung-4.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/rechnung-4.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#12]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/bericht/monat?jahr=2026 wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/bericht/monat?jahr=2026",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "bericht-monat-2026.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/bericht-monat-2026.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 2,\n    \"jahr\": 2026,\n    \"monat\": 1,\n    \"monatName\": \"Jänner\",\n    \"umsatzBrutto\": 696.48,\n    \"umsatzNetto\": 580.4\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 2,\n    \"monatName\": \"Februar\",\n    \"umsatzBrutto\": 100.8,\n    \"umsatzNetto\": 84.0\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 2,\n    \"jahr\": 2026,\n    \"monat\": 3,\n    \"monatName\": \"März\",\n    \"umsatzBrutto\": 1726.8,\n    \"umsatzNetto\": 1439.0\n  },\n  {\n    \"anzahlAuftraege\": 1,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 4,\n    \"monatName\": \"April\",\n    \"umsatzBrutto\": 179.52,\n    \"umsatzNetto\": 149.6\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 5,\n    \"monatName\": \"Mai\",\n    \"umsatzBrutto\": 408.0,\n    \"umsatzNetto\": 340.0\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 6,\n    \"monatName\": \"Juni\",\n    \"umsatzBrutto\": 294.0,\n    \"umsatzNetto\": 245.0\n  },\n  {\n    \"anzahlAuftraege\": 5,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 7,\n    \"monatName\": \"Juli\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 8,\n    \"monatName\": \"August\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 9,\n    \"monatName\": \"September\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 10,\n    \"monatName\": \"Oktober\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 11,\n    \"monatName\": \"November\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 12,\n    \"monatName\": \"Dezember\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  }\n]",
+          "modern": "[\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 2,\n    \"jahr\": 2026,\n    \"monat\": 1,\n    \"monatName\": \"Jänner\",\n    \"umsatzBrutto\": 696.48,\n    \"umsatzNetto\": 580.4\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 2,\n    \"monatName\": \"Februar\",\n    \"umsatzBrutto\": 100.8,\n    \"umsatzNetto\": 84.0\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 2,\n    \"jahr\": 2026,\n    \"monat\": 3,\n    \"monatName\": \"März\",\n    \"umsatzBrutto\": 1726.8,\n    \"umsatzNetto\": 1439.0\n  },\n  {\n    \"anzahlAuftraege\": 1,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 4,\n    \"monatName\": \"April\",\n    \"umsatzBrutto\": 179.52,\n    \"umsatzNetto\": 149.6\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 5,\n    \"monatName\": \"Mai\",\n    \"umsatzBrutto\": 408.0,\n    \"umsatzNetto\": 340.0\n  },\n  {\n    \"anzahlAuftraege\": 2,\n    \"anzahlRechnungen\": 1,\n    \"jahr\": 2026,\n    \"monat\": 6,\n    \"monatName\": \"Juni\",\n    \"umsatzBrutto\": 294.0,\n    \"umsatzNetto\": 245.0\n  },\n  {\n    \"anzahlAuftraege\": 5,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 7,\n    \"monatName\": \"Juli\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 8,\n    \"monatName\": \"August\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 9,\n    \"monatName\": \"September\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 10,\n    \"monatName\": \"Oktober\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 11,\n    \"monatName\": \"November\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  },\n  {\n    \"anzahlAuftraege\": 0,\n    \"anzahlRechnungen\": 0,\n    \"jahr\": 2026,\n    \"monat\": 12,\n    \"monatName\": \"Dezember\",\n    \"umsatzBrutto\": 0.0,\n    \"umsatzNetto\": 0.0\n  }\n]",
+          "gleich": true
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden bericht-monat-2026.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/bericht-monat-2026.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:endpointMatchesGolden(java.lang.String, java.lang.String)]/[test-template-invocation:#13]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "GET /api/bericht/topkunden?jahr=2026 wie aufgezeichnet",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "endpointMatchesGolden"
+        },
+        "endpunkt": "/api/bericht/topkunden?jahr=2026",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": {
+          "datei": "bericht-topkunden-2026.json",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/bericht-topkunden-2026.json"
+        },
+        "vergleich": {
+          "golden": "[\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 5,\n    \"nachname\": \"Steiner\",\n    \"umsatz\": 912.0,\n    \"vorname\": \"Karl\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 4,\n    \"nachname\": \"Brunner\",\n    \"umsatz\": 814.8,\n    \"vorname\": \"Elisabeth\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 2,\n    \"nachname\": \"Leitner\",\n    \"umsatz\": 434.88,\n    \"vorname\": \"Maria\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 8,\n    \"nachname\": \"Huber Transporte GmbH\",\n    \"umsatz\": 408.0,\n    \"vorname\": null\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 7,\n    \"nachname\": \"Pichler\",\n    \"umsatz\": 294.0,\n    \"vorname\": \"Josef\"\n  },\n  {\n    \"anzahl_auftraege\": 4,\n    \"id\": 1,\n    \"nachname\": \"Hofer\",\n    \"umsatz\": 261.6,\n    \"vorname\": \"Franz\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 6,\n    \"nachname\": \"Mayr\",\n    \"umsatz\": 179.52,\n    \"vorname\": \"Anna\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 3,\n    \"nachname\": \"Wimmer\",\n    \"umsatz\": 100.8,\n    \"vorname\": \"Johann\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 9,\n    \"nachname\": \"Wagner\",\n    \"umsatz\": 0,\n    \"vorname\": \"Christine\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 10,\n    \"nachname\": \"Aigner\",\n    \"umsatz\": 0,\n    \"vorname\": \"Thomas\"\n  }\n]",
+          "modern": "[\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 5,\n    \"nachname\": \"Steiner\",\n    \"umsatz\": 912.00,\n    \"vorname\": \"Karl\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 4,\n    \"nachname\": \"Brunner\",\n    \"umsatz\": 814.80,\n    \"vorname\": \"Elisabeth\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 2,\n    \"nachname\": \"Leitner\",\n    \"umsatz\": 434.88,\n    \"vorname\": \"Maria\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 8,\n    \"nachname\": \"Huber Transporte GmbH\",\n    \"umsatz\": 408.00,\n    \"vorname\": null\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 7,\n    \"nachname\": \"Pichler\",\n    \"umsatz\": 294.00,\n    \"vorname\": \"Josef\"\n  },\n  {\n    \"anzahl_auftraege\": 4,\n    \"id\": 1,\n    \"nachname\": \"Hofer\",\n    \"umsatz\": 261.60,\n    \"vorname\": \"Franz\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 6,\n    \"nachname\": \"Mayr\",\n    \"umsatz\": 179.52,\n    \"vorname\": \"Anna\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 3,\n    \"nachname\": \"Wimmer\",\n    \"umsatz\": 100.80,\n    \"vorname\": \"Johann\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 9,\n    \"nachname\": \"Wagner\",\n    \"umsatz\": 0,\n    \"vorname\": \"Christine\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 10,\n    \"nachname\": \"Aigner\",\n    \"umsatz\": 0,\n    \"vorname\": \"Thomas\"\n  }\n]",
+          "legacy": "[\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 5,\n    \"nachname\": \"Steiner\",\n    \"umsatz\": 912.00,\n    \"vorname\": \"Karl\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 4,\n    \"nachname\": \"Brunner\",\n    \"umsatz\": 814.80,\n    \"vorname\": \"Elisabeth\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 2,\n    \"nachname\": \"Leitner\",\n    \"umsatz\": 434.88,\n    \"vorname\": \"Maria\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 8,\n    \"nachname\": \"Huber Transporte GmbH\",\n    \"umsatz\": 408.00,\n    \"vorname\": null\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 7,\n    \"nachname\": \"Pichler\",\n    \"umsatz\": 294.00,\n    \"vorname\": \"Josef\"\n  },\n  {\n    \"anzahl_auftraege\": 4,\n    \"id\": 1,\n    \"nachname\": \"Hofer\",\n    \"umsatz\": 261.60,\n    \"vorname\": \"Franz\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 6,\n    \"nachname\": \"Mayr\",\n    \"umsatz\": 179.52,\n    \"vorname\": \"Anna\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 3,\n    \"nachname\": \"Wimmer\",\n    \"umsatz\": 100.80,\n    \"vorname\": \"Johann\"\n  },\n  {\n    \"anzahl_auftraege\": 2,\n    \"id\": 9,\n    \"nachname\": \"Wagner\",\n    \"umsatz\": 0,\n    \"vorname\": \"Christine\"\n  },\n  {\n    \"anzahl_auftraege\": 1,\n    \"id\": 10,\n    \"nachname\": \"Aigner\",\n    \"umsatz\": 0,\n    \"vorname\": \"Thomas\"\n  }\n]",
+          "gleich": false
+        },
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L58"
+          },
+          {
+            "label": "Golden bericht-topkunden-2026.json",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/bericht-topkunden-2026.json"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[method:adminPageMatchesGolden()]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "Adminseite: JSP-Golden (legacy) / SPA-Route + Statistik-JSON (modern, SD-2)",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "adminPageMatchesGolden"
+        },
+        "endpunkt": "/admin + /api/admin/statistik",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": {
+          "datei": "admin.html",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/admin.html"
+        },
+        "vergleich": {
+          "golden": "\n\n<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<title>Admin - KFZ-Werkstatt Moser GmbH</title>\n\t<style>\n\t\t/* Styles direkt in der Seite, die JSP hat mit dem SPA-Design nichts zu tun */\n\t\tbody { font-family: Verdana, Arial, sans-serif; background: #f0f0e8; margin: 24px; font-size: 13px; }\n\t\th1 { font-size: 20px; color: #333366; }\n\t\ttable.statistik { border-collapse: collapse; background: #ffffff; }\n\t\ttable.statistik td, table.statistik th { border: 1px solid #999999; padding: 6px 14px; text-align: left; }\n\t\ttable.statistik th { background: #ddddcc; }\n\t\t.hinweis { color: #666666; margin-top: 18px; font-size: 11px; }\n\t\t.meldung { background: #ffffcc; border: 1px solid #cccc66; padding: 8px 12px; margin: 12px 0; }\n\t\t.gefahr { background: #ffeeee; border: 1px solid #cc6666; padding: 10px 12px; margin-top: 20px; }\n\t\tpre.json { background: #eeeeee; border: 1px dashed #aaaaaa; padding: 8px; font-size: 11px; }\n\t</style>\n</head>\n<body>\n\n\t<h1>KFZ-Werkstatt Moser GmbH &mdash; Administration</h1>\n\t<p>WerkstattCRM Version 1.4.2 &middot; Stand: XX.XX.XXXX</p>\n\n\t\n\n\t<table class=\"statistik\">\n\t\t<tr><th>Kennzahl</th><th>Wert</th></tr>\n\t\t<tr><td>Kunden</td><td>10</td></tr>\n\t\t<tr><td>Fahrzeuge</td><td>13</td></tr>\n\t\t<tr><td>Aufträge gesamt</td><td>16</td></tr>\n\t\t<tr><td>Aufträge offen</td><td>4</td></tr>\n\t\t<tr><td>Rechnungen gesamt</td><td>8</td></tr>\n\t\t<tr><td>Rechnungen unbezahlt</td><td>1</td></tr>\n\t</table>\n\n\t<div class=\"gefahr\">\n\t\t<strong>Bereinigung:</strong> Löscht stornierte Aufträge, die älter als 90 Tage sind.\n\t\tEndgültig, kein Papierkorb!<br><br>\n\t\t<form method=\"post\" action=\"admin/bereinigen\"\n\t\t\tonsubmit=\"return confirm('Wirklich alle alten stornierten Aufträge löschen?');\">\n\t\t\t<button type=\"submit\">Jetzt bereinigen</button>\n\t\t</form>\n\t</div>\n\n\t<p class=\"hinweis\">Rohdaten (für Hrn. B. beim Telefonsupport):</p>\n\t<pre class=\"json\">{\"rechnungenOffen\":1,\"kunden\":10,\"auftraegeOffen\":4,\"rechnungen\":8,\"auftraege\":16,\"stand\":\"XX.XX.XXXX\",\"fahrzeuge\":13}</pre>\n\n\t<p class=\"hinweis\">\n\t\tZur <a href=\"./\">Werkstatt-Oberfläche</a>\n\t</p>\n\n</body>\n</html>\n",
+          "modern": "{\n  \"firmaName\": \"KFZ-Werkstatt Moser GmbH\",\n  \"statistik\": {\n    \"auftraege\": 16,\n    \"auftraegeOffen\": 4,\n    \"fahrzeuge\": 13,\n    \"kunden\": 10,\n    \"rechnungen\": 8,\n    \"rechnungenOffen\": 1,\n    \"stand\": \"21.10.2026\"\n  },\n  \"version\": \"1.4.2\"\n}",
+          "gleich": false
+        },
+        "sanktion": {
+          "ref": "SD-2",
+          "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md#L37",
+          "erklaerung": {
+            "ref": "SD-2",
+            "titel": "Adminseite",
+            "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+            "text": "Adminseite (SD-2, seit Etappe 5): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Registereintrag (englisch): Admin page: legacy serves the JSP at GET /admin (HTML golden master); modern serves the SPA shell there, numbers come from the new GET /api/admin/statistik, and POST /admin/bereinigen answers JSON instead of re-rendered JSP HTML. Unchanged and pinned identically on both stands: the /admin/bereinigen path, status 200, the exact German meldung, and the delete semantics (DB-state test). Begründung: Mandated by SPEC §4 / MILESTONES G5 (\"JSP-Adminseite absorbiert\") — the mixed server-rendered page is a wart the migration exists to remove; JSP/JSTL/gson die with it.",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "b41eaa6c2ba372e7f2f53bfeb3a847c44fe2895918b90e6d14d39d99b1ff3c49",
+            "diff_sha256": "02b69cbfeb9564ce5a034ffd007bf228bec7391d88297e810ef38fc204516a32",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L145"
+          },
+          {
+            "label": "Golden admin.html",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/resources/golden/admin.html"
+          },
+          {
+            "label": "Register SD-2",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md#L37"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[method:sucheMitEinzelnemHochkomma()]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "B4-Suche, einzelnes Hochkomma — sanktionierte Divergenz (ADR-0004)",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "sucheMitEinzelnemHochkomma"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "SD-1",
+          "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md#L36",
+          "erklaerung": {
+            "ref": "SD-1",
+            "titel": "Suche mit feindlicher Eingabe",
+            "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+            "text": "Suche mit feindlicher Eingabe (SD-1, seit Etappe 4): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Registereintrag (englisch): Hostile input to GET /api/kunden?suche= (and the ?status= filter): legacy is injectable, modern is parameterised. Pinned observed behaviour: %' OR '1'='1 → legacy 200/10 rows vs modern 200/0 rows; lone ' → legacy 500 (Boot error JSON naming java.lang.ArrayIndexOutOfBoundsException from the driver) vs modern 200/0 rows. Begründung: Security fix B4 — carrying an injection into the target stack to preserve bug-for-bug equality would be malpractice; equivalence holds for all legitimate inputs.",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "197190b818da4838f7559348f20f0ee1615b8ff6dc8d0e404a402bb62949543a",
+            "diff_sha256": "b59a8e9f1d71322f3b46043098518ef5d6ea68ae52b12ceefa0b98df220d8c5a",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L115"
+          },
+          {
+            "label": "Register SD-1",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md#L36"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[method:sucheMitInjektionsEingabe()]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "B4-Suche, Injektionseingabe %' OR '1'='1 — sanktionierte Divergenz (ADR-0004)",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "sucheMitInjektionsEingabe"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "SD-1",
+          "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md#L36",
+          "erklaerung": {
+            "ref": "SD-1",
+            "titel": "Suche mit feindlicher Eingabe",
+            "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+            "text": "Suche mit feindlicher Eingabe (SD-1, seit Etappe 4): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Registereintrag (englisch): Hostile input to GET /api/kunden?suche= (and the ?status= filter): legacy is injectable, modern is parameterised. Pinned observed behaviour: %' OR '1'='1 → legacy 200/10 rows vs modern 200/0 rows; lone ' → legacy 500 (Boot error JSON naming java.lang.ArrayIndexOutOfBoundsException from the driver) vs modern 200/0 rows. Begründung: Security fix B4 — carrying an injection into the target stack to preserve bug-for-bug equality would be malpractice; equivalence holds for all legitimate inputs.",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "197190b818da4838f7559348f20f0ee1615b8ff6dc8d0e404a402bb62949543a",
+            "diff_sha256": "b59a8e9f1d71322f3b46043098518ef5d6ea68ae52b12ceefa0b98df220d8c5a",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L94"
+          },
+          {
+            "label": "Register SD-1",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md#L36"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#1]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /start",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/start",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#2]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /kunden",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/kunden",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#3]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /kunden/neu",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/kunden/neu",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#4]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /kunden/1",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/kunden/1",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#5]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /fahrzeuge",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/fahrzeuge",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#6]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /auftraege",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/auftraege",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#7]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /auftraege/neu",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/auftraege/neu",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#8]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /auftraege/5",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/auftraege/5",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#9]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /rechnungen",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/rechnungen",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#10]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /rechnungen/4",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/rechnungen/4",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ApiCharacterizationTest]/[test-template:spaRouteServesDocument(java.lang.String)]/[test-template-invocation:#11]",
+        "suite": "API (Lese-Endpunkte)",
+        "name": "SPA-Dokumentroute /bericht",
+        "test": {
+          "klasse": "ApiCharacterizationTest",
+          "methode": "spaRouteServesDocument"
+        },
+        "endpunkt": "/bericht",
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "sanktioniert",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": {
+          "ref": "ADR-0009",
+          "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+          "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1",
+          "erklaerung": {
+            "ref": "ADR-0009",
+            "titel": "Seitenadressen ohne #!",
+            "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+            "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+            "source": "register",
+            "model": null,
+            "prompt_sha256": null,
+            "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+            "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+            "date": "2026-10-21",
+            "review": "offen"
+          }
+        },
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ApiCharacterizationTest.java#L243"
+          },
+          {
+            "label": "Register ADR-0009",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md#L1"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[method:doppelteRechnung_liefert500MitMeldung()]",
+        "suite": "Fehlerkontrakt",
+        "name": "Doppelte rechnung — liefert500 mit meldung",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "doppelteRechnung_liefert500MitMeldung"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L74"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[method:kundeOhneNachname_liefert500AusDbConstraint()]",
+        "suite": "Fehlerkontrakt",
+        "name": "Kunde ohne nachname — liefert500 aus db constraint",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "kundeOhneNachname_liefert500AusDbConstraint"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L87"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[method:rechnungFuerNichtFertigenAuftrag_liefert500MitMeldung()]",
+        "suite": "Fehlerkontrakt",
+        "name": "Rechnung fuer nicht fertigen auftrag — liefert500 mit meldung",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "rechnungFuerNichtFertigenAuftrag_liefert500MitMeldung"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L64"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[method:unerlaubterStatuswechsel_liefert500MitDeutscherMeldung()]",
+        "suite": "Fehlerkontrakt",
+        "name": "Unerlaubter statuswechsel — liefert500 mit deutscher meldung",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "unerlaubterStatuswechsel_liefert500MitDeutscherMeldung"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L55"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[test-template:nichtVorhandeneRessource_liefert404OhneBody(java.lang.String)]/[test-template-invocation:#1]",
+        "suite": "Fehlerkontrakt",
+        "name": "GET /api/kunden/999 → 404 ohne Body",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "nichtVorhandeneRessource_liefert404OhneBody"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L47"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[test-template:nichtVorhandeneRessource_liefert404OhneBody(java.lang.String)]/[test-template-invocation:#2]",
+        "suite": "Fehlerkontrakt",
+        "name": "GET /api/auftraege/999 → 404 ohne Body",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "nichtVorhandeneRessource_liefert404OhneBody"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L47"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[test-template:nichtVorhandeneRessource_liefert404OhneBody(java.lang.String)]/[test-template-invocation:#3]",
+        "suite": "Fehlerkontrakt",
+        "name": "GET /api/rechnungen/999 → 404 ohne Body",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "nichtVorhandeneRessource_liefert404OhneBody"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L47"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.ErrorContractCharacterizationTest]/[test-template:nichtVorhandeneRessource_liefert404OhneBody(java.lang.String)]/[test-template-invocation:#4]",
+        "suite": "Fehlerkontrakt",
+        "name": "GET /api/fahrzeuge/999 → 404 ohne Body",
+        "test": {
+          "klasse": "ErrorContractCharacterizationTest",
+          "methode": "nichtVorhandeneRessource_liefert404OhneBody"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/ErrorContractCharacterizationTest.java#L47"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:adminBereinigen_loeschtGenauStornierteAelterAls90Tage()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Admin bereinigen — loescht genau stornierte aelter als90 tage",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "adminBereinigen_loeschtGenauStornierteAelterAls90Tage"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L286"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:angenommenNachInArbeit_setztNurStatus()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Angenommen nach in arbeit — setzt nur status",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "angenommenNachInArbeit_setztNurStatus"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L72"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:angenommenNachStorniert_setztNurStatus()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Angenommen nach storniert — setzt nur status",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "angenommenNachStorniert_setztNurStatus"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L90"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:auftragAnlegen_schreibtAuftragUndAktualisiertFahrzeugKm()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Auftrag anlegen — schreibt auftrag und aktualisiert fahrzeug km",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "auftragAnlegen_schreibtAuftragUndAktualisiertFahrzeugKm"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L38"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:fertigNachAbgeholt_setztAbgeholtAmUndBehaeltFertigAm()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Fertig nach abgeholt — setzt abgeholt am und behaelt fertig am",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "fertigNachAbgeholt_setztAbgeholtAmUndBehaeltFertigAm"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L164"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:fertigZurueckInArbeit_sonderfallBehaeltFertigAm()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Fertig zurueck in arbeit — sonderfall behaelt fertig am",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "fertigZurueckInArbeit_sonderfallBehaeltFertigAm"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L144"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:inArbeitNachFertig_setztZeitstempel()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "In arbeit nach fertig — setzt zeitstempel",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "inArbeitNachFertig_setztZeitstempel"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L108"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:inArbeitNachStorniert_setztNurStatus()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "In arbeit nach storniert — setzt nur status",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "inArbeitNachStorniert_setztNurStatus"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L126"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:kundeLoeschen_hinterlaesstVerwaisteFahrzeuge()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Kunde loeschen — hinterlaesst verwaiste fahrzeuge",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "kundeLoeschen_hinterlaesstVerwaisteFahrzeuge"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L267"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:rechnungBezahlt_setztFlagUndZeitstempel()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Rechnung bezahlt — setzt flag und zeitstempel",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "rechnungBezahlt_setztFlagUndZeitstempel"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L247"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:rechnungErstellen_schreibtBetraegeUndNummer()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Rechnung erstellen — schreibt betraege und nummer",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "rechnungErstellen_schreibtBetraegeUndNummer"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L186"
+          }
+        ]
+      },
+      {
+        "id": "[engine:junit-jupiter]/[class:at.stoicera.migrationlab.characterization.DbStateCharacterizationTest]/[method:rechnungRundung_doppeltesRundenAmGrenzfall()]",
+        "suite": "DB-Zustand (Schreibpfade)",
+        "name": "Rechnung rundung — doppeltes runden am grenzfall",
+        "test": {
+          "klasse": "DbStateCharacterizationTest",
+          "methode": "rechnungRundung_doppeltesRundenAmGrenzfall"
+        },
+        "endpunkt": null,
+        "legacy": {
+          "status": "bestanden"
+        },
+        "modern": {
+          "status": "bestanden"
+        },
+        "urteil": "identisch",
+        "golden": null,
+        "vergleich": null,
+        "sanktion": null,
+        "belege": [
+          {
+            "label": "Test im Quelltext",
+            "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/characterization/src/test/java/at/stoicera/migrationlab/characterization/DbStateCharacterizationTest.java#L209"
+          }
+        ]
+      }
+    ]
+  },
+  "e2e": {
+    "legacy": {
+      "gesamt": 34,
+      "bestanden": 34,
+      "fehlgeschlagen": 0
+    },
+    "modern": {
+      "gesamt": 34,
+      "bestanden": 34,
+      "fehlgeschlagen": 0
+    },
+    "klassen": [
+      {
+        "klasse": "AdminTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/AdminTest.java",
+        "legacy": {
+          "gesamt": 2,
+          "bestanden": 2,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 2,
+          "bestanden": 2,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "AuftragLebenszyklusTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/AuftragLebenszyklusTest.java",
+        "legacy": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "AuftragSonderfaelleTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/AuftragSonderfaelleTest.java",
+        "legacy": {
+          "gesamt": 3,
+          "bestanden": 3,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 3,
+          "bestanden": 3,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "BerichtTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/BerichtTest.java",
+        "legacy": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "DashboardTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/DashboardTest.java",
+        "legacy": {
+          "gesamt": 2,
+          "bestanden": 2,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 2,
+          "bestanden": 2,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "DeepLinkTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/DeepLinkTest.java",
+        "legacy": {
+          "gesamt": 1,
+          "bestanden": 1,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 1,
+          "bestanden": 1,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "FahrzeugeTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/FahrzeugeTest.java",
+        "legacy": {
+          "gesamt": 3,
+          "bestanden": 3,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 3,
+          "bestanden": 3,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "KundeDetailTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/KundeDetailTest.java",
+        "legacy": {
+          "gesamt": 1,
+          "bestanden": 1,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 1,
+          "bestanden": 1,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "KundenCrudTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/KundenCrudTest.java",
+        "legacy": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "ListenFilterTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/ListenFilterTest.java",
+        "legacy": {
+          "gesamt": 3,
+          "bestanden": 3,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 3,
+          "bestanden": 3,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "RechnungTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/RechnungTest.java",
+        "legacy": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 4,
+          "bestanden": 4,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "SelectorMapParityTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/selectors/SelectorMapParityTest.java",
+        "legacy": {
+          "gesamt": 1,
+          "bestanden": 1,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 1,
+          "bestanden": 1,
+          "fehlgeschlagen": 0
+        }
+      },
+      {
+        "klasse": "ValidierungTest",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/e2e/src/test/java/at/stoicera/migrationlab/e2e/tests/ValidierungTest.java",
+        "legacy": {
+          "gesamt": 2,
+          "bestanden": 2,
+          "fehlgeschlagen": 0
+        },
+        "modern": {
+          "gesamt": 2,
+          "bestanden": 2,
+          "fehlgeschlagen": 0
+        }
+      }
+    ],
+    "sanktionen": [
+      {
+        "ref": "SD-3",
+        "url": "https://github.com/Stoicera/migration-lab-java/blob/00f74d797e6d893e338c41eb9685deec06810f5d/docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md#L38",
+        "erklaerung": {
+          "ref": "SD-3",
+          "titel": "Meldung bei abgelehnter Aktion",
+          "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+          "text": "Meldung bei abgelehnter Aktion (SD-3, seit Etappe 5): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Registereintrag (englisch): Alert on server-rejected actions (pinned instance: duplicate invoice): legacy shows literally undefined (Boot 1.5 labels the plain-string 500 body as JSON → AngularJS $http:baddata → alert(fehler.data) of an Error); modern shows the backend's German message. Both UI behaviours pinned by e2e via per-stand map values (alert.rechnungDuplikat); the HTTP contract itself is identical on both stands and pinned by error-contract characterization. Begründung: The legacy display is a defect (flagged at stage 1, e2e/README \"formatting contract\"); reproducing it in the new UI would preserve a bug users suffer from, not behaviour they rely on.",
+          "source": "register",
+          "model": null,
+          "prompt_sha256": null,
+          "register_sha256": "f7d72fcd110aa2a020814ea626d5e77c70cff607b7eefe9818c2a1cb8fb9456b",
+          "diff_sha256": "6776ba88892bfe5f1048d0e01db8610831850b9603cac1e1f578459995eb2f73",
+          "date": "2026-10-21",
+          "review": "offen"
+        }
+      }
+    ]
+  },
+  "imageScan": {
+    "werkzeug": "Trivy",
+    "schweregrade": "CRITICAL, HIGH",
+    "nurBehebbar": true,
+    "gesamt": 12,
+    "ziele": [
+      {
+        "ziel": "Java",
+        "typ": "jar",
+        "anzahl": 8
+      },
+      {
+        "ziel": "usr/bin/pebble",
+        "typ": "gobinary",
+        "anzahl": 4
+      }
+    ]
+  }
+}

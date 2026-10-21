@@ -34,6 +34,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Auftrag anlegen: schreibt Auftrag und aktualisiert Fahrzeug-km")
   void auftragAnlegen_schreibtAuftragUndAktualisiertFahrzeugKm() throws Exception {
     var response =
         Stand.send(
@@ -67,6 +68,7 @@ class DbStateCharacterizationTest {
   // -----------------------------------------------------------------
 
   @Test
+  @DisplayName("Status ANGENOMMEN → IN_ARBEIT: setzt nur den Status")
   void angenommenNachInArbeit_setztNurStatus() throws Exception {
     // Auftrag 15 ist ANGENOMMEN
     var response = Stand.send("PUT", "/api/auftraege/15/status?neu=IN_ARBEIT", null);
@@ -84,6 +86,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Status ANGENOMMEN → STORNIERT: setzt nur den Status")
   void angenommenNachStorniert_setztNurStatus() throws Exception {
     // Auftrag 14 ist ANGENOMMEN
     var response = Stand.send("PUT", "/api/auftraege/14/status?neu=STORNIERT", null);
@@ -101,6 +104,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Status IN_ARBEIT → FERTIG: setzt fertig_am")
   void inArbeitNachFertig_setztZeitstempel() throws Exception {
     // Auftrag 11 ist IN_ARBEIT
     var response = Stand.send("PUT", "/api/auftraege/11/status?neu=FERTIG", null);
@@ -118,6 +122,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Status IN_ARBEIT → STORNIERT: setzt nur den Status")
   void inArbeitNachStorniert_setztNurStatus() throws Exception {
     // Auftrag 13 ist IN_ARBEIT
     var response = Stand.send("PUT", "/api/auftraege/13/status?neu=STORNIERT", null);
@@ -135,6 +140,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Status FERTIG → IN_ARBEIT: Sonderfall, fertig_am bleibt")
   void fertigZurueckInArbeit_sonderfallBehaeltFertigAm() throws Exception {
     // Auftrag 9 ist FERTIG (fertig_am aus dem Seed) — Sonderfall "doch
     // noch was gefunden": zurueck in Arbeit ist erlaubt, aber der alte
@@ -154,6 +160,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Status FERTIG → ABGEHOLT: setzt abgeholt_am, fertig_am bleibt")
   void fertigNachAbgeholt_setztAbgeholtAmUndBehaeltFertigAm() throws Exception {
     // Auftrag 12 ist FERTIG (fertig_am aus dem Seed)
     var response = Stand.send("PUT", "/api/auftraege/12/status?neu=ABGEHOLT", null);
@@ -175,6 +182,7 @@ class DbStateCharacterizationTest {
   // -----------------------------------------------------------------
 
   @Test
+  @DisplayName("Rechnung erstellen: Beträge und Rechnungsnummer")
   void rechnungErstellen_schreibtBetraegeUndNummer() throws Exception {
     // Auftrag 9 ist FERTIG mit Positionen 1.00x78.00 + 1.00x45.00
     var response = Stand.send("POST", "/api/rechnungen/auftrag/9", null);
@@ -197,6 +205,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Rechnung: doppeltes Runden am Grenzfall (B8)")
   void rechnungRundung_doppeltesRundenAmGrenzfall() throws Exception {
     // B8 double money math, pinned at a decimal half-way case: 0.50 x
     // 16.99 = 8.4950 exactly. The app's chain (netto as double, then
@@ -234,6 +243,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Rechnung bezahlt: setzt Kennzeichen und Zeitstempel")
   void rechnungBezahlt_setztFlagUndZeitstempel() throws Exception {
     // Rechnung 5 (R-2026-0005) ist die einzige unbezahlte im Seed
     var response = Stand.send("PUT", "/api/rechnungen/5/bezahlt", null);
@@ -253,6 +263,7 @@ class DbStateCharacterizationTest {
   // -----------------------------------------------------------------
 
   @Test
+  @DisplayName("Kunde löschen: Fahrzeuge bleiben verwaist zurück (B13)")
   void kundeLoeschen_hinterlaesstVerwaisteFahrzeuge() throws Exception {
     // quirk B13 (LEGACY_NOTES): no FK, no cascade — orphans are current behaviour
     var response = Stand.send("DELETE", "/api/kunden/2", null);
@@ -271,6 +282,7 @@ class DbStateCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Admin-Bereinigung: löscht genau stornierte Aufträge älter als 90 Tage")
   void adminBereinigen_loeschtGenauStornierteAelterAls90Tage() throws Exception {
     // The predicate ("STORNIERT and older than 90 days") moves with the
     // wall clock over fixed seed dates — so the EXPECTED set is computed

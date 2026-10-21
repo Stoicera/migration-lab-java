@@ -39,13 +39,6 @@ const find = (name) => files.find((f) => basename(f) === name);
 const readJson = (p) => (p ? JSON.parse(readFileSync(p, 'utf8')) : null);
 
 // ---------- characterization ----------
-const legacy = readJson(find('characterization-legacy.json'));
-const modern = readJson(find('characterization-modern.json'));
-const byId = (doc) => new Map((doc?.tests ?? []).map((t) => [t.id, t]));
-const L = byId(legacy);
-const M = byId(modern);
-const ids = [...new Set([...L.keys(), ...M.keys()])].sort(compareIds);
-
 const SUITE = {
   ApiCharacterizationTest: 'API (Lese-Endpunkte)',
   ErrorContractCharacterizationTest: 'Fehlerkontrakt',
@@ -58,6 +51,13 @@ function compareIds(a, b) {
   if (ka !== kb) return ka - kb;
   return a.localeCompare(b, 'en', { numeric: true });
 }
+
+const legacy = readJson(find('characterization-legacy.json'));
+const modern = readJson(find('characterization-modern.json'));
+const byId = (doc) => new Map((doc?.tests ?? []).map((t) => [t.id, t]));
+const L = byId(legacy);
+const M = byId(modern);
+const ids = [...new Set([...L.keys(), ...M.keys()])].sort(compareIds);
 
 const CHAR_SRC = 'characterization/src/test/java/at/stoicera/migrationlab/characterization';
 const GOLDEN_DIR = 'characterization/src/test/resources/golden';
@@ -74,17 +74,45 @@ const erklaerungen = readJson(existsSync(join(ROOT, 'docs/nachweis/erklaerungen.
 const erklaerung = (ref) => erklaerungen.eintraege.find((e) => e.ref === ref) ?? null;
 const registerLink = (ref, quelle) => at(quelle, lineOf(quelle, ref.startsWith('SD-') ? `| ${ref} |` : `# ${ref}`));
 
+// JSON with sorted keys and number literals kept verbatim (84.0 stays 84.0)
 function canonical(text) {
-  try {
-    const sort = (v) =>
-      Array.isArray(v) ? v.map(sort) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, sort(v[k])])) : v;
-    return JSON.stringify(sort(JSON.parse(text)), null, 2);
-  } catch {
-    return text;
-  }
+  let i = 0;
+  const ws = () => { while (/\s/.test(text[i])) i++; };
+  const value = () => {
+    ws();
+    const c = text[i];
+    if (c === '{') {
+      i++; const o = []; ws();
+      if (text[i] === '}') { i++; return { o }; }
+      for (;;) { ws(); const k = str(); ws(); i++; o.push([k, value()]); ws(); if (text[i++] === '}') return { o }; }
+    }
+    if (c === '[') {
+      i++; const a = []; ws();
+      if (text[i] === ']') { i++; return { a }; }
+      for (;;) { a.push(value()); ws(); if (text[i++] === ']') return { a }; }
+    }
+    if (c === '"') return { s: str() };
+    const m = /^(-?\d+(\.\d+)?([eE][+-]?\d+)?|true|false|null)/.exec(text.slice(i));
+    if (!m) throw new Error(`not JSON at ${i}`);
+    i += m[0].length; return { r: m[0] };
+  };
+  const str = () => {
+    let j = i + 1;
+    while (text[j] !== '"') j += text[j] === '\\' ? 2 : 1;
+    const s = JSON.parse(text.slice(i, j + 1)); i = j + 1; return s;
+  };
+  const out = (v, ind) => {
+    const pad = '  '.repeat(ind + 1), end = '  '.repeat(ind);
+    if (v.o) return v.o.length === 0 ? '{}' : '{\n' + [...v.o].sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map(([k, x]) => `${pad}${JSON.stringify(k)}: ${out(x, ind + 1)}`).join(',\n') + `\n${end}}`;
+    if (v.a) return v.a.length === 0 ? '[]' : '[\n' + v.a.map((x) => pad + out(x, ind + 1)).join(',\n') + `\n${end}]`;
+    if ('s' in v) return JSON.stringify(v.s);
+    return v.r;
+  };
+  try { const v = value(); return out(v, 0); } catch { return text; }
 }
 
 const humanize = (t) => {
+  if (t.methode === 'endpointMatchesGolden' && t.endpunkt) return `GET ${t.endpunkt} wie aufgezeichnet`;
   if (!t.methode || t.name !== `${t.methode}()`) return t.name;
   const [was, ...rest] = t.methode.split('_');
   const words = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
@@ -151,6 +179,13 @@ const zeilen = ids.map((id) => {
     belege: belege.filter((b) => b.url),
   };
 });
+// golden-master rows first, sanctioned forks after them, per suite
+zeilen.sort(
+  (a, b) =>
+    SUITE_ORDER.indexOf(a.test.klasse) - SUITE_ORDER.indexOf(b.test.klasse) ||
+    (a.sanktion ? 1 : 0) - (b.sanktion ? 1 : 0) ||
+    compareIds(a.id, b.id),
+);
 const zaehle = (u) => zeilen.filter((z) => z.urteil === u).length;
 
 // ---------- e2e (surefire XML) ----------

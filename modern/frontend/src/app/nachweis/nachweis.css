@@ -1,0 +1,96 @@
+.nachweis-einleitung {
+  max-width: 60em;
+}
+.nachweis-herkunft {
+  color: #555;
+}
+.nachweis-zahl {
+  font-size: 32px;
+  margin-bottom: 0;
+}
+.nachweis-legende li {
+  margin-bottom: 4px;
+}
+.nachweis-legende .urteil {
+  margin-right: 6px;
+}
+/* verdict colours: Bootstrap 3 alert palette, text contrast >= 4.5:1 on its background */
+.urteil {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.urteil-identisch {
+  background: #dff0d8;
+  color: #2b542c;
+  border-color: #b2dba1;
+}
+.urteil-sanktioniert {
+  background: #fcf8e3;
+  color: #66512c;
+  border-color: #e6d28a;
+}
+.urteil-regression {
+  background: #f2dede;
+  color: #843534;
+  border-color: #dca7a7;
+}
+.urteil-unvollstaendig {
+  background: #eee;
+  color: #333;
+  border-color: #ccc;
+}
+.zeile-identisch {
+  border-left: 4px solid #3c763d;
+}
+.zeile-sanktioniert {
+  border-left: 4px solid #8a6d3b;
+}
+.zeile-regression {
+  border-left: 4px solid #a94442;
+}
+.status-fehlgeschlagen,
+.status-abgebrochen,
+.status-fehlt {
+  color: #a94442;
+  font-weight: bold;
+}
+.nachweis-umschalter {
+  padding: 0;
+  text-align: left;
+  white-space: normal;
+}
+.nachweis-ref {
+  font-size: 12px;
+  color: #555;
+}
+.nachweis-detail > td {
+  background: #fafafa;
+}
+.nachweis-vergleich pre {
+  max-height: 420px;
+  overflow: auto;
+  font-size: 12px;
+}
+.nachweis-vergleich pre span {
+  display: block;
+  min-height: 1em;
+}
+.nachweis-vergleich .anders {
+  background: #f2dede;
+  color: #843534;
+}
+.nachweis-erklaerung {
+  max-width: 60em;
+}
+.nachweis-provenienz,
+.nachweis-hinweis {
+  font-size: 12px;
+  color: #555;
+}
+.nachweis-meldung {
+  white-space: pre-wrap;
+}

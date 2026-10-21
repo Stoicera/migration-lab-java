@@ -1,0 +1,338 @@
+<h2>Äquivalenz-Nachweis</h2>
+
+<p class="lead nachweis-einleitung">
+  Dieselben Tests laufen gegen den Stand von 2016 und gegen den modernen Stand. Diese Seite zeigt
+  das Ergebnis eines CI-Laufs, Test für Test. Jede Zeile verweist auf den Quelltext und die
+  Aufzeichnung, auf die sie sich stützt.
+</p>
+
+@if (fehler()) {
+  <div class="alert alert-warning" role="alert" data-testid="nachweis-fehler">
+    Der Nachweis konnte nicht geladen werden. Die Rohdaten liegen unter
+    <a href="nachweis.json">nachweis.json</a>.
+  </div>
+}
+
+@if (daten(); as d) {
+  <p class="nachweis-herkunft" data-testid="nachweis-herkunft">
+    Erzeugt am {{ d.erzeugt | date: 'dd.MM.yyyy, HH:mm' }}
+    @if (d.commit) {
+      &middot; Commit <a [href]="d.commit.url" data-testid="nachweis-commit">{{ kurzSha() }}</a>
+    }
+    @if (d.ciLauf) {
+      &middot; <a [href]="d.ciLauf.url" data-testid="nachweis-cilauf">CI-Lauf</a>
+    }
+    &middot; <a [href]="d.repo">Repository</a> &middot;
+    <a href="nachweis.json">Rohdaten (JSON)</a>
+  </p>
+
+  <div class="row">
+    <div class="col-md-5">
+      <div class="panel panel-default">
+        <div class="panel-heading">Charakterisierungstests</div>
+        <div class="panel-body">
+          <p class="nachweis-zahl" data-testid="nachweis-gesamt">
+            {{ d.charakterisierung.gesamt }}
+          </p>
+          <p>je Test einmal gegen jeden Stand</p>
+          <ul class="list-unstyled nachweis-legende">
+            <li>
+              <span class="urteil urteil-identisch">identisch</span>
+              <strong data-testid="nachweis-anzahl-identisch">{{
+                d.charakterisierung.identisch
+              }}</strong>
+              — auf beiden Ständen grün, gleiche Erwartung
+            </li>
+            <li>
+              <span class="urteil urteil-sanktioniert">sanktionierte Abweichung</span>
+              <strong data-testid="nachweis-anzahl-sanktioniert">{{
+                d.charakterisierung.sanktioniert
+              }}</strong>
+              — absichtlich anders, beide Seiten festgehalten, Eintrag im Register
+            </li>
+            <li>
+              <span class="urteil urteil-regression">Regression</span>
+              <strong data-testid="nachweis-anzahl-regression">{{
+                d.charakterisierung.regression
+              }}</strong>
+              — ein Stand weicht vom festgehaltenen Verhalten ab
+            </li>
+            @if (d.charakterisierung.unvollstaendig > 0) {
+              <li>
+                <span class="urteil urteil-unvollstaendig">unvollständig</span>
+                <strong>{{ d.charakterisierung.unvollstaendig }}</strong>
+                — für einen Stand liegt kein Ergebnis vor
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Selenium-E2E-Tests</div>
+        <div class="panel-body">
+          <p>Dieselbe Suite gegen beide Oberflächen.</p>
+          <table class="table table-condensed nachweis-e2e-summe">
+            <tbody>
+              <tr>
+                <th scope="row">Stand 2016</th>
+                <td data-testid="nachweis-e2e-legacy">
+                  @if (d.e2e.legacy; as s) {
+                    {{ s.bestanden }} von {{ s.gesamt }} grün
+                  } @else {
+                    kein Ergebnis
+                  }
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Moderner Stand</th>
+                <td data-testid="nachweis-e2e-modern">
+                  @if (d.e2e.modern; as s) {
+                    {{ s.bestanden }} von {{ s.gesamt }} grün
+                  } @else {
+                    kein Ergebnis
+                  }
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">Image-Scan</div>
+        <div class="panel-body">
+          @if (d.imageScan; as scan) {
+            <p class="nachweis-zahl" data-testid="nachweis-trivy">{{ scan.gesamt }}</p>
+            <p>
+              Funde im Image des modernen Standes ({{ scan.werkzeug }}, {{ scan.schweregrade }}, nur
+              behebbare). Der Scan berichtet, er blockiert nicht;
+              @if (d.register.deviations) {
+                <a [href]="d.register.deviations">Begründung im Register</a>.
+              } @else {
+                Begründung im Register.
+              }
+            </p>
+            @if (scan.ziele.length > 0) {
+              <ul class="nachweis-ziele">
+                @for (z of scan.ziele; track z.ziel) {
+                  <li>
+                    <code>{{ z.ziel }}</code
+                    >: {{ z.anzahl }}
+                  </li>
+                }
+              </ul>
+            }
+          } @else {
+            <p>Für diesen Lauf liegt kein Scan-Ergebnis vor.</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Charakterisierung, Test für Test</h3>
+  <p>
+    Ein Klick auf den Testnamen zeigt die Aufzeichnung des Standes von 2016 neben der Antwort des
+    modernen Standes, oder die Begründung einer sanktionierten Abweichung.
+  </p>
+
+  <div class="table-responsive">
+    <table class="table table-condensed nachweis-matrix" data-testid="nachweis-matrix">
+      <thead>
+        <tr>
+          <th scope="col">Bereich</th>
+          <th scope="col">Test</th>
+          <th scope="col">Golden / Endpunkt</th>
+          <th scope="col">2016</th>
+          <th scope="col">Modern</th>
+          <th scope="col">Urteil</th>
+          <th scope="col">Beleg</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (zeile of zeilen(); track zeile.id) {
+          <tr
+            data-testid="nachweis-zeile"
+            [attr.data-urteil]="zeile.urteil"
+            class="zeile-{{ zeile.urteil }}"
+          >
+            <td>{{ zeile.suite }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-link nachweis-umschalter"
+                data-testid="nachweis-umschalter"
+                [attr.aria-expanded]="offen() === zeile.id"
+                (click)="umschalten(zeile)"
+              >
+                {{ zeile.name }}
+              </button>
+            </td>
+            <td>
+              @if (zeile.golden) {
+                <code>{{ zeile.golden.datei }}</code>
+              }
+              @if (zeile.endpunkt) {
+                <div>
+                  <code>{{ zeile.endpunkt }}</code>
+                </div>
+              }
+            </td>
+            <td class="status-{{ zeile.legacy.status }}">{{ statusText(zeile.legacy.status) }}</td>
+            <td class="status-{{ zeile.modern.status }}">{{ statusText(zeile.modern.status) }}</td>
+            <td>
+              <span class="urteil urteil-{{ zeile.urteil }}">{{ urteilText(zeile.urteil) }}</span>
+              @if (zeile.sanktion) {
+                <div class="nachweis-ref">{{ zeile.sanktion.ref }}</div>
+              }
+            </td>
+            <td>
+              @for (b of zeile.belege; track b.url) {
+                <div>
+                  <a [href]="b.url" data-testid="nachweis-beleg">{{ b.label }}</a>
+                </div>
+              }
+            </td>
+          </tr>
+          @if (offen() === zeile.id) {
+            <tr class="nachweis-detail" data-testid="nachweis-detail">
+              <td colspan="7">
+                @if (zeile.sanktion; as s) {
+                  <div class="nachweis-erklaerung" data-testid="nachweis-erklaerung">
+                    <h4>{{ s.erklaerung?.titel ?? s.ref }} ({{ s.ref }})</h4>
+                    @if (s.erklaerung; as e) {
+                      <p>{{ e.text }}</p>
+                      <p class="nachweis-provenienz">
+                        @if (e.source === 'openrouter') {
+                          Formuliert von {{ e.model }} am {{ e.date }} aus Registereintrag und
+                          Testauszug (Prompt-Hash {{ e.prompt_sha256?.slice(0, 12) }}).
+                        } @else {
+                          Zusammengestellt aus dem Registereintrag am {{ e.date }}, ohne Modell.
+                        }
+                        Maßgeblich ist der
+                        @if (s.url) {
+                          <a [href]="s.url">Registereintrag</a>.
+                        } @else {
+                          Registereintrag.
+                        }
+                      </p>
+                    }
+                  </div>
+                }
+                @for (m of [zeile.legacy, zeile.modern]; track $index) {
+                  @if (m.meldung) {
+                    <p class="nachweis-meldung">
+                      <strong>{{ $index === 0 ? 'Stand 2016' : 'Moderner Stand' }}:</strong>
+                      {{ m.meldung }}
+                    </p>
+                  }
+                }
+                @if (zeile.vergleich; as v) {
+                  <div class="row nachweis-vergleich" data-testid="nachweis-vergleich">
+                    <div class="col-md-6">
+                      <h5>Golden: Aufzeichnung des Standes von 2016</h5>
+                      <pre
+                        data-testid="nachweis-golden"
+                      >@for (z of vergleich(zeile); track $index) {<span [class.anders]="z.anders && zeile.urteil !== 'sanktioniert'">{{ z.links }}</span>}</pre>
+                    </div>
+                    <div class="col-md-6">
+                      <h5>Antwort des modernen Standes in diesem Lauf</h5>
+                      @if (v.modern !== null) {
+                        <pre
+                          data-testid="nachweis-modern"
+                        >@for (z of vergleich(zeile); track $index) {<span [class.anders]="z.anders && zeile.urteil !== 'sanktioniert'">{{ z.rechts }}</span>}</pre>
+                      } @else {
+                        <p>Keine Antwort aufgezeichnet.</p>
+                      }
+                    </div>
+                  </div>
+                  <p class="nachweis-hinweis">
+                    Schlüssel alphabetisch sortiert, Zahlen in der gesendeten Schreibweise. Der Test
+                    vergleicht JSON-Bäume: Reihenfolge der Schlüssel und Leerzeichen zählen nicht,
+                    Werte und Reihenfolge in Listen schon. Zahlen zählen als Wert, nicht als
+                    Schreibweise (912.0 = 912.00).
+                    @if (v.gleich) {
+                      In diesem Lauf sind beide Seiten gleich.
+                    }
+                  </p>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Selenium-E2E, nach Testklasse</h3>
+  <table class="table table-condensed nachweis-e2e" data-testid="nachweis-e2e">
+    <thead>
+      <tr>
+        <th scope="col">Testklasse</th>
+        <th scope="col">2016</th>
+        <th scope="col">Modern</th>
+        <th scope="col">Beleg</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (k of d.e2e.klassen; track k.klasse) {
+        <tr>
+          <td>
+            <code>{{ k.klasse }}</code>
+          </td>
+          <td>
+            @if (k.legacy; as s) {
+              {{ s.bestanden }} / {{ s.gesamt }}
+            } @else {
+              –
+            }
+          </td>
+          <td>
+            @if (k.modern; as s) {
+              {{ s.bestanden }} / {{ s.gesamt }}
+            } @else {
+              –
+            }
+          </td>
+          <td>
+            @if (k.url) {
+              <a [href]="k.url">Quelltext</a>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  @for (s of d.e2e.sanktionen; track s.ref) {
+    @if (s.erklaerung; as e) {
+      <div class="nachweis-erklaerung">
+        <h4>{{ e.titel }} ({{ s.ref }}), sanktionierte Abweichung in der Oberfläche</h4>
+        <p>{{ e.text }}</p>
+        @if (s.url) {
+          <p class="nachweis-provenienz">
+            Maßgeblich ist der <a [href]="s.url">Registereintrag</a>.
+          </p>
+        }
+      </div>
+    }
+  }
+
+  <h3>Was diese Seite nicht zeigt</h3>
+  <ul>
+    <li>
+      Eine grüne Suite belegt, was sie prüft, und nichts darüber hinaus. Aussehen und vom Browser
+      blockierte Styles sieht sie nicht; das steht als Grenze des Netzes im Register.
+    </li>
+    <li>
+      Die Seite zeigt den eingecheckten Stand eines CI-Laufs. Sie wird nicht bei jedem Aufruf neu
+      berechnet; Commit und CI-Lauf oben nennen, woher die Zahlen stammen.
+    </li>
+    <li>
+      Die Erklärungen zu sanktionierten Abweichungen sind Lesehilfen. Maßgeblich ist der jeweilige
+      Registereintrag.
+    </li>
+  </ul>
+}
