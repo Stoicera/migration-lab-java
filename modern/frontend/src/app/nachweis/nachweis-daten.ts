@@ -16,7 +16,7 @@ export interface Erklaerung {
   ref: string;
   titel: string;
   text: string;
-  source: 'openrouter' | 'register';
+  source: 'register+claude' | 'register';
   model: string | null;
   prompt_sha256: string | null;
   register_sha256: string;
