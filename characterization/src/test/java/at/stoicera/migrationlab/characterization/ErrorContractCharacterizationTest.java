@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -25,6 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  * one test that mutates state (doppelteRechnung).
  */
 @DisplayName("Fehlerkontrakt-Charakterisierung: 4xx/5xx-Oberfläche")
+@ExtendWith(NachweisBericht.class)
 class ErrorContractCharacterizationTest {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -49,6 +51,7 @@ class ErrorContractCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Unerlaubter Statuswechsel: 500 mit deutscher Meldung")
   void unerlaubterStatuswechsel_liefert500MitDeutscherMeldung() {
     // Auftrag 1 ist ABGEHOLT — von dort ist kein Uebergang mehr erlaubt
     var response = Stand.send("PUT", "/api/auftraege/1/status?neu=IN_ARBEIT", null);
@@ -57,6 +60,7 @@ class ErrorContractCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Rechnung für nicht fertigen Auftrag: 500 mit Meldung")
   void rechnungFuerNichtFertigenAuftrag_liefert500MitMeldung() {
     // Auftrag 11 ist IN_ARBEIT — Rechnung geht nur bei FERTIG
     var response = Stand.send("POST", "/api/rechnungen/auftrag/11", null);
@@ -66,6 +70,7 @@ class ErrorContractCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Doppelte Rechnung: 500 mit Meldung")
   void doppelteRechnung_liefert500MitMeldung() {
     // Auftrag 9 ist FERTIG ohne Rechnung — die erste geht durch ...
     var erste = Stand.send("POST", "/api/rechnungen/auftrag/9", null);
@@ -78,6 +83,7 @@ class ErrorContractCharacterizationTest {
   }
 
   @Test
+  @DisplayName("Kunde ohne Nachname: 500 aus dem DB-Constraint (B12)")
   void kundeOhneNachname_liefert500AusDbConstraint() throws Exception {
     // B12: der Controller validiert nichts — der NOT-NULL-Constraint der DB
     // schlaegt als Boot-Standard-Fehler-JSON bis zum Client durch.

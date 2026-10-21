@@ -1,0 +1,58 @@
+{
+  "hinweis": "Lesehilfe zu sanktionierten Abweichungen, erzeugt zur Build-Zeit von scripts/nachweis/erklaerungen.mjs, im Review geprüft. Maßgeblich ist der Registereintrag.",
+  "systemPrompt": "Du erklärst einer IT-Leitung oder Geschäftsführung in Österreich eine absichtliche Verhaltensänderung zwischen einer Altanwendung (Stand 2016) und ihrer modernisierten Fassung. Regeln: genau ein Absatz, drei bis fünf Sätze, österreichisches Standarddeutsch, sachlich und ruhig. Keine Superlative, keine Werbesprache, keine Aufzählungen, kein Markdown. Verwende nur Fakten aus dem Registereintrag und dem Testauszug; erfinde keine Zahlen, Kunden oder Folgen. Sag, was sich unterscheidet, warum es absichtlich so ist, und dass beide Seiten durch einen Test festgehalten sind. Technische Begriffe nur, wenn nötig, dann kurz erklärt.",
+  "eintraege": [
+    {
+      "ref": "SD-1",
+      "titel": "Suche mit feindlicher Eingabe",
+      "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+      "text": "Suche mit feindlicher Eingabe (SD-1, seit Etappe 4): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Registereintrag (englisch): Hostile input to GET /api/kunden?suche= (and the ?status= filter): legacy is injectable, modern is parameterised. Pinned observed behaviour: %' OR '1'='1 → legacy 200/10 rows vs modern 200/0 rows; lone ' → legacy 500 (Boot error JSON naming java.lang.ArrayIndexOutOfBoundsException from the driver) vs modern 200/0 rows. Begründung: Security fix B4 — carrying an injection into the target stack to preserve bug-for-bug equality would be malpractice; equivalence holds for all legitimate inputs.",
+      "source": "register",
+      "model": null,
+      "prompt_sha256": null,
+      "register_sha256": "197190b818da4838f7559348f20f0ee1615b8ff6dc8d0e404a402bb62949543a",
+      "diff_sha256": "b59a8e9f1d71322f3b46043098518ef5d6ea68ae52b12ceefa0b98df220d8c5a",
+      "date": "2026-10-21",
+      "review": "offen"
+    },
+    {
+      "ref": "SD-2",
+      "titel": "Adminseite",
+      "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+      "text": "Adminseite (SD-2, seit Etappe 5): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Registereintrag (englisch): Admin page: legacy serves the JSP at GET /admin (HTML golden master); modern serves the SPA shell there, numbers come from the new GET /api/admin/statistik, and POST /admin/bereinigen answers JSON instead of re-rendered JSP HTML. Unchanged and pinned identically on both stands: the /admin/bereinigen path, status 200, the exact German meldung, and the delete semantics (DB-state test). Begründung: Mandated by SPEC §4 / MILESTONES G5 (\"JSP-Adminseite absorbiert\") — the mixed server-rendered page is a wart the migration exists to remove; JSP/JSTL/gson die with it.",
+      "source": "register",
+      "model": null,
+      "prompt_sha256": null,
+      "register_sha256": "b41eaa6c2ba372e7f2f53bfeb3a847c44fe2895918b90e6d14d39d99b1ff3c49",
+      "diff_sha256": "02b69cbfeb9564ce5a034ffd007bf228bec7391d88297e810ef38fc204516a32",
+      "date": "2026-10-21",
+      "review": "offen"
+    },
+    {
+      "ref": "SD-3",
+      "titel": "Meldung bei abgelehnter Aktion",
+      "quelle": "docs/adr/0004-functional-equivalence-and-sanctioned-divergence.md",
+      "text": "Meldung bei abgelehnter Aktion (SD-3, seit Etappe 5): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Registereintrag (englisch): Alert on server-rejected actions (pinned instance: duplicate invoice): legacy shows literally undefined (Boot 1.5 labels the plain-string 500 body as JSON → AngularJS $http:baddata → alert(fehler.data) of an Error); modern shows the backend's German message. Both UI behaviours pinned by e2e via per-stand map values (alert.rechnungDuplikat); the HTTP contract itself is identical on both stands and pinned by error-contract characterization. Begründung: The legacy display is a defect (flagged at stage 1, e2e/README \"formatting contract\"); reproducing it in the new UI would preserve a bug users suffer from, not behaviour they rely on.",
+      "source": "register",
+      "model": null,
+      "prompt_sha256": null,
+      "register_sha256": "f7d72fcd110aa2a020814ea626d5e77c70cff607b7eefe9818c2a1cb8fb9456b",
+      "diff_sha256": "6776ba88892bfe5f1048d0e01db8610831850b9603cac1e1f578459995eb2f73",
+      "date": "2026-10-21",
+      "review": "offen"
+    },
+    {
+      "ref": "ADR-0009",
+      "titel": "Seitenadressen ohne #!",
+      "quelle": "docs/adr/0009-strangler-fig-url-seam-no-ngupgrade.md",
+      "text": "Seitenadressen ohne #! (ADR-0009): Der moderne Stand verhält sich hier absichtlich anders als der Stand von 2016; beide Seiten sind durch einen Test festgehalten. Entscheidung (englisch): Coexistence: one origin, the URL scheme is the seam — no ngUpgrade. The Angular app owns / with path routes from the first slice; the AngularJS app stays fully functional at /alt.html#!/… (its hash routing makes the split free). One route group migrates per commit; cross-overs are full page loads (Angular catch-all → /alt.html#!<path>; the old app keeps a ported-routes list and hands over via window.location).",
+      "source": "register",
+      "model": null,
+      "prompt_sha256": null,
+      "register_sha256": "e34b751c9e71f5ccaeae1dfe082f7abe837f4e0bc5b7f61d12c60fe0830c9745",
+      "diff_sha256": "aa6f3d7343108e60088d8686a78f7ed3062c57896d6fe04da48bc60688468f54",
+      "date": "2026-10-21",
+      "review": "offen"
+    }
+  ]
+}

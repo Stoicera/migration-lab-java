@@ -76,6 +76,26 @@ with bind parameters):
 
 Legitimate search input is golden-mastered and identical on both stands.
 
+## Report: the equivalence evidence (`/nachweis`)
+
+`NachweisBericht` (a JUnit extension on all three classes) records every test with its result
+and writes `target/nachweis/characterization-<stand>.json` at the end of the run. It observes
+and never decides: a test passes or fails exactly as without it. Tests attach the golden file,
+the endpoint and the received document (`NachweisBericht.erfasse`), so the report can show
+golden and answer side by side. A test whose expectation forks on `stand` carries
+`@Sanktioniert("SD-n" | "ADR-nnnn")` naming its register entry; a fork without the marker would
+be reported as `identisch`, which is a review finding.
+
+CI uploads the file from both stands (`legacy-ci`, `modern-ci`) together with the e2e surefire
+reports and the Trivy result; modern-ci's `nachweis` job joins them with
+`scripts/nachweis/aggregate.mjs` into the `nachweis` artefact. Verdicts: **identisch** (green
+on both stands, no fork), **sanktioniert** (green on both, forked with a register entry),
+**Regression** (red on either stand). The deployed page reads the committed copy
+`modern/frontend/public/nachweis.json`; refresh it with `scripts/nachweis/refresh.sh` and a PR.
+The paragraphs explaining each sanctioned divergence are generated at build time by
+`scripts/nachweis/erklaerungen.mjs` into `docs/nachweis/erklaerungen.json` and reviewed in the
+PR — never at request time.
+
 ## Determinism
 
 - `ApiCharacterizationTest` resets the database to the committed seed

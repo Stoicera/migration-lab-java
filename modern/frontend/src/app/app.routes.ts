@@ -8,6 +8,7 @@ import { Bericht } from './bericht/bericht';
 import { Dashboard } from './dashboard/dashboard';
 import { Fahrzeuge } from './fahrzeuge/fahrzeuge';
 import { Kunden } from './kunden/kunden';
+import { NachweisSeite } from './nachweis/nachweis';
 import { KundeDetail } from './kunden/kunde-detail';
 import { Rechnungen } from './rechnungen/rechnungen';
 import { RechnungDetail } from './rechnungen/rechnung-detail';
@@ -27,6 +28,8 @@ export const routes: Routes = [
   { path: 'rechnungen/:id', component: RechnungDetail },
   { path: 'bericht', component: Bericht },
   { path: 'admin', component: Admin },
+  // not part of the 2016 app: the demo's evidence page (scripts/nachweis/, docs/demo.md)
+  { path: 'nachweis', component: NachweisSeite },
   { path: '', pathMatch: 'full', redirectTo: 'start' },
   { path: '**', redirectTo: 'start' },
 ];

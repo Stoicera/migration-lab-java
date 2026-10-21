@@ -1,7 +1,7 @@
 # Regiebuch — migration-lab in zehn Minuten
 
 *Vorführung vor IT-Leitung und Geschäftsführung: Universität, öffentliche Stelle, Softwarehaus,
-Industrie. Stand 13.10.2026. Zahlen aus der Faktenbasis der Case Study, jede mit Messdatum.*
+Industrie. Stand 22.10.2026. Zahlen aus der Faktenbasis der Case Study, jede mit Messdatum.*
 
 Diese Demo zeigt nicht „wir können migrieren", sondern **wie man migriert, ohne blind zu
 fliegen** — und dass die Zahlen dazu öffentlich sind, einschließlich der unbequemen. Alles, was
@@ -23,19 +23,23 @@ gezeigt wird, ist im Repository nachlesbar. Was hier nicht steht, wird nicht beh
    geöffnet: `e2e/src/test/resources/selectors/`, `characterization/src/test/resources/golden/`,
    `docs/DEVIATIONS.md`, `ai-testgen/REPORT.md` (Abschnitt „Deutsche Zusammenfassung"),
    `playbook/README.md`.
-4. **Das Playbook-PDF** liegt als Datei bereit (Link in Szene 7), falls das Netz ausfällt.
-5. **Browserkonsole** im rechten Fenster kurz öffnen: keine CSP-Verletzung. Das ist der eine
+4. **`/nachweis` und den Vorführ-PR #107** in je einem Tab öffnen; im PR den roten Lauf
+   `modern-ci` aufklappen. Fehlt der rote Lauf (Artefakte laufen nach 90 Tagen ab), den PR mit
+   „Update branch“ neu anstoßen, eine Viertelstunde vorher.
+5. **Das Playbook-PDF** liegt als Datei bereit (Link in Szene 7), falls das Netz ausfällt.
+6. **Browserkonsole** im rechten Fenster kurz öffnen: keine CSP-Verletzung. Das ist der eine
    Check, den kein Skript sehen kann — Szene 5 erzählt, warum.
-6. **Nicht zeigen:** Terminals mit Hostnamen oder Pfaden, das Deployment-Panel, Zugangsdaten,
+7. **Nicht zeigen:** Terminals mit Hostnamen oder Pfaden, das Deployment-Panel, Zugangsdaten,
    `docs/VERMARKTUNG.md`. Die erhaltene SQL-Injection des Legacy-Standes wird benannt, nicht
    vorgeführt — keine Eingaben, keine Beispiele.
 
-## Ablauf — sieben Szenen
+## Ablauf — sieben Szenen und ein Einschub
 
 | Szene | Minute | Bild | Kernaussage |
 |---|---|---|---|
 | 1 | 0:00–1:00 | Startseite des Legacy-Standes | So sieht der Bestand aus |
 | 2 | 1:00–3:00 | Beide Stände nebeneinander: Kunden, Aufträge | Gleiches Verhalten ist das Produkt |
+| 2b | +1:00, Einschub | `/nachweis`, dann Vorführ-PR #107 | Grün, gelb, rot — jede Zeile mit Beleg |
 | 3 | 3:00–5:00 | `e2e/` — Szenarien und Selektor-Map | Dieselbe Suite, zwei Oberflächen |
 | 4 | 5:00–6:30 | `characterization/golden/` | Der Golden Master fängt, was das Auge nicht sieht |
 | 5 | 6:30–7:30 | `docs/DEVIATIONS.md`, ADR-0004 | Das Register erlaubt alles außer Schweigen |
@@ -68,6 +72,28 @@ Oberfläche können Sie danach jederzeit ändern — mit demselben Netz."
 **Hinweis für den Vorführenden:** Die Daten im rechten Stand sind ein Demo-Datensatz, den
 Besucher verändern können; die nächtliche Sicherung ist zugleich der Rücksetzpfad. Passt eine
 Zahl nicht zum linken Stand, genau das sagen.
+
+### Szene 2b — Der Nachweis und ein roter Lauf (Einschub, eine Minute)
+
+**Bild:** <https://migration-lab.stoicera.cyou/nachweis>. Erst die drei Kästen oben, dann eine
+grüne Zeile anklicken (`GET /api/kunden wie aufgezeichnet`): links die Aufzeichnung des Standes
+von 2016, rechts die Antwort des modernen Standes. Dann eine gelbe Zeile (`B4-Suche,
+Injektionseingabe`): Begründung und Link auf den Registereintrag. Zuletzt den Vorführ-PR
+[#107 „Rundungsregression im Monatsbericht“](https://github.com/Stoicera/migration-lab-java/pull/107)
+öffnen: eine Zeile Code, `modern-build` rot, im Artefakt `nachweis` dieselbe Zeile als
+**Regression**.
+
+**Sprechtext:** „Das ist kein Dashboard, das wir gebaut haben, um gut auszusehen. Es ist das
+Protokoll eines CI-Laufs: 47 Charakterisierungstests, jeder gegen beide Stände, 34
+Selenium-Tests je Stand. Grün heißt: gleiche Antwort. Gelb heißt: absichtlich anders, mit
+Registereintrag, und beide Seiten sind festgehalten. Rot gibt es auch — hier im Vorführ-PR. Jemand
+rundet den Monatsumsatz auf ganze Euro, im Backend statt in der Oberfläche. Die Seite sieht danach
+plausibel aus. Der Lauf ist rot, und er zeigt genau die Zeile, die sich geändert hat. Keine
+Migration ohne Netz."
+
+**Hinweis für den Vorführenden:** Die Seite zeigt den eingecheckten Stand eines CI-Laufs, nicht
+den Moment des Aufrufs; Commit und CI-Lauf stehen oben auf der Seite. Die Zahlen auf der Seite
+gelten mit diesem Datum. Den Vorführ-PR nie mergen (Label `demo`, Entwurf).
 
 ### Szene 3 — Dieselbe Selenium-Suite (3:00–5:00)
 
@@ -154,6 +180,7 @@ Link zum Mitgeben:
 |---|---|---|
 | Charakterisierungstests | 47, grün gegen beide Stände | 30.09.2026 (CI) |
 | Selenium-E2E-Szenarien | 34 je Stand, 0 Fehler | 01.10.2026 (CI) |
+| Nachweis-Seite (`/nachweis`) | 47 Charakterisierungstests: 33 identisch, 14 sanktionierte Abweichung, 0 Regression; E2E 34/34 je Stand | 21.10.2026 (CI-Lauf auf der Seite verlinkt) |
 | Umfang des Legacy-Standes | ~1.700 Zeilen Backend, 25 REST-Endpunkte, 10 Views + 1 JSP | 01.10.2026 |
 | Entscheidungsprotokolle (ADR) | 16 | 01.10.2026 |
 | KI-Experiment: Aufrufe / Kosten | 24 / 0,65 € | Lauf 31.07.2026, nachgerechnet 01.10.2026 |
