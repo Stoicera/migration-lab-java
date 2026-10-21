@@ -33,6 +33,15 @@
 		     Never raise this above a measured value: a gate nobody can reach is the reason
 		     -DskipTests exists. See docs/DEVIATIONS.md. -->
 		<jacoco.line.minimum>0.80</jacoco.line.minimum>
+		<!-- Security overrides of Boot 4.1.1's managed versions (2026-10-21), each held at the
+		     minimum version that fixes what the image scan reported, not at the newest:
+		     - Tomcat 11.0.24 → 11.0.25: CVE-2026-65182, CVE-2026-65905, CVE-2026-68525 (CRITICAL)
+		     - Jackson 3 3.1.5 → 3.1.7: CVE-2026-89407, -89425, -68497, -91776, -91777 (HIGH).
+		       3.1.7 stays on Boot's managed minor; 3.2.2 would NOT close -89425/-91776/-91777
+		       (fixed in 3.1.7 or 3.2.3), and a minor jump touches the wire format ADR-0005 pins.
+		     Drop both properties when the Boot parent manages these versions or newer. -->
+		<tomcat.version>11.0.25</tomcat.version>
+		<jackson-bom.version>3.1.7</jackson-bom.version>
 	</properties>
 
 	<dependencyManagement>
@@ -65,7 +74,8 @@
 		     fixed in 42.7.12. Not theoretical: PostgreSQL 18 authenticates with SCRAM, so
 		     this is the mechanism the modern stand actually uses. Held at the minimum fixed
 		     version rather than the newest (42.7.13) so this is a security fix and nothing
-		     else — Dependabot owns routine drift.
+		     else — Dependabot owns routine drift. 2026-10-21: 42.7.14 (Dependabot #101),
+		     testbed pom moved in the same commit.
 		     Declared as a literal here AND in ai-testgen/testbed/modern/pom.xml rather than
 		     as a property: PomDriftGuardTest compares DECLARED coordinates, and a property
 		     override does not travel through the testbed's imported BOM the way it travels
@@ -74,7 +84,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.12</version>
+			<version>42.7.14</version>
 		</dependency>
 
 		<!-- G7 (stage 6): schema management moves out of the hand-run SQL files
