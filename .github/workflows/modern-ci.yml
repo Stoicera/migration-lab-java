@@ -14,6 +14,7 @@ on:
 # Least privilege (CodeQL actions/missing-workflow-permissions, 2026-10-21): the jobs
 # here only read the repository; artefact upload and the Actions cache use the
 # runtime token, not GITHUB_TOKEN, so read access to the contents is all it needs.
+# The nachweis job additionally reads Actions runs (job-level `actions: read`).
 permissions:
   contents: read
 
