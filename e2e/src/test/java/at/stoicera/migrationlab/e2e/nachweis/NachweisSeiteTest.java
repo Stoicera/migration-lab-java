@@ -77,7 +77,7 @@ class NachweisSeiteTest extends ScenarioTest {
             .filter(z -> z.getText().contains("kunden.json"))
             .findFirst()
             .orElseThrow();
-    goldenZeile.findElement(testid("nachweis-umschalter")).click();
+    klicke(goldenZeile.findElement(testid("nachweis-umschalter")));
     waits.visible(testid("nachweis-vergleich"));
     String golden = driver.findElement(testid("nachweis-golden")).getText();
     String modern = driver.findElement(testid("nachweis-modern")).getText();
@@ -93,7 +93,7 @@ class NachweisSeiteTest extends ScenarioTest {
             .filter(z -> "sanktioniert".equals(z.getAttribute("data-urteil")))
             .findFirst()
             .orElseThrow();
-    zeile.findElement(testid("nachweis-umschalter")).click();
+    klicke(zeile.findElement(testid("nachweis-umschalter")));
     waits.visible(testid("nachweis-erklaerung"));
     assertThat(
             zeile.findElements(testid("nachweis-beleg")).stream()
@@ -114,6 +114,13 @@ class NachweisSeiteTest extends ScenarioTest {
         ((JavascriptExecutor) driver)
             .executeScript("return document.querySelectorAll('script:not([src])').length");
     assertThat(((Number) inline).intValue()).as("no inline script (strict CSP)").isZero();
+  }
+
+  /** The fixed 2016 footer covers the lower viewport edge; centre the target before clicking. */
+  private void klicke(WebElement element) {
+    ((JavascriptExecutor) driver)
+        .executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
+    element.click();
   }
 
   private int zahl(String id) {
