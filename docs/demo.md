@@ -91,6 +91,8 @@ rundet den Monatsumsatz auf ganze Euro, im Backend statt in der Oberfläche. Die
 plausibel aus. Der Lauf ist rot, und er zeigt genau die Zeile, die sich geändert hat. Keine
 Migration ohne Netz."
 
+Erklärungen: Register entscheidet, Claude formuliert (Modell und Datum im JSON).
+
 **Hinweis für den Vorführenden:** Die Seite zeigt den eingecheckten Stand eines CI-Laufs, nicht
 den Moment des Aufrufs; Commit und CI-Lauf stehen oben auf der Seite. Die Zahlen auf der Seite
 gelten mit diesem Datum. Den Vorführ-PR nie mergen (Label `demo`, Entwurf).

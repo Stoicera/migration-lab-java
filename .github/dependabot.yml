@@ -32,3 +32,8 @@ updates:
     directory: /modern/frontend
     schedule:
       interval: weekly
+  # build-time scripts of /nachweis (Anthropic SDK); nothing from here ships in an image
+  - package-ecosystem: npm
+    directory: /scripts/nachweis
+    schedule:
+      interval: weekly
