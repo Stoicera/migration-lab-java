@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.release>25</maven.compiler.release>
 		<junit.version>5.14.4</junit.version>
-		<selenium.version>4.51.0</selenium.version>
+		<selenium.version>4.52.0</selenium.version>
 		<assertj.version>3.27.7</assertj.version>
 		<e2e.excludedGroups>nachweis</e2e.excludedGroups>
 		<e2e.reportsDirectory>${project.build.directory}/surefire-reports</e2e.reportsDirectory>
